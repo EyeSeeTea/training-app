@@ -108,13 +108,10 @@ export const TrainingWizard: React.FC<TrainingWizardProps> = ({ onClose, module 
 };
 
 const StyledWizard = styled(Wizard)`
-    height: 100%;
-
     .MuiPaper-root {
         box-shadow: none;
         background-color: inherit;
         margin: inherit;
-        height: 100%;
     }
 `;
 
@@ -127,7 +124,6 @@ const StyledModal = styled(Modal)`
 
     ${ModalContent} {
         padding: 0px 15px;
-        max-height: 75%;
     }
 
     ${StyledWizard} .MuiPaper-root {

@@ -5,8 +5,10 @@ import Draggable, {
     DraggableEvent,
     DraggableProps,
 } from "react-draggable";
+import { Resizable } from "react-resizable";
 import styled from "styled-components";
 import { ModalHeader } from "./ModalHeader";
+import "react-resizable/css/styles.css";
 
 export const Modal: React.FC<ModalProps> = ({
     className,
@@ -16,6 +18,8 @@ export const Modal: React.FC<ModalProps> = ({
     minimized,
     allowDrag,
 }) => {
+    const [height, setHeight] = useState(800);
+    const [width, setWidth] = useState(600);
     const [position, setPosition] = useState<ControlPosition>();
     const dragId = "drag-button";
 
@@ -35,16 +39,27 @@ export const Modal: React.FC<ModalProps> = ({
             onDrag={clearPosition}
         >
             <ModalWrapper>
-                <ModalBody className={className}>
-                    <ModalHeader
-                        dragId={dragId}
-                        minimized={minimized}
-                        onClose={onClose}
-                        onMinimize={onMinimize}
-                        allowDrag={allowDrag}
-                    />
-                    {children}
-                </ModalBody>
+                <Resizable
+                    width={width}
+                    height={height}
+                    resizeHandles={["sw", "se", "nw", "ne", "w", "e", "n", "s"]}
+                    onResize={(_e, { size }) => {
+                        setWidth(size.width);
+                        setHeight(size.height);
+                    }}
+                    draggableOpts={{ offsetParent: document.body }}
+                >
+                    <ModalBody className={className} style={{ width, height }}>
+                        <ModalHeader
+                            dragId={dragId}
+                            minimized={minimized}
+                            onClose={onClose}
+                            onMinimize={onMinimize}
+                            allowDrag={allowDrag}
+                        />
+                        {children}
+                    </ModalBody>
+                </Resizable>
             </ModalWrapper>
         </StyledDraggable>
     );
@@ -98,5 +113,9 @@ const StyledDraggable = styled(CustomDraggable)`
     /* Required to not loose dragging focus if cursor goes outside of draggable region */
     :active {
         pointer-events: all;
+    }
+
+    .react-resizable-handle {
+        background-image: unset;
     }
 `;
