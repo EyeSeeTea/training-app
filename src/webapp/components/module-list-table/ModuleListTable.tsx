@@ -30,6 +30,7 @@ export interface ModuleListTableProps {
 
 export const ModuleListTable: React.FC<ModuleListTableProps> = ({ rows, refreshRows = async () => {} }) => {
     const { usecases, setAppState } = useAppContext();
+    //, module,
     const loading = useLoading();
     const snackbar = useSnackbar();
 
@@ -226,6 +227,7 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = ({ rows, refreshR
                 },
             },
             {
+                // && usecases.user.checkSettingsPermissions("write", module) === true
                 name: "edit-module",
                 text: i18n.t("Edit module"),
                 icon: <Icon>edit</Icon>,

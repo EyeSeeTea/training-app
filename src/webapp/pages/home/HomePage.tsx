@@ -9,15 +9,38 @@ import { MainButton } from "../../components/main-button/MainButton";
 import { Modal, ModalContent, ModalFooter, ModalParagraph, ModalTitle } from "../../components/modal";
 import { Spinner } from "../../components/spinner/Spinner";
 import { useAppContext } from "../../contexts/app-context";
+//import { User } from "../../../data/entities/User";
+import { TrainingModule } from "../../../domain/entities/TrainingModule";
 
 export const HomePage = () => {
-    const { usecases, setAppState, modules, reload, hasSettingsAccess, translate } = useAppContext();
+   const { usecases, setAppState, modules, reload, hasSettingsAccess, translate } = useAppContext();
+   //const [moduleHasPermission, setModuleHasPermission] = useState<object>();
+   const[hasUserPermission, setHasUserPermission] = useState<boolean>();
+   //let newModules = Object.create({});
+   console.log(modules)
+    const ff = async (permission: "read" |"write", module: TrainingModule) => await usecases.user.checkSettingsPermissions(permission, module).then(setHasUserPermission)
+    
+    /*
+    have a state object of all the modules 
+    */
+   /*const checkModuleUserPermissions = useCallback(
+    async (permission: "read" |"write", module: TrainingModule) => {
+        const data = await usecases.user.checkSettingsPermissions(permission, module)
+        if (!data) {
+            return false;
+        }
 
+        return true;
+    },
+    [usecases, modules]
+);*/
+   
     const [loading, setLoading] = useState(true);
     const [contextMenuTarget, setContextMenuTarget] = useState<{
         id: string;
         pos: number[];
     } | null>(null);
+
 
     const loadModule = useCallback(
         (module: string, step: number) => {
@@ -51,7 +74,7 @@ export const HomePage = () => {
         },
         [usecases, reload]
     );
-
+    
     const contextMenuActions = useMemo(() => {
         return [
             {
@@ -66,7 +89,9 @@ export const HomePage = () => {
     useEffect(() => {
         reload().then(() => setLoading(false));
     }, [reload]);
-
+    //hasPermissions("read", module)
+    //ff("read", module) && user === true
+    // && user === true
     return (
         <React.Fragment>
             {contextMenuTarget && (
@@ -100,7 +125,7 @@ export const HomePage = () => {
                         ) : (
                             <Cardboard>
                                 {modules
-                                    .filter(module => module.installed === true)
+                                    .filter(module => module.installed === true && ff("read", module) && hasUserPermission === true)
                                     .map(({ name, id, progress, disabled, contents }, idx) => {
                                         const { lastStep, completed } = progress;
                                         const percentage = Math.round((lastStep / contents.steps.length) * 100);
