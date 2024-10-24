@@ -1,13 +1,19 @@
 {
-    "name": "training-app",
+    "name": "training-component",
     "description": "Training App",
-    "version": "1.4.0",
+    "version": "1.4.0-beta.17",
     "license": "GPL-3.0",
     "author": "EyeSeeTea team",
+    "main": "index.js",
+    "types": "index.d.ts",
     "homepage": ".",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/eyeseetea/training-app.git"
+    },
+    "peerDependencies": {
+        "react": "17",
+        "react-dom": "17"
     },
     "dependencies": {
         "@dhis2/app-runtime": "3.2.4",
@@ -58,6 +64,9 @@
         "styled-jsx": "4.0.1"
     },
     "scripts": {
+        "build-lib": "mkdir -p dist && yarn build-lib-locales && yarn build-lib-tsc && node ./build-lib.js",
+        "build-lib-tsc": "tsc --build tsconfig.lib.json",
+        "build-lib-locales": "yarn localize && mkdir -p dist/locales && cp -a src/locales/* dist/locales",
         "start": "react-scripts start",
         "craco-start": "craco start",
         "prebuild": "yarn localize && yarn test",
@@ -97,7 +106,7 @@
         "@typescript-eslint/eslint-plugin": "5.2.0",
         "@typescript-eslint/parser": "5.2.0",
         "@welldone-software/why-did-you-render": "6.2.1",
-        "axios-mock-adapter": "1.20.0",
+        "axios-mock-adapter": "1.18.2",
         "babel-core": "6.26.3",
         "babel-eslint": "10.1.0",
         "craco": "0.0.3",
