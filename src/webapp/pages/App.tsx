@@ -20,6 +20,8 @@ import { HomePage } from "./home/HomePage";
 import { SettingsPage } from "./settings/SettingsPage";
 import { SummaryPage } from "./summary/SummaryPage";
 import { WelcomePage } from "./welcome/WelcomePage";
+import { AppConfigProvider } from "../contexts/AppConfigProvider";
+import { D2Api } from "../../types/d2-api";
 
 export const routes: AppRoute[] = [
     {
@@ -109,25 +111,27 @@ export const routes: AppRoute[] = [
 ];
 
 const App: React.FC<{ locale: string; baseUrl: string }> = ({ locale, baseUrl }) => {
-    const compositionRoot = getCompositionRoot(baseUrl);
+    const compositionRoot = getCompositionRoot(new D2Api({ baseUrl: baseUrl }));
 
     return (
         <AppContextProvider routes={routes} compositionRoot={compositionRoot} locale={locale}>
-            <StylesProvider injectFirst>
-                <MuiThemeProvider theme={muiTheme}>
-                    <OldMuiThemeProvider muiTheme={muiThemeLegacy}>
-                        <SnackbarProvider>
-                            <LoadingProvider>
-                                <div id="app" className="content">
-                                    <HashRouter>
-                                        <Router baseUrl={baseUrl} />
-                                    </HashRouter>
-                                </div>
-                            </LoadingProvider>
-                        </SnackbarProvider>
-                    </OldMuiThemeProvider>
-                </MuiThemeProvider>
-            </StylesProvider>
+            <AppConfigProvider>
+                <StylesProvider injectFirst>
+                    <MuiThemeProvider theme={muiTheme}>
+                        <OldMuiThemeProvider muiTheme={muiThemeLegacy}>
+                            <SnackbarProvider>
+                                <LoadingProvider>
+                                    <div id="app" className="content">
+                                        <HashRouter>
+                                            <Router baseUrl={baseUrl} />
+                                        </HashRouter>
+                                    </div>
+                                </LoadingProvider>
+                            </SnackbarProvider>
+                        </OldMuiThemeProvider>
+                    </MuiThemeProvider>
+                </StylesProvider>
+            </AppConfigProvider>
         </AppContextProvider>
     );
 };

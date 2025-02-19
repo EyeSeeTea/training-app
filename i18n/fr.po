@@ -1,12 +1,18 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Traning App - UI Interface\n"
-"POT-Creation-Date: 2024-11-04T02:21:30.584Z\n"
+"POT-Creation-Date: 2025-02-18T08:45:55.109Z\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
+
+msgid "Welcome to training on DHIS2"
+msgstr "Bienvenue dans les tutoriels de formation DHIS2\n"
+
+msgid "What do you want to learn in DHIS2?"
+msgstr "Que voulez-vous apprendre dans DHIS2 aujourd'hui?"
 
 msgid "Field {{field}} cannot be blank"
 msgstr "Le champ {{field}} ne peut pas être vide"
@@ -61,6 +67,30 @@ msgstr "Tutoriels"
 
 msgid "done"
 msgstr ""
+
+msgid "Export JSON translations"
+msgstr "Exportation des traductions en JSON"
+
+msgid "Import JSON translations"
+msgstr "Importer des traductions JSON"
+
+msgid "Close"
+msgstr "Fermer"
+
+msgid "Home page logo"
+msgstr "Logo de la page d'accueil"
+
+msgid "Customize landing page text"
+msgstr "Personnaliser le texte de la page d'accueil"
+
+msgid "Welcome message"
+msgstr "Message de bienvenue"
+
+msgid "Module selection"
+msgstr "Sélection du module"
+
+msgid "Exporting translations"
+msgstr "Exportation des traductions"
 
 msgid "You need to select a module"
 msgstr "Vous devez sélectionner un module"
@@ -126,12 +156,6 @@ msgstr "Oui"
 msgid "No"
 msgstr "Pas de"
 
-msgid "Imported {{total}} translation terms"
-msgstr "Termes de traduction importées {{total}}"
-
-msgid "Unable to import translation terms"
-msgstr "Impossible d'importer les termes de la traduction"
-
 msgid "Add section"
 msgstr "Ajouter une section"
 
@@ -153,12 +177,6 @@ msgstr "Exportation de la page de renvoi"
 msgid "Exporting landing page(s)"
 msgstr "Exportation de page(s) de destination"
 
-msgid "Export JSON translations"
-msgstr "Exportation des traductions en JSON"
-
-msgid "Exporting translations"
-msgstr "Exportation des traductions"
-
 msgid "Move up"
 msgstr "Avancez"
 
@@ -167,9 +185,6 @@ msgstr "Descendre"
 
 msgid "Import landing pages"
 msgstr "Importer des pages de renvoi"
-
-msgid "Import JSON translations"
-msgstr "Importer des traductions JSON"
 
 msgid "Landing page"
 msgstr "Page d'atterrissage"
@@ -376,9 +391,6 @@ msgstr "Modules d'importation"
 msgid "Help"
 msgstr "Aide"
 
-msgid "Close"
-msgstr "Fermer"
-
 msgid "Previous step"
 msgstr "Étape précédente"
 
@@ -390,6 +402,12 @@ msgstr "Suivant"
 
 msgid "Sub step {{position}} of {{total}}"
 msgstr "Sous-étape {{position}} de {{total}}"
+
+msgid "Imported {{total}} translation terms"
+msgstr "Termes de traduction importées {{total}}"
+
+msgid "Unable to import translation terms"
+msgstr "Impossible d'importer les termes de la traduction"
 
 msgid "Welcome"
 msgstr "Bienvenue sur"
@@ -533,12 +551,6 @@ msgstr ""
 "tutoriel' ci-dessous ou si vous souhaitez sélectionner un autre tutoriel, "
 "cliquez sur le bouton 'Accueil'."
 
-msgid "Welcome to training on DHIS2"
-msgstr "Bienvenue dans les tutoriels de formation DHIS2\n"
-
-msgid "What do you want to learn in DHIS2?"
-msgstr "Que voulez-vous apprendre dans DHIS2 aujourd'hui?"
-
 msgid "First load can take a couple of minutes, please wait..."
 msgstr ""
 "Le premier chargement peut prendre quelques minutes, veuillez patienter..."
@@ -587,8 +599,9 @@ msgstr "Impossible de supprimer l'étape"
 msgid "Unable to remove page"
 msgstr "Impossible de supprimer la page"
 
-msgid "Permissions"
-msgstr "Permissions"
+#, fuzzy
+msgid "General Settings"
+msgstr "Informations générales"
 
 msgid "Access to Settings"
 msgstr "Accès aux paramètres"
@@ -602,6 +615,13 @@ msgstr "Une liste avec tous les modules existants est visible"
 msgid "The list with all the existing  modules is hidden"
 msgstr "La liste avec tous les modules existants est cachée"
 
+#, fuzzy
+msgid "Customize the landing page"
+msgstr "Exportation de la page de renvoi"
+
+msgid "Update the logo or content"
+msgstr ""
+
 msgid "There are no unused documents to clean"
 msgstr "Il n'y a pas de documents inutilisés à nettoyer"
 
@@ -610,3 +630,10 @@ msgstr "Il y a {{total}} documents disponibles à nettoyer"
 
 msgid "Training modules"
 msgstr "Modules de formation"
+
+#, fuzzy
+#~ msgid "Select module"
+#~ msgstr "Supprimer le module"
+
+#~ msgid "Permissions"
+#~ msgstr "Permissions"
