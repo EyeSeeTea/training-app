@@ -1,10 +1,10 @@
 import { UseCase } from "../../webapp/CompositionRoot";
-import { DocumentRepository } from "../repositories/DocumentRepository";
+import { InstanceRepository } from "../repositories/InstanceRepository";
 
 export class DeleteDocumentsUseCase implements UseCase {
-    constructor(private documentRepository: DocumentRepository) {}
+    constructor(private instanceRepository: InstanceRepository) {}
 
     public async execute(ids: string[]): Promise<void> {
-        return this.documentRepository.delete(ids);
+        return this.instanceRepository.deleteDocuments(ids);
     }
 }

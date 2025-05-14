@@ -7,6 +7,7 @@ import { CompositionRoot } from "../CompositionRoot";
 import { AppState } from "../entities/AppState";
 import { AppRoute } from "../router/AppRoute";
 import { cacheImages } from "../utils/image-cache";
+import i18n from "../../locales";
 
 const AppContext = React.createContext<AppContextState | null>(null);
 
@@ -19,22 +20,25 @@ export const AppContextProvider: React.FC<AppContextProviderProps> = ({
     const [appState, setAppState] = useState<AppState>({ type: "UNKNOWN" });
     const [modules, setModules] = useState<TrainingModule[]>([]);
     const [landings, setLandings] = useState<LandingNode[]>([]);
+    const [hasSettingsAccess, setHasSettingsAccess] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [showAllModules, setShowAllModules] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const translate = buildTranslate(locale);
+
     const reload = useCallback(async () => {
         setIsLoading(true);
 
-        const [modules, landings] = await Promise.all([
-            compositionRoot.usecases.modules.list(),
-            compositionRoot.usecases.landings.list(),
-        ]);
+        const modules = await compositionRoot.usecases.modules.list();
+        const landings = await compositionRoot.usecases.landings.list();
+        const showAllModules = await compositionRoot.usecases.config.getShowAllModules();
 
         cacheImages(JSON.stringify(modules));
         cacheImages(JSON.stringify(landings));
 
         setModules(modules);
         setLandings(landings);
+        setShowAllModules(showAllModules);
         setIsLoading(false);
     }, [compositionRoot]);
 
@@ -46,7 +50,9 @@ export const AppContextProvider: React.FC<AppContextProviderProps> = ({
     }, []);
 
     useEffect(() => {
+        compositionRoot.usecases.user.checkSettingsPermissions().then(setHasSettingsAccess);
         compositionRoot.usecases.user.checkAdminAuthority().then(setIsAdmin);
+        compositionRoot.usecases.config.getShowAllModules().then(setShowAllModules);
     }, [compositionRoot]);
 
     return (
@@ -61,7 +67,9 @@ export const AppContextProvider: React.FC<AppContextProviderProps> = ({
                 translate,
                 reload,
                 isLoading,
+                hasSettingsAccess,
                 isAdmin,
+                showAllModules,
             }}
         >
             {children}
@@ -71,10 +79,23 @@ export const AppContextProvider: React.FC<AppContextProviderProps> = ({
 
 export function useAppContext(): UseAppContextResult {
     const context = useContext(AppContext);
+    i18n.setDefaultNamespace("training-app");
     if (!context) throw new Error("Context not initialized");
 
-    const { compositionRoot, routes, appState, setAppState, modules, landings, translate, reload, isLoading, isAdmin } =
-        context;
+    const {
+        compositionRoot,
+        routes,
+        appState,
+        setAppState,
+        modules,
+        landings,
+        translate,
+        reload,
+        isLoading,
+        hasSettingsAccess,
+        isAdmin,
+        showAllModules,
+    } = context;
     const { usecases } = compositionRoot;
     const [module, setCurrentModule] = useState<TrainingModule>();
 
@@ -100,7 +121,9 @@ export function useAppContext(): UseAppContextResult {
         translate,
         reload,
         isLoading,
+        hasSettingsAccess,
         isAdmin,
+        showAllModules,
     };
 }
 
@@ -123,7 +146,9 @@ export interface AppContextState {
     translate: TranslateMethod;
     reload: ReloadMethod;
     isLoading: boolean;
+    hasSettingsAccess: boolean;
     isAdmin: boolean;
+    showAllModules: boolean;
 }
 
 interface UseAppContextResult {
@@ -137,5 +162,7 @@ interface UseAppContextResult {
     translate: TranslateMethod;
     reload: ReloadMethod;
     isLoading: boolean;
+    hasSettingsAccess: boolean;
     isAdmin: boolean;
+    showAllModules: boolean;
 }

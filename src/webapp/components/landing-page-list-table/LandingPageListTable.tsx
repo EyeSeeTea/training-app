@@ -19,18 +19,16 @@ import {
     OrderedLandingNode,
     buildOrderedLandingNodes,
 } from "../../../domain/entities/LandingPage";
-import i18n from "../../../utils/i18n";
+import i18n from "../../../locales";
 import { MarkdownViewer } from "../../components/markdown-viewer/MarkdownViewer";
 import { useAppContext } from "../../contexts/app-context";
 import { Dropzone, DropzoneRef } from "../dropzone/Dropzone";
 import { ImportTranslationDialog, ImportTranslationRef } from "../import-translation-dialog/ImportTranslationDialog";
 import { LandingPageEditDialog, LandingPageEditDialogProps } from "../landing-page-edit-dialog/LandingPageEditDialog";
 import { ModalBody } from "../modal";
-import { useImportExportTranslation } from "../../hooks/useImportExportTranslation";
 
 export const LandingPageListTable: React.FC<{ nodes: LandingNode[]; isLoading?: boolean }> = ({ nodes, isLoading }) => {
     const { usecases, reload } = useAppContext();
-    const { exportTranslation, importTranslation } = useImportExportTranslation();
 
     const loading = useLoading();
     const snackbar = useSnackbar();
@@ -79,9 +77,14 @@ export const LandingPageListTable: React.FC<{ nodes: LandingNode[]; isLoading?: 
 
     const handleTranslationUpload = useCallback(
         async (_key: string | undefined, lang: string, terms: Record<string, string>) => {
-            await importTranslation(() => usecases.landings.importTranslations(lang, terms));
+            const total = await usecases.landings.importTranslations(lang, terms);
+            if (total > 0) {
+                snackbar.success(i18n.t("Imported {{total}} translation terms", { total }));
+            } else {
+                snackbar.warning(i18n.t("Unable to import translation terms"));
+            }
         },
-        [usecases.landings, importTranslation]
+        [usecases, snackbar]
     );
 
     const move = useCallback(
@@ -260,7 +263,7 @@ export const LandingPageListTable: React.FC<{ nodes: LandingNode[]; isLoading?: 
                 icon: <Icon>translate</Icon>,
                 onClick: async () => {
                     loading.show(true, i18n.t("Exporting translations"));
-                    await exportTranslation(() => usecases.landings.extractTranslations(), "landing-page");
+                    await usecases.landings.exportTranslations();
                     loading.reset();
                 },
                 isActive: nodes => _.every(nodes, item => item.type === "root"),
@@ -284,7 +287,7 @@ export const LandingPageListTable: React.FC<{ nodes: LandingNode[]; isLoading?: 
                 multiple: false,
             },
         ],
-        [usecases, reload, loading, nodes, move, exportTranslation]
+        [usecases, reload, loading, nodes, move]
     );
 
     const globalActions: TableGlobalAction[] | undefined = useMemo(

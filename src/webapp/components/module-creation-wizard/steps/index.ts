@@ -1,6 +1,6 @@
 import { WizardStep } from "@eyeseetea/d2-ui-components";
 import { PartialTrainingModule } from "../../../../domain/entities/TrainingModule";
-import i18n from "../../../../utils/i18n";
+import i18n from "../../../../locales";
 import { AccessStep } from "./AccessStep";
 import { ContentsStep } from "./ContentsStep";
 import { GeneralInfoStep } from "./GeneralInfoStep";

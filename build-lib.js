@@ -34,48 +34,20 @@ function generateIndexJsWithTypes() {
     }
 }
 
-function updatePackageJson() {
+function removeDependenciesFromPackage() {
     const packageJsonPath = path.join(__dirname, "package.json");
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
     const packageJson2 = { ...packageJson, name: packageJson.name.replace(/-app$/, "-component") };
-    delete packageJson2["manifest.webapp"];
-    moveToPeerDependencies(packageJson2);
+
+    delete packageJson2.dependencies["react-router"];
+    delete packageJson2.dependencies["react-router-dom"];
     const destinationPath = path.join(distPath, "package.json");
     fs.writeFileSync(destinationPath, JSON.stringify(packageJson2, null, 2));
     console.log("package.json copied");
 }
 
-function moveToPeerDependencies(packageJson) {
-    const depsToMove = [
-        ["react-router", "react-router-dom", "react", "react-dom"],
-        ["@material-ui/core", "@material-ui/icons", "@material-ui/lab", "@material-ui/styles"],
-        [
-            "@dhis2/app-runtime",
-            "@dhis2/d2-i18n",
-            "@dhis2/d2-i18n-extract",
-            "@dhis2/d2-i18n-generate",
-            "@dhis2/d2-ui-core",
-            "@dhis2/d2-ui-forms",
-            "@dhis2/ui",
-        ],
-        ["@eyeseetea/d2-api", "@eyeseetea/d2-ui-components"],
-        ["purify-ts"],
-        ["d2", "d2-manifest"],
-    ].flat();
-    depsToMove.forEach(dep => {
-        if (packageJson.dependencies[dep]) {
-            const depVersion = packageJson.dependencies[dep];
-            packageJson.peerDependencies[dep] = depVersion.startsWith("^") ? depVersion : `^${depVersion}`;
-            delete packageJson.dependencies[dep];
-        } else {
-            console.warn(`Dependency ${dep} not found in dependencies`);
-        }
-    });
-    return packageJson;
-}
-
 function start() {
-    updatePackageJson();
+    removeDependenciesFromPackage();
     validateDistFolder();
     generateIndexJsWithTypes();
 }

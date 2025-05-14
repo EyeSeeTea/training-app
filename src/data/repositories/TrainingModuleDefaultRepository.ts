@@ -1,6 +1,8 @@
+import FileSaver from "file-saver";
+import JSZip from "jszip";
 import _ from "lodash";
 import { defaultTrainingModule, isValidTrainingType, TrainingModule } from "../../domain/entities/TrainingModule";
-import { setTranslationValue, TranslatableText } from "../../domain/entities/TranslatableText";
+import { TranslatableText } from "../../domain/entities/TranslatableText";
 import { UserProgress } from "../../domain/entities/UserProgress";
 import { ConfigRepository } from "../../domain/repositories/ConfigRepository";
 import { InstanceRepository } from "../../domain/repositories/InstanceRepository";
@@ -18,8 +20,6 @@ import { JSONTrainingModule } from "../entities/JSONTrainingModule";
 import { PersistedTrainingModule } from "../entities/PersistedTrainingModule";
 import { validateUserPermission } from "../entities/User";
 import { getMajorVersion } from "../utils/d2-api";
-import { D2Api } from "../../types/d2-api";
-import { DocumentRepository } from "../../domain/repositories/DocumentRepository";
 
 export class TrainingModuleDefaultRepository implements TrainingModuleRepository {
     private storageClient: StorageClient;
@@ -27,21 +27,16 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
     private importExportClient: ImportExportClient;
     private assetClient: HttpClient;
 
-    constructor(
-        api: D2Api,
-        private configRepository: ConfigRepository,
-        private instanceRepository: InstanceRepository,
-        private documentRepository: DocumentRepository
-    ) {
-        this.storageClient = new DataStoreStorageClient("global", api);
-        this.progressStorageClient = new DataStoreStorageClient("user", api);
-        this.importExportClient = new ImportExportClient(api, this.documentRepository, "training-modules");
+    constructor(private config: ConfigRepository, private instanceRepository: InstanceRepository) {
+        this.storageClient = new DataStoreStorageClient("global", config.getInstance());
+        this.progressStorageClient = new DataStoreStorageClient("user", config.getInstance());
+        this.importExportClient = new ImportExportClient(this.instanceRepository, "training-modules");
         this.assetClient = new FetchHttpClient({});
     }
 
     public async list(): Promise<TrainingModule[]> {
         try {
-            const currentUser = await this.configRepository.getUser();
+            const currentUser = await this.config.getUser();
             const progress = await this.progressStorageClient.getObject<UserProgress[]>(Namespaces.PROGRESS);
             const dataStoreModules = await this.storageClient.listObjectsInCollection<PersistedTrainingModule>(
                 Namespaces.TRAINING_MODULES
@@ -179,54 +174,81 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
         });
     }
 
-    public async extractTranslations(key: string): Promise<TranslatableText[]> {
+    public async exportTranslations(key: string): Promise<void> {
         const model = await this.storageClient.getObjectInCollection<PersistedTrainingModule>(
             Namespaces.TRAINING_MODULES,
             key
         );
         if (!model) throw new Error(`Module ${key} not found`);
 
-        return this.extractTranslatableText(model);
-    }
-    private extractTranslatableText(model: PersistedTrainingModule): TranslatableText[] {
-        return _.compact([
-            model.name,
-            model.contents.welcome,
-            ..._.flatMap(model.contents.steps, step => [step.title, step.subtitle, ...step.pages]),
-        ]);
+        const translations = await this.extractTranslations(model);
+        const files = _.toPairs(translations);
+        const zip = new JSZip();
+
+        for (const [lang, contents] of files) {
+            const json = JSON.stringify(contents, null, 4);
+            const blob = new Blob([json], { type: "application/json" });
+            zip.file(`${lang}.json`, blob);
+        }
+
+        const blob = await zip.generateAsync({ type: "blob" });
+        const moduleName = _.kebabCase(model.name.referenceValue);
+        FileSaver.saveAs(blob, `translations-${moduleName}.zip`);
     }
 
-    public async importTranslations(
-        language: string,
-        terms: Record<string, string>,
-        key: string
-    ): Promise<TranslatableText[]> {
+    public async importTranslations(key: string, language: string, terms: Record<string, string>): Promise<number> {
         const model = await this.storageClient.getObjectInCollection<PersistedTrainingModule>(
             Namespaces.TRAINING_MODULES,
             key
         );
         if (!model) throw new Error(`Module ${key} not found`);
+
+        const translate = <T extends TranslatableText>(item: T, language: string, term: string | undefined): T => {
+            if (term === undefined) {
+                return item;
+            } else if (language === "en") {
+                return { ...item, referenceValue: term };
+            } else {
+                return { ...item, translations: { ...item.translations, [language]: term } };
+            }
+        };
 
         const translatedModel: PersistedTrainingModule = {
             ...model,
-            name: setTranslationValue(model.name, language, terms[model.name.key]),
+            name: translate(model.name, language, terms[model.name.key]),
             contents: {
                 ...model.contents,
-                welcome: setTranslationValue(model.contents.welcome, language, terms[model.contents.welcome.key]),
+                welcome: translate(model.contents.welcome, language, terms[model.contents.welcome.key]),
                 steps: model.contents.steps.map(step => ({
                     ...step,
-                    title: setTranslationValue(step.title, language, terms[step.title.key]),
-                    subtitle: step.subtitle
-                        ? setTranslationValue(step.subtitle, language, terms[step.subtitle.key])
-                        : undefined,
-                    pages: step.pages.map(page => setTranslationValue(page, language, terms[page.key])),
+                    title: translate(step.title, language, terms[step.title.key]),
+                    subtitle: step.subtitle ? translate(step.subtitle, language, terms[step.subtitle.key]) : undefined,
+                    pages: step.pages.map(page => translate(page, language, terms[page.key])),
                 })),
             },
         };
 
         await this.saveDataStore(translatedModel);
 
-        return this.extractTranslatableText(model);
+        const translations = await this.extractTranslations(model);
+        return _.intersection(_.keys(translations["en"]), _.keys(terms)).length;
+    }
+
+    private async extractTranslations(model: PersistedTrainingModule): Promise<Record<string, Record<string, string>>> {
+        const texts = _.compact([
+            model.name,
+            model.contents.welcome,
+            ..._.flatMap(model.contents.steps, step => [step.title, step.subtitle, ...step.pages]),
+        ]);
+
+        const referenceStrings = _.fromPairs(texts.map(({ key, referenceValue }) => [key, referenceValue]));
+        const translatedStrings = _(texts)
+            .flatMap(({ key, translations }) => _.toPairs(translations).map(([lang, value]) => ({ lang, key, value })))
+            .groupBy("lang")
+            .mapValues(array => _.fromPairs(array.map(({ key, value }) => [key, value])))
+            .value();
+
+        return { ...translatedStrings, en: referenceStrings };
     }
 
     @cache()
@@ -270,7 +292,7 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
     }
 
     private async saveDataStore(model: PersistedTrainingModule, options?: { recreate?: boolean; revision?: number }) {
-        const currentUser = await this.configRepository.getUser();
+        const currentUser = await this.config.getUser();
         const user = { id: currentUser.id, name: currentUser.name };
         const date = new Date().toISOString();
 
@@ -307,7 +329,7 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
 
         const { created, lastUpdated, type, contents, ...rest } = model;
         const validType = isValidTrainingType(type) ? type : "app";
-        const currentUser = await this.configRepository.getUser();
+        const currentUser = await this.config.getUser();
         const instanceVersion = await this.instanceRepository.getVersion();
 
         return {
@@ -333,7 +355,7 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
     }
 
     private async buildPersistedModel(model: JSONTrainingModule): Promise<PersistedTrainingModule> {
-        const currentUser = await this.configRepository.getUser();
+        const currentUser = await this.config.getUser();
         const defaultUser = { id: currentUser.id, name: currentUser.name };
 
         return {
