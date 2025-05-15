@@ -1,9 +1,9 @@
 import i18n from "../locales";
 
-export interface I18nModule {
+export type I18nModule = {
     t: <Str extends string>(...args: I18nTArgs<Str>) => string;
-    changeLanguage: (lng: string, callback?: (err?: any, t?: any) => void) => void;
-}
+    changeLanguage: (lng: string) => void;
+};
 
 export function getModuleForNamespace(namespace: string): I18nModule {
     return {
