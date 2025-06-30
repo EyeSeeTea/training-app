@@ -1,5 +1,6 @@
 import { Codec, GetSchemaType, Schema } from "../../utils/codec";
 import { TranslatableText, TranslatableTextModel } from "./TranslatableText";
+import { SharedProperties, SharedPropertiesModel } from "./Ref";
 
 export const LandingPageNodeTypeModel = Schema.oneOf([
     Schema.exact("root"),
@@ -21,6 +22,8 @@ export interface LandingNode {
     content: TranslatableText | undefined;
     modules: string[];
     children: LandingNode[];
+    permissions: SharedProperties;
+    executeOnInit: boolean;
 }
 
 export const LandingNodeModel: Codec<LandingNode> = Schema.object({
@@ -34,6 +37,8 @@ export const LandingNodeModel: Codec<LandingNode> = Schema.object({
     content: Schema.optional(TranslatableTextModel),
     modules: Schema.optionalSafe(Schema.array(Schema.string), []),
     children: Schema.lazy(() => Schema.array(LandingNodeModel)),
+    permissions: SharedPropertiesModel,
+    executeOnInit: Schema.optionalSafe(Schema.boolean, true),
 });
 
 export interface OrderedLandingNode extends LandingNode {

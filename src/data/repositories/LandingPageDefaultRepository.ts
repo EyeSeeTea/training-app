@@ -30,24 +30,9 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
             const root = persisted?.find(({ parent }) => parent === "none");
 
             if (persisted.length === 0 || !root) {
-                const root = {
-                    id: generateUid(),
-                    parent: "none",
-                    type: "root" as const,
-                    icon: "",
-                    order: undefined,
-                    name: {
-                        key: "root-name",
-                        referenceValue: "Main landing page",
-                        translations: {},
-                    },
-                    title: undefined,
-                    content: undefined,
-                    modules: [],
-                };
-
-                await this.storageClient.saveObjectInCollection<PersistedLandingPage>(Namespaces.LANDING_PAGES, root);
-                return [{ ...root, children: [] }];
+                return this.saveDefaultLandingPage()
+                    .then(root => buildDomainLandingNode(root, []))
+                    .then(root => [root]);
             }
 
             const validation = LandingNodeModel.decode(buildDomainLandingNode(root, persisted));
@@ -133,7 +118,36 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
             { ...node2, order: node1.order },
         ]);
     }
+
+    private async saveDefaultLandingPage(): Promise<PersistedLandingPage> {
+        const root = {
+            id: generateUid(),
+            parent: "none",
+            type: "root" as const,
+            icon: "",
+            order: undefined,
+            name: {
+                key: "root-name",
+                referenceValue: "Main landing page",
+                translations: {},
+            },
+            title: undefined,
+            content: undefined,
+            modules: [],
+            permissions: defaultPermissions,
+            executeOnInit: true,
+        };
+
+        await this.storageClient.saveObjectInCollection<PersistedLandingPage>(Namespaces.LANDING_PAGES, root);
+        return root;
+    }
 }
+
+const defaultPermissions = {
+    publicAccess: "r-------",
+    userAccesses: [],
+    userGroupAccesses: [],
+};
 
 const buildDomainLandingNode = (root: PersistedLandingPage, items: PersistedLandingPage[]): LandingNode => {
     return {
