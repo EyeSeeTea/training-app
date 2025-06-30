@@ -67,12 +67,12 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
         return items;
     }
 
-    public async updateChild(node: LandingNode): Promise<void> {
-        const updatedNodes = extractChildrenNodes(node, node.parent);
+    public async update(nodes: LandingNode[]): Promise<void> {
+        const updatedNodes = nodes.map(node => extractChildrenNodes(node, node.parent)).flat();
         await this.storageClient.saveObjectsInCollection<PersistedLandingPage>(Namespaces.LANDING_PAGES, updatedNodes);
     }
 
-    public async removeChilds(ids: string[]): Promise<void> {
+    public async delete(ids: string[]): Promise<void> {
         const nodes = await this.storageClient.listObjectsInCollection<PersistedLandingPage>(Namespaces.LANDING_PAGES);
         const toDelete = _(nodes)
             .filter(({ id }) => ids.includes(id))
@@ -110,13 +110,6 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
         await this.storageClient.saveObject<PersistedLandingPage[]>(Namespaces.LANDING_PAGES, translatedModels);
 
         return this.extractTranslatableText(models);
-    }
-
-    public async swapOrder(node1: LandingNode, node2: LandingNode) {
-        await this.storageClient.saveObjectsInCollection(Namespaces.LANDING_PAGES, [
-            { ...node1, order: node2.order },
-            { ...node2, order: node1.order },
-        ]);
     }
 
     private async saveDefaultLandingPage(): Promise<PersistedLandingPage> {
