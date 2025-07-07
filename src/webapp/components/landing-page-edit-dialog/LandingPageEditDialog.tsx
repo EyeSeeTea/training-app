@@ -15,7 +15,8 @@ import { MarkdownEditor } from "../markdown-editor/MarkdownEditor";
 import { MarkdownViewer } from "../markdown-viewer/MarkdownViewer";
 import { ModalBody } from "../modal";
 
-const buildDefaultNode = (type: LandingNodeType, parent: string, order: number) => {
+const buildDefaultNode = (props: { type: LandingNodeType; parent: string; order: number; executeOnInit: boolean }) => {
+    const { type, parent, order, executeOnInit } = props;
     return {
         id: generateUid(),
         type,
@@ -27,6 +28,12 @@ const buildDefaultNode = (type: LandingNodeType, parent: string, order: number) 
         content: undefined,
         children: [],
         modules: [],
+        permissions: {
+            publicAccess: "r-------",
+            userAccesses: [],
+            userGroupAccesses: [],
+        },
+        executeOnInit: executeOnInit,
     };
 };
 
@@ -36,7 +43,9 @@ export const LandingPageEditDialog: React.FC<LandingPageEditDialogProps> = props
     const { modules, translate, usecases } = useAppContext();
     const snackbar = useSnackbar();
 
-    const [value, setValue] = useState<LandingNode>(initialNode ?? buildDefaultNode(type, parent, order));
+    const [value, setValue] = useState<LandingNode>(
+        initialNode ?? buildDefaultNode({ type, parent, order, executeOnInit: true })
+    );
 
     const items = useMemo(
         () =>

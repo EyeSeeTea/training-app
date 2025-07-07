@@ -21,6 +21,8 @@ import { useAppContext } from "../../contexts/app-context";
 import { DhisPage } from "../dhis/DhisPage";
 import { CustomizeSettingsDialog } from "../../components/customize-settings-dialog/CustomizeSettingsDialog";
 import { useAppConfigContext } from "../../contexts/AppConfigProvider";
+import { CreateButton } from "./CreateButton";
+import { LandingPageEditDialog } from "../../components/landing-page-edit-dialog/LandingPageEditDialog";
 
 export const SettingsPage: React.FC = () => {
     const { modules, landings, reload, usecases, setAppState, isLoading, isAdmin } = useAppContext();
@@ -111,10 +113,6 @@ export const SettingsPage: React.FC = () => {
         await reload();
     }, [reload]);
 
-    const openAddModule = useCallback(() => {
-        setAppState({ type: "CREATE_MODULE" });
-    }, [setAppState]);
-
     const toggleShowAllModules = useCallback(() => {
         return save({
             showAllModules: !appConfig.showAllModules,
@@ -194,6 +192,8 @@ export const SettingsPage: React.FC = () => {
     return (
         <DhisPage>
             {dialogProps && <ConfirmationDialog isOpen={true} maxWidth={"lg"} fullWidth={true} {...dialogProps} />}
+            {landingPageDetailsDialog && <LandingPageEditDialog isOpen={true} {...landingPageDetailsDialog} />}
+
             {showCustomSettings && (
                 <CustomizeSettingsDialog
                     onSave={saveCustomSettings}
@@ -292,9 +292,10 @@ export const SettingsPage: React.FC = () => {
                     rows={buildListModules(modules)}
                     refreshRows={refreshModules}
                     tableActions={tableActions}
-                    onActionButtonClick={openAddModule}
                     isLoading={isLoading}
                 />
+
+                <CreateButton onAddLandingPage={} />
             </Container>
         </DhisPage>
     );
