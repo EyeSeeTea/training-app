@@ -8,6 +8,8 @@ import { Modal, ModalContent, ModalTitle } from "../../components/modal";
 import { useAppContext } from "../../contexts/app-context";
 import { useAppConfigContext } from "../../contexts/AppConfigProvider";
 import { HomePageContent } from "../../components/home/HomePageContent";
+import { MainLandingPage } from "../../components/home/MainLandingPage";
+import { Maybe } from "../../../types/utils";
 
 export const HomePage: React.FC = React.memo(() => {
     const { setAppState, landings, reload, isLoading } = useAppContext();
@@ -55,8 +57,9 @@ export const HomePage: React.FC = React.memo(() => {
         [setAppState]
     );
 
-    const currentPage = useMemo<LandingNode | undefined>(() => {
-        return history[0] ?? landings[0];
+    const currentPage = useMemo<Maybe<LandingNode>>(() => {
+        if (history[0]) return history[0];
+        return landings.length > 1 ? undefined : landings[0];
     }, [history, landings]);
 
     const isRoot = history.length === 0;
@@ -83,21 +86,27 @@ export const HomePage: React.FC = React.memo(() => {
             allowDrag={true}
         >
             <ContentWrapper>
-                {isLoading ? (
+                {isLoading && (
                     <React.Fragment>
                         <Progress color={"white"} size={65} />
                         {isLoadingLong ? (
                             <p>{i18n.t("First load can take a couple of minutes, please wait...")}</p>
                         ) : null}
                     </React.Fragment>
-                ) : currentPage ? (
+                )}
+
+                {!isLoading && currentPage && (
                     <HomePageContent
                         isRoot={isRoot}
                         loadModule={loadModule}
                         currentPage={currentPage}
                         openPage={openPage}
                     />
-                ) : null}
+                )}
+
+                {!isLoading && !currentPage && landings.length > 1 && (
+                    <MainLandingPage openPage={openPage} landingNodes={landings} />
+                )}
             </ContentWrapper>
         </StyledModal>
     );
