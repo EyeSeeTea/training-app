@@ -1,6 +1,5 @@
 import { Permission } from "./Permission";
 import { CustomText, getDefaultCustomText } from "./CustomText";
-import { RecursivePartial } from "../../types/utils";
 
 export type Config = {
     settingsPermissions: Permission;
@@ -9,13 +8,16 @@ export type Config = {
     customText: CustomText;
 };
 
-export type PartialConfig = RecursivePartial<Config>;
+export type PartialConfig = Pick<Partial<Config>, "showAllModules" | "logo"> & {
+    settingsPermissions?: Partial<Permission>;
+    customText?: Partial<CustomText>;
+};
 
-export function getDefaultConfig({ isDefault }: { isDefault?: boolean } = {}): Config {
+export function getDefaultConfig(): Config {
     return {
         showAllModules: true,
         settingsPermissions: { users: [], userGroups: [] },
-        customText: getDefaultCustomText({ isDefault }),
+        customText: getDefaultCustomText(),
         logo: "",
     };
 }

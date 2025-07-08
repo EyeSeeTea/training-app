@@ -2,32 +2,24 @@ import { isEmpty, isEqual } from "lodash";
 
 import { UseCase } from "../../webapp/CompositionRoot";
 import { ConfigRepository } from "../repositories/ConfigRepository";
-import { NullabelMaybe } from "../../types/utils";
 import { CustomText, getDefaultCustomText } from "../entities/CustomText";
-import { TranslatableText } from "../entities/TranslatableText";
-import { getMergedConfig } from "./GetConfigUseCase";
-
-export type CustomTextForm = {
-    rootTitle?: NullabelMaybe<TranslatableText>;
-    rootSubtitle?: NullabelMaybe<TranslatableText>;
-};
+import { Config, PartialConfig } from "../entities/Config";
 
 export class SaveConfigUseCase implements UseCase {
     constructor(private configRepository: ConfigRepository) {}
 
-    public async execute(config: Partial<any>): Promise<any> {
+    public async execute(config: PartialConfig): Promise<Config> {
         const { customText, ...rest } = config;
 
         const configUpdates = {
             ...rest,
-            ...(config.customText && { customText: this.cleanCustomText(customText) }),
+            ...(customText && { customText: this.cleanCustomText(customText) }),
         };
 
-        const newConfig = await this.configRepository.save(configUpdates);
-        return getMergedConfig(newConfig);
+        return await this.configRepository.save(configUpdates);
     }
 
-    private cleanCustomText(customText: Partial<CustomText>): CustomTextForm {
+    private cleanCustomText(customText: Partial<CustomText>): PartialConfig["customText"] {
         const defaultCustomText = getDefaultCustomText();
 
         return Object.entries(customText).reduce((acc, [key, value]) => {

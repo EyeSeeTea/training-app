@@ -17,7 +17,7 @@ export const useCustomizeSettingsDialog = ({
 }: Omit<CustomSettingsDialogProps, "onClose">) => {
     const { appConfig } = useAppConfigContext();
     const appCustomText = appConfig.customText;
-    const defaultCustomText = getDefaultCustomText({ isDefault: true });
+    const defaultCustomText = getDefaultCustomText();
     const { exportTranslation, importTranslation } = useImportExportTranslation();
     const { usecases } = useAppContext();
     const loading = useLoading();
@@ -76,7 +76,6 @@ export const useCustomizeSettingsDialog = ({
     return {
         logoVal,
         customTextVal,
-        defaultCustomText,
         customTextKeys: CustomTextFields,
         isCustomTextDefault,
         disableSave,

@@ -12,7 +12,7 @@ export type CustomTextInfo = { [K in keyof CustomText]: string };
 
 export type DefaultCustomText = CustomText & { isDefault?: NullabelMaybe<boolean> };
 
-export function getDefaultCustomText(isDefault: { isDefault?: NullabelMaybe<boolean> } = {}): DefaultCustomText {
+export function getDefaultCustomText(): DefaultCustomText {
     return {
         rootTitle: {
             key: "root-title",
@@ -24,6 +24,5 @@ export function getDefaultCustomText(isDefault: { isDefault?: NullabelMaybe<bool
             referenceValue: i18n.t("What do you want to learn in DHIS2?"),
             translations: {},
         },
-        ...isDefault,
     };
 }

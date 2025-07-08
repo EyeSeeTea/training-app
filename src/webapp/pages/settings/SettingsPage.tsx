@@ -26,11 +26,11 @@ export const SettingsPage: React.FC = () => {
     }, [setAppState]);
 
     const updateSettingsPermissions = useCallback(
-        async ({ userAccesses = [], userGroupAccesses = [] }: SharedUpdate) => {
+        async ({ userAccesses, userGroupAccesses }: SharedUpdate) => {
             return save({
                 settingsPermissions: {
-                    users: userAccesses.map(({ id, name }) => ({ id, name })),
-                    userGroups: userGroupAccesses.map(({ id, name }) => ({ id, name })),
+                    users: userAccesses?.map(({ id, name }) => ({ id, name })),
+                    userGroups: userGroupAccesses?.map(({ id, name }) => ({ id, name })),
                 },
             });
         },

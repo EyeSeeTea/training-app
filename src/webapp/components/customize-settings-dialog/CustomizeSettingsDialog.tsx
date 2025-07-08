@@ -27,7 +27,6 @@ export const CustomizeSettingsDialog: React.FC<CustomSettingsDialogProps> = prop
     const {
         logoVal,
         customTextVal,
-        defaultCustomText,
         customTextKeys,
         isCustomTextDefault,
         disableSave,
@@ -118,7 +117,6 @@ export const CustomizeSettingsDialog: React.FC<CustomSettingsDialogProps> = prop
                     <TextField
                         fullWidth={true}
                         label={customTextLabel[key]}
-                        placeholder={i18n.t(defaultCustomText[key]?.referenceValue)}
                         value={customTextVal[key] ? customTextVal[key]?.referenceValue : ""}
                         InputLabelProps={inputProps}
                         onChange={onChangeField(key)}

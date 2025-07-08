@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import _ from "lodash";
 
 import { useAppContext } from "../contexts/app-context";
-import { Config, getDefaultConfig } from "../../domain/entities/Config";
+import { Config, getDefaultConfig, PartialConfig } from "../../domain/entities/Config";
 import { NullabelMaybe } from "../../types/utils";
 
 export function useAppConfig() {
@@ -13,7 +13,7 @@ export function useAppConfig() {
     const logoInfo = useMemo(() => getLogoInfo(appConfig?.logo), [appConfig]);
 
     const save = React.useCallback(
-        (config: Partial<Config>) => {
+        (config: PartialConfig) => {
             return usecases.config.save(config).then(setAppConfig);
         },
         [usecases.config]

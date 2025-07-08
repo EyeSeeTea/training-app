@@ -1,11 +1,11 @@
 import React, { createContext, useContext } from "react";
 import { useAppConfig } from "../hooks/useAppConfig";
 import { LogoInfo } from "../hooks/useAppConfig";
-import { Config } from "../../domain/entities/Config";
+import { Config, PartialConfig } from "../../domain/entities/Config";
 
 interface ConfigContextState {
     appConfig: Config;
-    save: (settings: Partial<Config>) => Promise<void>;
+    save: (settings: PartialConfig) => Promise<void>;
     hasSettingsAccess: boolean;
     logoInfo: LogoInfo;
     hasLoaded: boolean;

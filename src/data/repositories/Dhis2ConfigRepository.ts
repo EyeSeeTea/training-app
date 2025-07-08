@@ -1,4 +1,4 @@
-import _, { assign } from "lodash";
+import _, { merge, omitBy } from "lodash";
 
 import { ConfigRepository } from "../../domain/repositories/ConfigRepository";
 import { D2Api } from "../../types/d2-api";
@@ -9,7 +9,9 @@ import { StorageClient } from "../clients/storage/StorageClient";
 import { User } from "../entities/User";
 import { setTranslationValue, TranslatableText } from "../../domain/entities/TranslatableText";
 import { CustomText } from "../../domain/entities/CustomText";
-import { Config, PartialConfig } from "../../domain/entities/Config";
+import { Config, getDefaultConfig, PartialConfig } from "../../domain/entities/Config";
+import { PersistedConfig } from "../entities/PersistedConfig";
+import { Maybe } from "../../types/utils";
 
 export class Dhis2ConfigRepository implements ConfigRepository {
     private storageClient: StorageClient;
@@ -43,17 +45,28 @@ export class Dhis2ConfigRepository implements ConfigRepository {
         };
     }
 
-    public async get(): Promise<Partial<Config>> {
-        return (await this.storageClient.getObject<Partial<Config>>(Namespaces.CONFIG)) ?? {};
+    public async get(): Promise<Config> {
+        return (
+            (await this.storageClient
+                .getObject<PartialConfig>(Namespaces.CONFIG)
+                .then(config => getMergedConfig(config))) ?? {}
+        );
     }
 
-    public async save(update: PartialConfig): Promise<Partial<Config>> {
+    public async save(update: PartialConfig): Promise<Config> {
         const config = await this.get();
-        const updatedConfig: Partial<Config> = assign({}, config, update);
+        const updatedConfig: PersistedConfig = {
+            ...config,
+            ...update,
+            settingsPermissions: {
+                users: update.settingsPermissions?.users ?? config.settingsPermissions?.users ?? [],
+                userGroups: update.settingsPermissions?.userGroups ?? config.settingsPermissions?.userGroups ?? [],
+            },
+        };
 
         return this.storageClient
-            .saveObject<Partial<Config>>(Namespaces.CONFIG, updatedConfig)
-            .then(() => updatedConfig);
+            .saveObject<PersistedConfig>(Namespaces.CONFIG, updatedConfig)
+            .then(() => getMergedConfig(updatedConfig));
     }
 
     public async importTranslations(language: string, terms: Record<string, string>): Promise<TranslatableText[]> {
@@ -85,4 +98,13 @@ export class Dhis2ConfigRepository implements ConfigRepository {
     private extractTranslatableText(config: Partial<Config>): TranslatableText[] {
         return _.compact(_.values(config.customText));
     }
+}
+
+export function getMergedConfig(config: Maybe<PartialConfig>): Config {
+    const cleanCustomText = omitBy(config?.customText, value => value === null);
+    const defaultConfig = getDefaultConfig();
+    return merge({}, defaultConfig, {
+        ...config,
+        customText: cleanCustomText,
+    });
 }

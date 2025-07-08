@@ -4,6 +4,6 @@ import { TranslableTextRepository } from "./TranslableTextRepository";
 
 export interface ConfigRepository extends TranslableTextRepository {
     getUser(): Promise<User>;
-    get(): Promise<Partial<Config>>;
-    save(update: PartialConfig): Promise<Partial<Config>>;
+    get(): Promise<Config>;
+    save(update: PartialConfig): Promise<Config>;
 }
