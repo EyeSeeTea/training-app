@@ -27,21 +27,27 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
                 Namespaces.LANDING_PAGES
             );
 
-            const root = persisted?.find(({ parent }) => parent === "none");
+            const roots = persisted?.filter(({ parent }) => parent === "none");
 
-            if (persisted.length === 0 || !root) {
+            if (persisted.length === 0 || !roots?.length) {
                 return this.saveDefaultLandingPage()
                     .then(root => buildDomainLandingNode(root, []))
                     .then(root => [root]);
             }
 
-            const validation = LandingNodeModel.decode(buildDomainLandingNode(root, persisted));
+            const validations = roots.map(root =>
+                LandingNodeModel.decode(buildDomainLandingNode(root, _.flatten(persisted)))
+            );
 
-            if (validation.isLeft()) {
-                throw new Error(validation.extract());
-            }
+            _.forEach(validations, validation => {
+                if (validation.isLeft()) {
+                    console.error(validation.extract());
 
-            return _.compact([validation.toMaybe().extract()]);
+                    throw new Error(validation.extract());
+                }
+            });
+
+            return _.flatten(validations.map(validation => _.compact([validation.toMaybe().extract()])));
         } catch (error: any) {
             console.error(error);
             return [];
@@ -145,6 +151,7 @@ const defaultPermissions = {
 const buildDomainLandingNode = (root: PersistedLandingPage, items: PersistedLandingPage[]): LandingNode => {
     return {
         ...root,
+        permissions: root.permissions ?? defaultPermissions,
         children: _(items)
             .filter(({ parent }) => parent === root.id)
             .sortBy(item => item.order ?? 1000)
