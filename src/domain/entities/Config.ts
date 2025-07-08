@@ -1,6 +1,6 @@
 import { Permission } from "./Permission";
 import { CustomText, getDefaultCustomText } from "./CustomText";
-import { NullabelMaybe, RecursivePartial } from "../../types/utils";
+import { RecursivePartial } from "../../types/utils";
 
 export type Config = {
     settingsPermissions: Permission;
@@ -11,7 +11,7 @@ export type Config = {
 
 export type PartialConfig = RecursivePartial<Config>;
 
-export function getDefaultConfig({ isDefault }: { isDefault?: NullabelMaybe<boolean> } = {}): Config {
+export function getDefaultConfig({ isDefault }: { isDefault?: boolean } = {}): Config {
     return {
         showAllModules: true,
         settingsPermissions: { users: [], userGroups: [] },

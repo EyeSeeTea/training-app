@@ -16,7 +16,7 @@ export class GetConfigUseCase implements UseCase {
 
 export function getMergedConfig(config: NullabelMaybe<Partial<Config>>): Config {
     const cleanCustomText = omitBy(config?.customText, value => value === null);
-    const defaultConfig = getDefaultConfig({ isDefault: isEmpty(cleanCustomText) ? true : null });
+    const defaultConfig = getDefaultConfig({ isDefault: isEmpty(cleanCustomText) ? true : undefined });
     return merge({}, defaultConfig, {
         ...config,
         customText: cleanCustomText,
