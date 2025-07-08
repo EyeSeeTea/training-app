@@ -76,6 +76,7 @@ export const CustomizeSettingsDialog: React.FC<CustomSettingsDialogProps> = prop
 
     return (
         <ConfirmationDialog
+            title={i18n.t("Customize main landing page")}
             isOpen={true}
             fullWidth={true}
             onSave={save}
@@ -84,17 +85,16 @@ export const CustomizeSettingsDialog: React.FC<CustomSettingsDialogProps> = prop
             disableSave={disableSave}
         >
             <ImportTranslationDialog type="custom-text" ref={translationImportRef} onSave={handleTranslationUpload} />
-            <Typography variant="h6">{i18n.t("Home page logo")}</Typography>
+            <Typography variant="h6">{i18n.t("Logo")}</Typography>
             <Box marginBottom={3}>
                 <IconUpload>
                     <IconContainer>
-                        <img src={logoVal} alt={i18n.t("Home page logo")} />
+                        <img src={logoVal} alt={i18n.t("Logo")} />
                     </IconContainer>
                     <FileInput type="file" onChange={handleFileUpload} />
                 </IconUpload>
             </Box>
             <Box display="flex" alignItems="center">
-                <Typography variant="h6">{i18n.t("Customize landing page text")}</Typography>
                 {!isCustomTextDefault && (
                     <>
                         <IconButton onClick={handleClickMenu}>
