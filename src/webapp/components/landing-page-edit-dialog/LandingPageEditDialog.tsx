@@ -40,6 +40,8 @@ const buildDefaultNode = (props: { type: LandingNodeType; parent: string; order:
 export const LandingPageEditDialog: React.FC<LandingPageEditDialogProps> = props => {
     const { type, parent, order, initialNode, onSave } = props;
 
+    const isRoot = type === "root";
+
     const { modules, translate, usecases } = useAppContext();
     const snackbar = useSnackbar();
 
@@ -115,56 +117,59 @@ export const LandingPageEditDialog: React.FC<LandingPageEditDialogProps> = props
                     onChange={onChangeField("name")}
                 />
             </Row>
+            {!isRoot && (
+                <>
+                    <Row>
+                        <TextField
+                            fullWidth={true}
+                            label={i18n.t("Title")}
+                            value={value.title?.referenceValue ?? ""}
+                            onChange={onChangeField("title")}
+                        />
+                    </Row>
 
-            <Row>
-                <TextField
-                    fullWidth={true}
-                    label={i18n.t("Title")}
-                    value={value.title?.referenceValue ?? ""}
-                    onChange={onChangeField("title")}
-                />
-            </Row>
+                    <Row>
+                        <h3>{i18n.t("Icon")}</h3>
 
-            <Row>
-                <h3>{i18n.t("Icon")}</h3>
+                        <IconUpload>
+                            {value.icon ? (
+                                <IconContainer>
+                                    <img src={value.icon} alt={`Page icon`} />
+                                </IconContainer>
+                            ) : null}
 
-                <IconUpload>
-                    {value.icon ? (
-                        <IconContainer>
-                            <img src={value.icon} alt={`Page icon`} />
-                        </IconContainer>
-                    ) : null}
+                            <FileInput type="file" onChange={handleFileUpload} />
+                        </IconUpload>
+                    </Row>
 
-                    <FileInput type="file" onChange={handleFileUpload} />
-                </IconUpload>
-            </Row>
+                    <Row>
+                        <h3>{i18n.t("Modules")}</h3>
 
-            <Row>
-                <h3>{i18n.t("Modules")}</h3>
+                        <ModuleSelector
+                            label={i18n.t("Modules assigned")}
+                            items={items}
+                            values={value.modules}
+                            onChange={modules => setValue(landing => ({ ...landing, modules }))}
+                        />
+                    </Row>
 
-                <ModuleSelector
-                    label={i18n.t("Modules assigned")}
-                    items={items}
-                    values={value.modules}
-                    onChange={modules => setValue(landing => ({ ...landing, modules }))}
-                />
-            </Row>
+                    <Row>
+                        <h3>{i18n.t("Contents")}</h3>
 
-            <Row>
-                <h3>{i18n.t("Contents")}</h3>
-
-                <MarkdownEditor
-                    value={value.content?.referenceValue ?? ""}
-                    onChange={referenceValue =>
-                        setValue(landing => ({
-                            ...landing,
-                            content: { key: `${value.id}-content`, referenceValue, translations: {} },
-                        }))
-                    }
-                    markdownPreview={markdown => <StepPreview value={markdown} />}
-                    onUpload={(data, file) => usecases.document.uploadFile(data, file.name)}
-                />
-            </Row>
+                        <MarkdownEditor
+                            value={value.content?.referenceValue ?? ""}
+                            onChange={referenceValue =>
+                                setValue(landing => ({
+                                    ...landing,
+                                    content: { key: `${value.id}-content`, referenceValue, translations: {} },
+                                }))
+                            }
+                            markdownPreview={markdown => <StepPreview value={markdown} />}
+                            onUpload={(data, file) => usecases.document.uploadFile(data, file.name)}
+                        />
+                    </Row>
+                </>
+            )}
         </ConfirmationDialog>
     );
 };

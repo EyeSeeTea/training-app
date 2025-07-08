@@ -23,7 +23,6 @@ export interface LandingNode {
     modules: string[];
     children: LandingNode[];
     permissions: SharedProperties;
-    executeOnInit: boolean;
 }
 
 export const LandingNodeModel: Codec<LandingNode> = Schema.object({
@@ -38,7 +37,6 @@ export const LandingNodeModel: Codec<LandingNode> = Schema.object({
     modules: Schema.optionalSafe(Schema.array(Schema.string), []),
     children: Schema.lazy(() => Schema.array(LandingNodeModel)),
     permissions: SharedPropertiesModel,
-    executeOnInit: Schema.optionalSafe(Schema.boolean, true),
 });
 
 export interface OrderedLandingNode extends LandingNode {
