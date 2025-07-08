@@ -3,7 +3,7 @@ import { isEmpty, merge, omitBy } from "lodash";
 import { UseCase } from "../../webapp/CompositionRoot";
 import { ConfigRepository } from "../repositories/ConfigRepository";
 import { Config, getDefaultConfig } from "../entities/Config";
-import { Maybe } from "../../types/utils";
+import { NullabelMaybe } from "../../types/utils";
 
 export class GetConfigUseCase implements UseCase {
     constructor(private configRepository: ConfigRepository) {}
@@ -14,7 +14,7 @@ export class GetConfigUseCase implements UseCase {
     }
 }
 
-export function getMergedConfig(config: Maybe<Partial<Config>>): Config {
+export function getMergedConfig(config: NullabelMaybe<Partial<Config>>): Config {
     const cleanCustomText = omitBy(config?.customText, value => value === null);
     const defaultConfig = getDefaultConfig({ isDefault: isEmpty(cleanCustomText) ? true : null });
     return merge({}, defaultConfig, {

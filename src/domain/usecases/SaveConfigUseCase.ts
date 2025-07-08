@@ -2,14 +2,14 @@ import { isEmpty, isEqual } from "lodash";
 
 import { UseCase } from "../../webapp/CompositionRoot";
 import { ConfigRepository } from "../repositories/ConfigRepository";
-import { Maybe } from "../../types/utils";
+import { NullabelMaybe } from "../../types/utils";
 import { CustomText, getDefaultCustomText } from "../entities/CustomText";
 import { TranslatableText } from "../entities/TranslatableText";
 import { getMergedConfig } from "./GetConfigUseCase";
 
 export type CustomTextForm = {
-    rootTitle?: Maybe<TranslatableText>;
-    rootSubtitle?: Maybe<TranslatableText>;
+    rootTitle?: NullabelMaybe<TranslatableText>;
+    rootSubtitle?: NullabelMaybe<TranslatableText>;
 };
 
 export class SaveConfigUseCase implements UseCase {

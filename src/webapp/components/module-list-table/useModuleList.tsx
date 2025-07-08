@@ -14,7 +14,7 @@ import {
 import { AlertIcon } from "../alert-icon/AlertIcon";
 import { Icon } from "@material-ui/core";
 import GetAppIcon from "@material-ui/icons/GetApp";
-import { ListItem } from "./ModuleListTable";
+import { ListItem, ModuleListTableAction } from "./ModuleListTable";
 import { useModuleTableAction } from "./useModuleTableAction";
 import { InputDialogProps } from "../input-dialog/InputDialog";
 import { MarkdownEditorDialogProps } from "../markdown-editor/MarkdownEditorDialog";
@@ -26,14 +26,15 @@ import { useAppContext } from "../../contexts/app-context";
 import { ImportTranslationRef } from "../import-translation-dialog/ImportTranslationDialog";
 
 type UseModuleListProps = {
-    refreshRows: () => Promise<void>;
     rows: ListItem[];
+    refreshRows: () => Promise<void>;
     openImportDialog: () => Promise<void>;
     translationImportRef: React.RefObject<ImportTranslationRef>;
+    tableActions?: ModuleListTableAction;
 };
 
 export function useModuleList(props: UseModuleListProps) {
-    const { refreshRows, rows, openImportDialog, translationImportRef } = props;
+    const { refreshRows, rows, openImportDialog, translationImportRef, tableActions: tableActionsProp } = props;
 
     const { usecases } = useAppContext();
     const { exportTranslation } = useImportExportTranslation();
@@ -46,7 +47,15 @@ export function useModuleList(props: UseModuleListProps) {
     const [dialogProps, updateDialog] = useState<ConfirmationDialogProps | null>(null);
     const [markdownDialogProps, updateMarkdownDialog] = useState<MarkdownEditorDialogProps | null>(null);
 
-    const tableActions = useModuleTableAction();
+    const moduleTableActions = useModuleTableAction();
+
+    const tableActions = useMemo(
+        () => ({
+            ...moduleTableActions,
+            ...tableActionsProp,
+        }),
+        [moduleTableActions, tableActionsProp]
+    );
 
     const deleteModules = useCallback(
         async (ids: string[]) => {

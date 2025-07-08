@@ -1,19 +1,5 @@
-import {
-    ConfirmationDialog,
-    ConfirmationDialogProps,
-    ObjectsTable,
-    TableAction,
-    TableColumn,
-    TableGlobalAction,
-    TableSelection,
-    TableState,
-    useLoading,
-    useSnackbar,
-} from "@eyeseetea/d2-ui-components";
-import { Icon } from "@material-ui/core";
-import GetAppIcon from "@material-ui/icons/GetApp";
-import _ from "lodash";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import { ConfirmationDialog, ObjectsTable, useLoading, useSnackbar } from "@eyeseetea/d2-ui-components";
+import React, { useCallback, useRef } from "react";
 import { FileRejection } from "react-dropzone";
 import styled from "styled-components";
 import { PartialTrainingModule, TrainingModule, TrainingModuleStep } from "../../../domain/entities/TrainingModule";
@@ -22,24 +8,11 @@ import i18n from "../../../utils/i18n";
 import { zipMimeType } from "../../../utils/files";
 import { FlattenUnion } from "../../../utils/flatten-union";
 import { useAppContext } from "../../contexts/app-context";
-import { AlertIcon } from "../alert-icon/AlertIcon";
 import { Dropzone, DropzoneRef } from "../dropzone/Dropzone";
 import { ImportTranslationDialog, ImportTranslationRef } from "../import-translation-dialog/ImportTranslationDialog";
-import { InputDialog, InputDialogProps } from "../input-dialog/InputDialog";
-import { MarkdownEditorDialog, MarkdownEditorDialogProps } from "../markdown-editor/MarkdownEditorDialog";
-import { MarkdownViewer } from "../markdown-viewer/MarkdownViewer";
-import { ModalBody } from "../modal";
+import { InputDialog } from "../input-dialog/InputDialog";
+import { MarkdownEditorDialog } from "../markdown-editor/MarkdownEditorDialog";
 import { useImportExportTranslation } from "../../hooks/useImportExportTranslation";
-import {
-    addPage,
-    addStep,
-    removePage,
-    removeStep,
-    updateOrder,
-    updateTranslation,
-} from "../../../domain/helpers/TrainingModuleHelpers";
-import { CompositionRoot } from "../../CompositionRoot";
-import { useModuleTableAction } from "./useModuleTableAction";
 import { useModuleList } from "./useModuleList";
 
 export interface ModuleListTableProps {
@@ -47,6 +20,7 @@ export interface ModuleListTableProps {
     refreshRows?: () => Promise<void>;
     onActionButtonClick?: (event: React.MouseEvent<unknown>) => void;
     isLoading?: boolean;
+    tableActions?: ModuleListTableAction;
 }
 
 export const ModuleListTable: React.FC<ModuleListTableProps> = props => {

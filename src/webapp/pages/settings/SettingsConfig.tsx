@@ -11,16 +11,16 @@ import { ConfirmationDialog, ConfirmationDialogProps, useLoading, useSnackbar } 
 import { TrainingModule } from "../../../domain/entities/TrainingModule";
 import { LandingNode } from "../../../domain/entities/LandingPage";
 import { CustomizeSettingsDialog } from "../../components/customize-settings-dialog/CustomizeSettingsDialog";
+import { buildSharingDescription } from "../../utils/sharing-settings";
 
 type SettingsConfigProps = {
     setPermissionsType: (type: Maybe<"settings">) => void;
-    buildSharingDescription: (props: Maybe<{ users?: NamedRef[]; userGroups?: NamedRef[] }>) => string;
     modules: TrainingModule[];
     landings: LandingNode[];
 };
 
 export const SettingsConfig: React.FC<SettingsConfigProps> = props => {
-    const { setPermissionsType, buildSharingDescription, modules, landings } = props;
+    const { setPermissionsType, modules, landings } = props;
     const { usecases, isAdmin, isLoading } = useAppContext();
     const { appConfig, save, hasLoaded, logoInfo } = useAppConfigContext();
     const snackbar = useSnackbar();
@@ -37,6 +37,7 @@ export const SettingsConfig: React.FC<SettingsConfigProps> = props => {
     }, [appConfig, save]);
 
     const openSettingsPermission = useCallback(() => {
+        console.log("openSettingsPermission");
         setPermissionsType("settings");
     }, [setPermissionsType]);
 
@@ -98,7 +99,7 @@ export const SettingsConfig: React.FC<SettingsConfigProps> = props => {
             )}
 
             <Group row={true}>
-                <ListItem button onClick={() => openSettingsPermission}>
+                <ListItem button onClick={openSettingsPermission}>
                     <ListItemIcon>
                         <Icon>settings</Icon>
                     </ListItemIcon>

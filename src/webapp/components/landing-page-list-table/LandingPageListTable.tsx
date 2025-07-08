@@ -20,15 +20,27 @@ import {
     buildOrderedLandingNodes,
 } from "../../../domain/entities/LandingPage";
 import i18n from "../../../utils/i18n";
-import { MarkdownViewer } from "../markdown-viewer/MarkdownViewer";
 import { useAppContext } from "../../contexts/app-context";
 import { Dropzone, DropzoneRef } from "../dropzone/Dropzone";
 import { ImportTranslationDialog, ImportTranslationRef } from "../import-translation-dialog/ImportTranslationDialog";
-import { LandingPageEditDialog, LandingPageEditDialogProps } from "../landing-page-edit-dialog/LandingPageEditDialog";
-import { ModalBody } from "../modal";
 import { useImportExportTranslation } from "../../hooks/useImportExportTranslation";
+import { StepPreview } from "../step-preview/StepPreview";
+import { Maybe } from "../../../types/utils";
 
-export const LandingPageListTable: React.FC<{ nodes: LandingNode[]; isLoading?: boolean }> = ({ nodes, isLoading }) => {
+type LandingNodeAction = (ids: string[]) => void;
+
+type LandingPageListTableProps = {
+    nodes: LandingNode[];
+    isLoading?: boolean;
+    onAddSection: LandingNodeAction;
+    onAddSubSection: LandingNodeAction;
+    onAddCategory: LandingNodeAction;
+    onEditLandingNode: LandingNodeAction;
+};
+
+export const LandingPageListTable: React.FC<LandingPageListTableProps> = props => {
+    const { nodes, isLoading, onAddSection, onAddSubSection, onAddCategory, onEditLandingNode } = props;
+
     const { usecases, reload } = useAppContext();
     const { exportTranslation, importTranslation } = useImportExportTranslation();
 
@@ -39,7 +51,6 @@ export const LandingPageListTable: React.FC<{ nodes: LandingNode[]; isLoading?: 
     const translationImportRef = useRef<ImportTranslationRef>(null);
 
     const [dialogProps, updateDialog] = useState<ConfirmationDialogProps | null>(null);
-    const [editDialogProps, updateEditDialog] = useState<LandingPageEditDialogProps | null>(null);
 
     const openImportDialog = useCallback(async () => {
         landingImportRef.current?.openDialog();
@@ -141,93 +152,28 @@ export const LandingPageListTable: React.FC<{ nodes: LandingNode[]; isLoading?: 
                 name: "add-section",
                 text: i18n.t("Add section"),
                 icon: <Icon>add</Icon>,
-                onClick: ids => {
-                    const parent = flattenRows(nodes).find(({ id }) => id === ids[0]);
-                    if (!parent) return;
-
-                    updateEditDialog({
-                        title: i18n.t("Add section"),
-                        type: "section",
-                        parent: parent.id,
-                        order: parent.children.length,
-                        onCancel: () => updateEditDialog(null),
-                        onSave: async node => {
-                            updateEditDialog(null);
-                            await usecases.landings.update(node);
-                            await reload();
-                        },
-                    });
-                },
+                onClick: onAddSection,
                 isActive: nodes => _.every(nodes, item => item.type === "root"),
             },
             {
                 name: "add-sub-section",
                 text: i18n.t("Add sub-section"),
                 icon: <Icon>add</Icon>,
-                onClick: ids => {
-                    const parent = flattenRows(nodes).find(({ id }) => id === ids[0]);
-                    if (!parent) return;
-
-                    updateEditDialog({
-                        title: i18n.t("Add sub-section"),
-                        type: "sub-section",
-                        parent: parent.id,
-                        order: parent.children.length,
-                        onCancel: () => updateEditDialog(null),
-                        onSave: async node => {
-                            updateEditDialog(null);
-                            await usecases.landings.update(node);
-                            await reload();
-                        },
-                    });
-                },
+                onClick: onAddSubSection,
                 isActive: nodes => _.every(nodes, item => item.type === "section"),
             },
             {
                 name: "add-category",
                 text: i18n.t("Add category"),
                 icon: <Icon>add</Icon>,
-                onClick: ids => {
-                    const parent = flattenRows(nodes).find(({ id }) => id === ids[0]);
-                    if (!parent) return;
-
-                    updateEditDialog({
-                        title: i18n.t("Add category"),
-                        type: "category",
-                        parent: parent.id,
-                        order: parent.children.length,
-                        onCancel: () => updateEditDialog(null),
-                        onSave: async node => {
-                            updateEditDialog(null);
-                            await usecases.landings.update(node);
-                            await reload();
-                        },
-                    });
-                },
+                onClick: onAddCategory,
                 isActive: nodes => _.every(nodes, item => item.type === "sub-section" || item.type === "category"),
             },
             {
                 name: "edit",
                 text: i18n.t("Edit"),
                 icon: <Icon>edit</Icon>,
-                onClick: ids => {
-                    const node = flattenRows(nodes).find(({ id }) => id === ids[0]);
-                    if (!node) return;
-
-                    updateEditDialog({
-                        title: i18n.t("Edit"),
-                        type: node.type,
-                        parent: node.parent,
-                        initialNode: node,
-                        order: node.order ?? 0,
-                        onCancel: () => updateEditDialog(null),
-                        onSave: async node => {
-                            updateEditDialog(null);
-                            await usecases.landings.update(node);
-                            await reload();
-                        },
-                    });
-                },
+                onClick: onEditLandingNode,
                 isActive: nodes => _.every(nodes, item => item.type !== "root"),
             },
             {
@@ -284,10 +230,21 @@ export const LandingPageListTable: React.FC<{ nodes: LandingNode[]; isLoading?: 
                 multiple: false,
             },
         ],
-        [usecases, reload, loading, nodes, move, exportTranslation]
+        [
+            usecases,
+            reload,
+            loading,
+            nodes,
+            move,
+            exportTranslation,
+            onAddCategory,
+            onEditLandingNode,
+            onAddSection,
+            onAddSubSection,
+        ]
     );
 
-    const globalActions: TableGlobalAction[] | undefined = useMemo(
+    const globalActions: Maybe<TableGlobalAction[]> = useMemo(
         () => [
             {
                 name: "import",
@@ -310,7 +267,6 @@ export const LandingPageListTable: React.FC<{ nodes: LandingNode[]; isLoading?: 
     return (
         <React.Fragment>
             {dialogProps && <ConfirmationDialog isOpen={true} maxWidth={"xl"} {...dialogProps} />}
-            {editDialogProps && <LandingPageEditDialog isOpen={true} {...editDialogProps} />}
 
             <ImportTranslationDialog type="landing-page" ref={translationImportRef} onSave={handleTranslationUpload} />
 
@@ -353,21 +309,4 @@ const flattenRows = (rows: LandingNode[]): LandingNode[] => {
 
 const ItemIcon = styled.img`
     width: 100px;
-`;
-
-const StepPreview: React.FC<{
-    className?: string;
-    value?: string;
-}> = ({ className, value }) => {
-    if (!value) return null;
-
-    return (
-        <StyledModalBody className={className}>
-            <MarkdownViewer source={value} />
-        </StyledModalBody>
-    );
-};
-
-const StyledModalBody = styled(ModalBody)`
-    max-width: 600px;
 `;

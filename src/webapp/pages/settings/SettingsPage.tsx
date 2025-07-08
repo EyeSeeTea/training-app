@@ -1,17 +1,6 @@
-import { ConfirmationDialog, ConfirmationDialogProps, useLoading, useSnackbar } from "@eyeseetea/d2-ui-components";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
-import { NamedRef } from "../../../domain/entities/Ref";
-import {
-    addPage,
-    addStep,
-    removePage,
-    removeStep,
-    updateOrder,
-    updateTranslation,
-} from "../../../domain/helpers/TrainingModuleHelpers";
 import i18n from "../../../utils/i18n";
-import { ComponentParameter, Maybe } from "../../../types/utils";
 import { LandingPageListTable } from "../../components/landing-page-list-table/LandingPageListTable";
 import { buildListModules, ModuleListTable } from "../../components/module-list-table/ModuleListTable";
 import { PageHeader } from "../../components/page-header/PageHeader";
@@ -22,13 +11,13 @@ import { useAppConfigContext } from "../../contexts/AppConfigProvider";
 import { CreateButton } from "./CreateButton";
 import { LandingPageEditDialog } from "../../components/landing-page-edit-dialog/LandingPageEditDialog";
 import { SettingsConfig } from "./SettingsConfig";
+import { useLandingNodeDialog } from "./useLandingNodeDialog";
 
 export const SettingsPage: React.FC = () => {
-    const { modules, landings, reload, usecases, setAppState, isLoading } = useAppContext();
+    const { modules, landings, reload, setAppState, isLoading } = useAppContext();
 
     const { appConfig, save } = useAppConfigContext();
-
-    const snackbar = useSnackbar();
+    const { landingNodeDetailsDialog, onAddLandingPage, ...actionsDialog } = useLandingNodeDialog({ nodes: landings });
 
     const [permissionsType, setPermissionsType] = useState<"settings">();
 
@@ -58,7 +47,7 @@ export const SettingsPage: React.FC = () => {
 
     return (
         <DhisPage>
-            {landingPageDetailsDialog && <LandingPageEditDialog isOpen={true} {...landingPageDetailsDialog} />}
+            {landingNodeDetailsDialog && <LandingPageEditDialog isOpen={true} {...landingNodeDetailsDialog} />}
 
             {!!permissionsType && (
                 <PermissionsDialog
@@ -83,53 +72,24 @@ export const SettingsPage: React.FC = () => {
 
             <Header title={i18n.t("Settings")} onBackClick={openTraining} />
 
-            <SettingsConfig
-                setPermissionsType={setPermissionsType}
-                buildSharingDescription={buildSharingDescription}
-                modules={modules}
-                landings={landings}
-            />
+            <SettingsConfig setPermissionsType={setPermissionsType} modules={modules} landings={landings} />
 
             <Container>
                 <Title>{i18n.t("General Settings")}</Title>
 
                 <Title>{i18n.t("Landing page")}</Title>
 
-                <LandingPageListTable nodes={landings} isLoading={isLoading} />
+                <LandingPageListTable nodes={landings} isLoading={isLoading} {...actionsDialog} />
 
                 <Title>{i18n.t("Training modules")}</Title>
 
-                <ModuleListTable
-                    rows={buildListModules(modules)}
-                    refreshRows={refreshModules}
-                    tableActions={tableActions}
-                    isLoading={isLoading}
-                />
+                <ModuleListTable rows={buildListModules(modules)} refreshRows={refreshModules} isLoading={isLoading} />
 
-                <CreateButton onAddLandingPage={} />
+                <CreateButton onAddLandingPage={onAddLandingPage} />
             </Container>
         </DhisPage>
     );
 };
-
-function buildSharingDescription(props: Maybe<{ users?: NamedRef[]; userGroups?: NamedRef[] }>) {
-    const { users, userGroups } = { users: [], userGroups: [], ...(props || {}) };
-    const usersCount = users?.length ?? 0;
-    const userGroupsCount = userGroups?.length ?? 0;
-
-    if (usersCount > 0 && userGroupsCount > 0) {
-        return i18n.t("Accessible to {{usersCount}} users and {{userGroupsCount}} user groups", {
-            usersCount,
-            userGroupsCount,
-        });
-    } else if (usersCount > 0) {
-        return i18n.t("Accessible to {{usersCount}} users", { usersCount });
-    } else if (userGroupsCount > 0) {
-        return i18n.t("Accessible to {{userGroupsCount}} user groups", { userGroupsCount });
-    } else {
-        return i18n.t("Only accessible to system administrators");
-    }
-}
 
 const Title = styled.h3`
     margin-top: 25px;
