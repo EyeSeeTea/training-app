@@ -261,7 +261,6 @@ function buildTableActions(props: BuildTableActionsProps): TableAction<LandingNo
             text: i18n.t("Edit"),
             icon: <Icon>edit</Icon>,
             onClick: onEditLandingNode,
-            isActive: nodes => _.every(nodes, item => item.type !== "root"),
         },
         {
             name: "sharing",
@@ -272,6 +271,7 @@ function buildTableActions(props: BuildTableActionsProps): TableAction<LandingNo
                 if (!landingNode) return;
                 setPermissionLandingNodeId(landingNode.id);
             },
+            isActive: nodes => _.every(nodes, item => item.type !== "root"),
         },
         {
             name: "remove",
