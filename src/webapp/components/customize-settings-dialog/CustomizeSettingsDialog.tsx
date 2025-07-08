@@ -18,7 +18,7 @@ export type CustomizeSettingsSaveForm = {
 };
 
 export type CustomSettingsDialogProps = CustomizeSettingsSaveForm & {
-    onSave: (data: Partial<CustomizeSettingsSaveForm>) => void;
+    onSave: (data: Partial<CustomizeSettingsSaveForm>) => Promise<void>;
     onClose: () => void;
 };
 

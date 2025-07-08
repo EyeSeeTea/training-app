@@ -1,26 +1,32 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
 import { FormGroup, Icon, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import i18n from "../../../utils/i18n";
 import { useAppConfigContext } from "../../contexts/AppConfigProvider";
-import { Maybe } from "../../../types/utils";
 import { NamedRef } from "../../../domain/entities/Ref";
 import { useAppContext } from "../../contexts/app-context";
 import { ConfirmationDialog, ConfirmationDialogProps, useLoading, useSnackbar } from "@eyeseetea/d2-ui-components";
 import { TrainingModule } from "../../../domain/entities/TrainingModule";
 import { LandingNode } from "../../../domain/entities/LandingPage";
-import { CustomizeSettingsDialog } from "../../components/customize-settings-dialog/CustomizeSettingsDialog";
-import { buildSharingDescription } from "../../utils/sharing-settings";
+import {
+    CustomizeSettingsDialog,
+    CustomizeSettingsSaveForm,
+} from "../../components/customize-settings-dialog/CustomizeSettingsDialog";
+import { buildSettingsPermissionDialogProps, buildSharingDescription } from "../../utils/sharing-settings";
+import {
+    PermissionHandlerProps,
+    PermissionsDialog,
+    SharedUpdate,
+} from "../../components/permissions-dialog/PermissionsDialog";
 
 type SettingsConfigProps = {
-    setPermissionsType: (type: Maybe<"settings">) => void;
     modules: TrainingModule[];
     landings: LandingNode[];
 };
 
 export const SettingsConfig: React.FC<SettingsConfigProps> = props => {
-    const { setPermissionsType, modules, landings } = props;
+    const { modules, landings } = props;
     const { usecases, isAdmin, isLoading } = useAppContext();
     const { appConfig, save, hasLoaded, logoInfo } = useAppConfigContext();
     const snackbar = useSnackbar();
@@ -29,31 +35,25 @@ export const SettingsConfig: React.FC<SettingsConfigProps> = props => {
     const [danglingDocuments, setDanglingDocuments] = useState<NamedRef[]>([]);
     const [dialogProps, updateDialog] = useState<ConfirmationDialogProps | null>(null);
     const [showCustomSettings, setShowCustomSettings] = useState(false);
+    const [showPermissionDialog, setShowPermissionDialog] = useState(false);
 
-    const toggleShowAllModules = useCallback(() => {
-        return save({
-            showAllModules: !appConfig.showAllModules,
-        });
-    }, [appConfig, save]);
-
-    const openSettingsPermission = useCallback(() => {
-        console.log("openSettingsPermission");
-        setPermissionsType("settings");
-    }, [setPermissionsType]);
-
+    const closePermissionsDialog = useCallback(() => setShowPermissionDialog(false), []);
+    const openSettingsPermission = useCallback(() => setShowPermissionDialog(true), []);
     const openCustomizeSettingsDialog = useCallback(() => setShowCustomSettings(true), []);
-
-    const closeCustomSettingsDialog = useCallback(() => {
-        setShowCustomSettings(false);
-    }, []);
+    const closeCustomSettingsDialog = useCallback(() => setShowCustomSettings(false), []);
 
     const saveCustomSettings = useCallback(
-        async data => {
+        async (data: Partial<CustomizeSettingsSaveForm>) => {
             await save(data);
             closeCustomSettingsDialog();
         },
         [save, closeCustomSettingsDialog]
     );
+    const toggleShowAllModules = useCallback(() => {
+        return save({
+            showAllModules: !appConfig.showAllModules,
+        });
+    }, [appConfig, save]);
 
     const cleanUpDanglingDocuments = useCallback(async () => {
         updateDialog({
@@ -80,6 +80,24 @@ export const SettingsConfig: React.FC<SettingsConfigProps> = props => {
         });
     }, [danglingDocuments, loading, snackbar, usecases]);
 
+    const permissionsDialogProps: PermissionHandlerProps = useMemo(
+        () => ({
+            object: buildSettingsPermissionDialogProps({
+                permissions: appConfig.settingsPermissions,
+                name: "Access to settings",
+            }),
+            onChange: async ({ userAccesses, userGroupAccesses }: SharedUpdate) => {
+                return save({
+                    settingsPermissions: {
+                        users: userAccesses?.map(({ id, name }) => ({ id, name })),
+                        userGroups: userGroupAccesses?.map(({ id, name }) => ({ id, name })),
+                    },
+                });
+            },
+        }),
+        [appConfig, save]
+    );
+
     useEffect(() => {
         if (!hasLoaded || isLoading) return;
         const data = [...modules, ...landings, appConfig];
@@ -88,6 +106,7 @@ export const SettingsConfig: React.FC<SettingsConfigProps> = props => {
 
     return (
         <>
+            {showPermissionDialog && <PermissionsDialog onClose={closePermissionsDialog} {...permissionsDialogProps} />}
             {dialogProps && <ConfirmationDialog isOpen={true} maxWidth={"lg"} fullWidth={true} {...dialogProps} />}
             {showCustomSettings && (
                 <CustomizeSettingsDialog

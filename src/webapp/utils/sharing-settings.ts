@@ -1,6 +1,8 @@
 import i18n from "../../utils/i18n";
 import { Maybe } from "../../types/utils";
 import { NamedRef } from "../../domain/entities/Ref";
+import { Permission } from "../../domain/entities/Permission";
+import { PermissionsDialogProps } from "../components/permissions-dialog/PermissionsDialog";
 
 export function buildSharingDescription(props: Maybe<{ users?: NamedRef[]; userGroups?: NamedRef[] }>) {
     const { users, userGroups } = { users: [], userGroups: [], ...(props || {}) };
@@ -19,4 +21,26 @@ export function buildSharingDescription(props: Maybe<{ users?: NamedRef[]; userG
     } else {
         return i18n.t("Only accessible to system administrators");
     }
+}
+
+export function buildSettingsPermissionDialogProps(props: {
+    permissions: Permission;
+    name: string;
+    publicAccess?: string;
+}): PermissionsDialogProps["object"] {
+    const { permissions, name, publicAccess } = props;
+    return {
+        name: name,
+        publicAccess: publicAccess || "--------",
+        userAccesses:
+            permissions.users.map(ref => ({
+                ...ref,
+                access: "rw----",
+            })) ?? [],
+        userGroupAccesses:
+            permissions.userGroups.map(ref => ({
+                ...ref,
+                access: "rw----",
+            })) ?? [],
+    };
 }

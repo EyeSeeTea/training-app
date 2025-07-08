@@ -68,7 +68,7 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
     public async import(files: File[]): Promise<PersistedLandingPage[]> {
         const items = await this.importExportClient.import<PersistedLandingPage>(files);
         // TODO: Do not overwrite existing landing page
-        await this.storageClient.saveObject(Namespaces.LANDING_PAGES, items);
+        await this.storageClient.saveObjectsInCollection(Namespaces.LANDING_PAGES, items);
 
         return items;
     }
@@ -113,7 +113,10 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
             content: model.content ? setTranslationValue(model.content, language, terms[model.content.key]) : undefined,
         }));
 
-        await this.storageClient.saveObject<PersistedLandingPage[]>(Namespaces.LANDING_PAGES, translatedModels);
+        await this.storageClient.saveObjectsInCollection<PersistedLandingPage>(
+            Namespaces.LANDING_PAGES,
+            translatedModels
+        );
 
         return this.extractTranslatableText(models);
     }
