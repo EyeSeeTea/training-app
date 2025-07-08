@@ -126,7 +126,7 @@ export interface AppContextState {
     isAdmin: boolean;
 }
 
-interface UseAppContextResult {
+export interface UseAppContextResult {
     appState: AppState;
     setAppState: (appState: AppState | AppStateUpdateMethod) => void;
     routes: AppRoute[];
