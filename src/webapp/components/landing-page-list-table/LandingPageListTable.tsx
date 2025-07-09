@@ -156,7 +156,7 @@ export const LandingPageListTable: React.FC<LandingPageListTableProps> = props =
                 await reload();
             },
         };
-    }, [permissionLandingNodeId, nodes]);
+    }, [permissionLandingNodeId, nodes, reload, usecases.landings]);
 
     return (
         <React.Fragment>
