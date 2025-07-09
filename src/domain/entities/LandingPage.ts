@@ -1,6 +1,7 @@
 import { Codec, GetSchemaType, Schema } from "../../utils/codec";
 import { TranslatableText, TranslatableTextModel } from "./TranslatableText";
 import { SharedProperties, SharedPropertiesModel } from "./Ref";
+import { User, validateUserPermission } from "../../data/entities/User";
 
 export const LandingPageNodeTypeModel = Schema.oneOf([
     Schema.exact("root"),
@@ -50,3 +51,9 @@ export const buildOrderedLandingNodes = (nodes: LandingNode[]): OrderedLandingNo
         children: buildOrderedLandingNodes(node.children),
     }));
 };
+
+export function getUserRootLandings(nodes: LandingNode[], currentUser: User) {
+    return nodes.filter(node => {
+        return node.type === "root" && validateUserPermission(node.permissions, "read", currentUser);
+    });
+}

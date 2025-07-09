@@ -15,13 +15,15 @@ export const Root: React.FC<HomePageProps> = props => {
 
     return (
         <React.Fragment>
-            <LogoContainer>
-                <img src={currentPage.icon} alt={`Page icon`} />
-            </LogoContainer>
+            {currentPage.icon && (
+                <LogoContainer>
+                    <img src={currentPage.icon} alt={`Page icon`} />
+                </LogoContainer>
+            )}
+
             <ModalTitle bold={true} big={true}>
                 {translate(currentPage.title ?? currentPage.name)}
             </ModalTitle>
-
             <ModalContent>
                 <ModalParagraph size={28} align={"left"}>
                     {currentPage.content ? <MarkdownContents source={translate(currentPage.content)} /> : null}

@@ -271,7 +271,7 @@ function buildTableActions(props: BuildTableActionsProps): TableAction<LandingNo
                 if (!landingNode) return;
                 setPermissionLandingNodeId(landingNode.id);
             },
-            isActive: nodes => _.every(nodes, item => item.type !== "root"),
+            isActive: nodes => _.every(nodes, item => item.type === "root"),
         },
         {
             name: "remove",
