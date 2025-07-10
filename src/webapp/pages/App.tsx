@@ -24,7 +24,8 @@ import { Feedback } from "@eyeseetea/feedback-component";
 import { appConfig } from "../../app-config";
 import { AppConfigProvider } from "../contexts/AppConfigProvider";
 import { D2Api } from "../../types/d2-api";
-import { User } from "../../data/entities/User";
+import { useMigrations } from "../components/migrations/useMigration";
+import Migrations from "../components/migrations/Migrations";
 
 export const routes: AppRoute[] = [
     {
@@ -115,35 +116,46 @@ export const routes: AppRoute[] = [
 
 const App: React.FC<{ locale: string; baseUrl: string }> = ({ locale, baseUrl }) => {
     const [appContextProps, setAppContextProps] = useState<AppContextProviderProps>();
+    const [api] = useState(() => new D2Api({ baseUrl }));
+
+    const migrations = useMigrations(api, appConfig.appKey);
 
     useEffect(() => {
         async function setup() {
-            const compositionRoot = getCompositionRoot(new D2Api({ baseUrl: baseUrl }));
+            const compositionRoot = getCompositionRoot(api);
             const currentUser = await compositionRoot.usecases.user.getCurrent();
 
             setAppContextProps({ compositionRoot, locale, routes, currentUser });
         }
-        setup();
-    }, [baseUrl, locale]);
+
+        if (migrations.state.type === "checked") {
+            setup();
+        }
+    }, [baseUrl, locale, api, migrations.state.type]);
+
     return appContextProps ? (
         <AppContextProvider {...appContextProps}>
             <AppConfigProvider>
                 <StylesProvider injectFirst>
                     <MuiThemeProvider theme={muiTheme}>
                         <OldMuiThemeProvider muiTheme={muiThemeLegacy}>
-                            <SnackbarProvider>
-                                <LoadingProvider>
-                                    <div id="app" className="content">
-                                        <HashRouter>
-                                            <Router baseUrl={baseUrl} />
-                                        </HashRouter>
-                                    </div>
-                                    <Feedback
-                                        options={appConfig.feedback}
-                                        username={appContextProps.currentUser.username}
-                                    />
-                                </LoadingProvider>
-                            </SnackbarProvider>
+                            {migrations.state.type === "pending" ? (
+                                <Migrations migrations={migrations} />
+                            ) : (
+                                <SnackbarProvider>
+                                    <LoadingProvider>
+                                        <div id="app" className="content">
+                                            <HashRouter>
+                                                <Router baseUrl={baseUrl} />
+                                            </HashRouter>
+                                        </div>
+                                        <Feedback
+                                            options={appConfig.feedback}
+                                            username={appContextProps.currentUser.username}
+                                        />
+                                    </LoadingProvider>
+                                </SnackbarProvider>
+                            )}
                         </OldMuiThemeProvider>
                     </MuiThemeProvider>
                 </StylesProvider>

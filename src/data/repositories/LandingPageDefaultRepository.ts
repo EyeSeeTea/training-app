@@ -122,26 +122,8 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
     }
 
     private async saveDefaultLandingPage(): Promise<PersistedLandingPage> {
-        const root = {
-            id: generateUid(),
-            parent: "none",
-            type: "root" as const,
-            icon: "",
-            order: undefined,
-            name: {
-                key: "root-name",
-                referenceValue: "Main landing page",
-                translations: {},
-            },
-            title: undefined,
-            content: undefined,
-            modules: [],
-            permissions: defaultPermissions,
-            executeOnInit: true,
-        };
-
-        await this.storageClient.saveObjectInCollection<PersistedLandingPage>(Namespaces.LANDING_PAGES, root);
-        return root;
+        await this.storageClient.saveObjectInCollection<PersistedLandingPage>(Namespaces.LANDING_PAGES, defaultRoot);
+        return defaultRoot;
     }
 }
 
@@ -149,6 +131,23 @@ const defaultPermissions = {
     publicAccess: "r-------",
     userAccesses: [],
     userGroupAccesses: [],
+};
+
+export const defaultRoot: PersistedLandingPage = {
+    id: generateUid(),
+    parent: "none",
+    type: "root" as const,
+    icon: "",
+    order: undefined,
+    name: {
+        key: "root-name",
+        referenceValue: "Main landing page",
+        translations: {},
+    },
+    title: undefined,
+    content: undefined,
+    modules: [],
+    permissions: defaultPermissions,
 };
 
 const buildDomainLandingNode = (root: PersistedLandingPage, items: PersistedLandingPage[]): LandingNode => {
