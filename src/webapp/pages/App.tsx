@@ -133,29 +133,33 @@ const App: React.FC<{ locale: string; baseUrl: string }> = ({ locale, baseUrl })
         }
     }, [baseUrl, locale, api, migrations.state.type]);
 
+    if (migrations.state.type === "pending") {
+        return (
+            <StylesProvider injectFirst>
+                <Migrations migrations={migrations} />
+            </StylesProvider>
+        );
+    }
+
     return appContextProps ? (
         <AppContextProvider {...appContextProps}>
             <AppConfigProvider>
                 <StylesProvider injectFirst>
                     <MuiThemeProvider theme={muiTheme}>
                         <OldMuiThemeProvider muiTheme={muiThemeLegacy}>
-                            {migrations.state.type === "pending" ? (
-                                <Migrations migrations={migrations} />
-                            ) : (
-                                <SnackbarProvider>
-                                    <LoadingProvider>
-                                        <div id="app" className="content">
-                                            <HashRouter>
-                                                <Router baseUrl={baseUrl} />
-                                            </HashRouter>
-                                        </div>
-                                        <Feedback
-                                            options={appConfig.feedback}
-                                            username={appContextProps.currentUser.username}
-                                        />
-                                    </LoadingProvider>
-                                </SnackbarProvider>
-                            )}
+                            <SnackbarProvider>
+                                <LoadingProvider>
+                                    <div id="app" className="content">
+                                        <HashRouter>
+                                            <Router baseUrl={baseUrl} />
+                                        </HashRouter>
+                                    </div>
+                                    <Feedback
+                                        options={appConfig.feedback}
+                                        username={appContextProps.currentUser.username}
+                                    />
+                                </LoadingProvider>
+                            </SnackbarProvider>
                         </OldMuiThemeProvider>
                     </MuiThemeProvider>
                 </StylesProvider>
