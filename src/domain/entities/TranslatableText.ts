@@ -1,6 +1,6 @@
 import { GetSchemaType, Schema } from "../../utils/codec";
 import _ from "lodash";
-import { NullabelMaybe } from "../../types/utils";
+import { Maybe } from "../../types/utils";
 
 export const TranslatableTextModel = Schema.object({
     key: Schema.string,
@@ -22,11 +22,7 @@ export type TranslateMethod = (string: TranslatableText) => string;
 //{lang: {key: translatedText}}
 export type Translations = Record<string, Record<string, string>>;
 
-export function setTranslationValue<T extends TranslatableText>(
-    item: T,
-    language: string,
-    term: NullabelMaybe<string>
-): T {
+export function setTranslationValue<T extends TranslatableText>(item: T, language: string, term: Maybe<string>): T {
     if (term === undefined) {
         return item;
     } else if (language === "en") {

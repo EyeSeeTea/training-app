@@ -1,9 +1,10 @@
 import _ from "lodash";
 import { deleteDataStore, getDataStore, saveDataStore } from "./dataStore";
 import { D2Api } from "../types/d2-api";
-import { promiseMap, zeroPad } from "./utils";
+import { zeroPad } from "./utils";
 import { Config, Debug, MigrationWithVersion, RunnerOptions } from "./types";
 import { checkCurrentUserIsSuperadmin } from "./tasks/permissions";
+import { promiseMap } from "../utils/promises";
 
 const configKey = "migration";
 

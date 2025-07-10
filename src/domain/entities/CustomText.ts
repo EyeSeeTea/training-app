@@ -1,6 +1,5 @@
 import i18n from "../../utils/i18n";
 import { TranslatableText } from "./TranslatableText";
-import { NullabelMaybe } from "../../types/utils";
 
 export type CustomText = {
     rootTitle: TranslatableText;
@@ -10,9 +9,7 @@ export type CustomText = {
 export const CustomTextFields: (keyof CustomText)[] = ["rootTitle", "rootSubtitle"];
 export type CustomTextInfo = { [K in keyof CustomText]: string };
 
-export type DefaultCustomText = CustomText & { isDefault?: NullabelMaybe<boolean> };
-
-export function getDefaultCustomText(): DefaultCustomText {
+export function getDefaultCustomText(): CustomText {
     return {
         rootTitle: {
             key: "root-title",

@@ -27,9 +27,9 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
                 Namespaces.LANDING_PAGES
             );
 
-            const roots = persisted?.filter(({ parent }) => parent === "none");
+            const roots = persisted.filter(({ parent }) => parent === "none");
 
-            if (persisted.length === 0 || !roots?.length) {
+            if (!persisted.length || !roots.length) {
                 return this.saveDefaultLandingPage()
                     .then(root => buildDomainLandingNode(root, []))
                     .then(root => [root]);
