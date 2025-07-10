@@ -48,7 +48,7 @@ export class Dhis2ConfigRepository implements ConfigRepository {
     public async get(): Promise<Config> {
         return (
             (await this.storageClient
-                .getObject<PartialConfig>(Namespaces.CONFIG)
+                .getObject<PersistedConfig>(Namespaces.CONFIG)
                 .then(config => getMergedConfig(config))) ?? {}
         );
     }
@@ -65,7 +65,7 @@ export class Dhis2ConfigRepository implements ConfigRepository {
         };
 
         return this.storageClient
-            .saveObject<PersistedConfig>(Namespaces.CONFIG, updatedConfig)
+            .saveObject(Namespaces.CONFIG, updatedConfig)
             .then(() => getMergedConfig(updatedConfig));
     }
 
