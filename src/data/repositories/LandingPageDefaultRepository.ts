@@ -143,7 +143,7 @@ export const defaultRoot: PersistedLandingPage = {
     order: undefined,
     name: {
         key: "root-name",
-        referenceValue: "Main landing page",
+        referenceValue: "Default landing page",
         translations: {},
     },
     title: undefined,
