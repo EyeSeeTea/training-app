@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-
 import { FormGroup, Icon, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import { ConfirmationDialog, ConfirmationDialogProps, useLoading, useSnackbar } from "@eyeseetea/d2-ui-components";
+
 import i18n from "../../../utils/i18n";
 import { useAppConfigContext } from "../../contexts/AppConfigProvider";
 import { NamedRef } from "../../../domain/entities/Ref";
 import { useAppContext } from "../../contexts/app-context";
-import { ConfirmationDialog, ConfirmationDialogProps, useLoading, useSnackbar } from "@eyeseetea/d2-ui-components";
 import { TrainingModule } from "../../../domain/entities/TrainingModule";
 import { LandingNode } from "../../../domain/entities/LandingPage";
 import {

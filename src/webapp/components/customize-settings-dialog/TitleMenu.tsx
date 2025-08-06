@@ -1,10 +1,11 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Box, Icon, IconButton } from "@material-ui/core";
-import i18n from "../../../utils/i18n";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Menu from "@material-ui/core/Menu";
 import styled from "styled-components";
 import MenuItem from "@material-ui/core/MenuItem";
+
+import i18n from "../../../utils/i18n";
 
 type TitleMenuProps = {
     hideMenu: boolean;

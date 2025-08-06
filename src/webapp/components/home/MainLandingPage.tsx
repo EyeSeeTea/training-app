@@ -1,6 +1,7 @@
 import React from "react";
-import { LandingNode } from "../../../domain/entities/LandingPage";
 import styled from "styled-components";
+
+import { LandingNode } from "../../../domain/entities/LandingPage";
 import { useAppConfigContext } from "../../contexts/AppConfigProvider";
 import { ModalContent, ModalParagraph, ModalTitle } from "../modal";
 import { useAppContext } from "../../contexts/app-context";
