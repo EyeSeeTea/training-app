@@ -301,9 +301,10 @@ function buildTableActions(props: BuildTableActionsProps): TableAction<LandingNo
             name: "export-translations",
             text: i18n.t("Export JSON translations"),
             icon: <Icon>translate</Icon>,
-            onClick: async () => {
+            onClick: async (ids: string[]) => {
+                if (!ids[0]) return;
                 loading.show(true, i18n.t("Exporting translations"));
-                await exportTranslation(() => usecases.landings.extractTranslations(), "landing-page");
+                await exportTranslation(() => usecases.landings.extractTranslations(ids[0]), "landing-page");
                 loading.reset();
             },
             isActive: nodes => _.every(nodes, item => item.type === "root"),

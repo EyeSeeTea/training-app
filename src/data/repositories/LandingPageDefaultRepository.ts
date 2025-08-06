@@ -23,9 +23,7 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
 
     public async list(): Promise<LandingNode[]> {
         try {
-            const persisted = await this.storageClient.listObjectsInCollection<PersistedLandingPage>(
-                Namespaces.LANDING_PAGES
-            );
+            const persisted = await this._list();
 
             const roots = persisted.filter(({ parent }) => parent === "none");
 
@@ -54,10 +52,14 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
         }
     }
 
+    private async _list(ids?: string[]): Promise<PersistedLandingPage[]> {
+        const pages = await this.storageClient.listObjectsInCollection<PersistedLandingPage>(Namespaces.LANDING_PAGES);
+        return ids ? pages.filter(({ id }) => ids.includes(id)) : pages;
+    }
+
     public async export(ids: string[]): Promise<void> {
-        const nodes = await this.storageClient.listObjectsInCollection<PersistedLandingPage>(Namespaces.LANDING_PAGES);
+        const nodes = await this._list(ids);
         const toExport = _(nodes)
-            .filter(({ id }) => ids.includes(id))
             .flatMap(node => extractChildrenNodes(buildDomainLandingNode(node, nodes), node.parent))
             .flatten()
             .value();
@@ -79,9 +81,8 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
     }
 
     public async delete(ids: string[]): Promise<void> {
-        const nodes = await this.storageClient.listObjectsInCollection<PersistedLandingPage>(Namespaces.LANDING_PAGES);
+        const nodes = await this._list(ids);
         const toDelete = _(nodes)
-            .filter(({ id }) => ids.includes(id))
             .map(node => LandingNodeModel.decode(buildDomainLandingNode(node, nodes)).toMaybe().extract())
             .compact()
             .flatMap(node => [node.id, extractChildrenNodes(node, node.parent).map(({ id }) => id)])
@@ -91,9 +92,10 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
         await this.storageClient.removeObjectsInCollection(Namespaces.LANDING_PAGES, toDelete);
     }
 
-    public async extractTranslations(): Promise<TranslatableText[]> {
-        const models = await this.storageClient.getObject<PersistedLandingPage[]>(Namespaces.LANDING_PAGES);
-        if (!models) throw new Error(`Unable to load landing pages`);
+    public async extractTranslations(id: string): Promise<TranslatableText[]> {
+        const nodes = await this._list();
+        const models = nodes.filter(node => node.id === id || node.parent === id);
+        if (!models.length) throw new Error(`Unable to load landing pages`);
 
         return this.extractTranslatableText(models);
     }
