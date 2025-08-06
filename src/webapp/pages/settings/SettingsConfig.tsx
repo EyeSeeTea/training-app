@@ -149,7 +149,7 @@ export const SettingsConfig: React.FC<SettingsConfigProps> = props => {
                         <Icon>format_shapes</Icon>
                     </ListItemIcon>
                     <ListItemText
-                        primary={i18n.t("Customize the main landing page")}
+                        primary={i18n.t("Customize landing page selection")}
                         secondary={i18n.t("Update the logo or content")}
                     />
                 </ListItem>

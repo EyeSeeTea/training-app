@@ -4,7 +4,6 @@ import { saveDataStore } from "../dataStore";
 import { dataStoreNamespace, Namespaces } from "../../data/clients/storage/Namespaces";
 import { PersistedLandingPage } from "../../data/entities/PersistedLandingPage";
 import { PersistedConfig } from "../../data/entities/PersistedConfig";
-import { defaultRoot } from "../../data/repositories/LandingPageDefaultRepository";
 import { getDefaultCustomText } from "../../domain/entities/CustomText";
 
 async function migrate(api: D2Api, debug: Debug): Promise<void> {
@@ -22,7 +21,7 @@ async function migrate(api: D2Api, debug: Debug): Promise<void> {
     debug("Updating default landing page title and content with custom text");
     debug("Updating default landing page icon with customized or default logo");
     const updatedLandingNodes = landingNodes.map(node => {
-        if (node.name.referenceValue === defaultRoot.name.referenceValue) {
+        if (node.name.referenceValue === "Main landing page") {
             return {
                 ...node,
                 name: {
