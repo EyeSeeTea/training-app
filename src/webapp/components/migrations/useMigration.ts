@@ -30,7 +30,7 @@ export function useMigrations(api: D2Api, dataStoreNamespace: string): UseMigrat
 async function runMigrations(api: D2Api, dataStoreNamespace: string): Promise<MigrationsState> {
     const runner = await MigrationsRunner.init({
         api,
-        debug: console.log,
+        debug: console.debug,
         migrations: await getMigrationTasks(),
         dataStoreNamespace,
     });
