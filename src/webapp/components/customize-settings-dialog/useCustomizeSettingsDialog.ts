@@ -61,7 +61,7 @@ export const useCustomizeSettingsDialog = ({
             await importTranslation(() => usecases.config.importTranslations(lang, terms));
             await reload();
         },
-        [usecases, importTranslation]
+        [usecases, importTranslation, reload]
     );
 
     const exportTranslations = useCallback(async () => {
