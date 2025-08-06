@@ -1,5 +1,6 @@
 import { ConfirmationDialog } from "@eyeseetea/d2-ui-components";
 import React from "react";
+
 import i18n from "../../../locales";
 import { UseMigrationsResult } from "./useMigration";
 import { MigrationsRunner } from "../../../migrations";

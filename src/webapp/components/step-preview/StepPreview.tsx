@@ -1,6 +1,7 @@
 import React from "react";
-import { MarkdownViewer } from "../markdown-viewer/MarkdownViewer";
 import styled from "styled-components";
+
+import { MarkdownViewer } from "../markdown-viewer/MarkdownViewer";
 import { ModalBody } from "../modal";
 
 export const StepPreview: React.FC<{

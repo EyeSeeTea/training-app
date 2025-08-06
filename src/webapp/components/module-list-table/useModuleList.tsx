@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
-import i18n from "../../../utils/i18n";
 import _ from "lodash";
+import { Icon } from "@material-ui/core";
 import {
     ConfirmationDialogProps,
     TableAction,
@@ -11,15 +11,16 @@ import {
     useLoading,
     useSnackbar,
 } from "@eyeseetea/d2-ui-components";
-import { AlertIcon } from "../alert-icon/AlertIcon";
-import { Icon } from "@material-ui/core";
 import GetAppIcon from "@material-ui/icons/GetApp";
+import styled from "styled-components";
+
+import i18n from "../../../utils/i18n";
+import { AlertIcon } from "../alert-icon/AlertIcon";
 import { ListItem, ModuleListTableAction } from "./ModuleListTable";
 import { useModuleTableAction } from "./useModuleTableAction";
 import { InputDialogProps } from "../input-dialog/InputDialog";
 import { MarkdownEditorDialogProps } from "../markdown-editor/MarkdownEditorDialog";
 import { MarkdownViewer } from "../markdown-viewer/MarkdownViewer";
-import styled from "styled-components";
 import { ModalBody } from "../modal";
 import { useImportExportTranslation } from "../../hooks/useImportExportTranslation";
 import { useAppContext } from "../../contexts/app-context";

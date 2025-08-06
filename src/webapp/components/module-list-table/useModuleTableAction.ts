@@ -1,5 +1,6 @@
-import { useAppContext } from "../../contexts/app-context";
 import { useSnackbar } from "@eyeseetea/d2-ui-components";
+
+import { useAppContext } from "../../contexts/app-context";
 import {
     addPage,
     addStep,
