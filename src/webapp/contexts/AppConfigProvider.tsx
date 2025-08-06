@@ -9,6 +9,7 @@ interface ConfigContextState {
     hasSettingsAccess: boolean;
     logoInfo: LogoInfo;
     hasLoaded: boolean;
+    reload: () => Promise<void>;
 }
 
 const ConfigContext = createContext<ConfigContextState | null>(null);

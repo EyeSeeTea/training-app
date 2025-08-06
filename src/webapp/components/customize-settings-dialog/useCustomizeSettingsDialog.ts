@@ -15,7 +15,7 @@ export const useCustomizeSettingsDialog = ({
     customText,
     onSave,
 }: Omit<CustomSettingsDialogProps, "onClose">) => {
-    const { appConfig } = useAppConfigContext();
+    const { appConfig, reload } = useAppConfigContext();
     const appCustomText = appConfig.customText;
     const defaultCustomText = getDefaultCustomText();
     const { exportTranslation, importTranslation } = useImportExportTranslation();
@@ -59,6 +59,7 @@ export const useCustomizeSettingsDialog = ({
     const handleTranslationUpload = useCallback(
         async (_key: string | undefined, lang: string, terms: Record<string, string>) => {
             await importTranslation(() => usecases.config.importTranslations(lang, terms));
+            await reload();
         },
         [usecases, importTranslation]
     );
