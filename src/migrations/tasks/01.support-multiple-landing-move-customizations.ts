@@ -5,6 +5,7 @@ import { dataStoreNamespace, Namespaces } from "../../data/clients/storage/Names
 import { PersistedLandingPage } from "../../data/entities/PersistedLandingPage";
 import { PersistedConfig } from "../../data/entities/PersistedConfig";
 import { getDefaultCustomText } from "../../domain/entities/CustomText";
+import { defaultRoot } from "../../data/repositories/LandingPageDefaultRepository";
 
 async function migrate(api: D2Api, debug: Debug): Promise<void> {
     const landingNodes = await getLandingNodes(api);
@@ -24,10 +25,7 @@ async function migrate(api: D2Api, debug: Debug): Promise<void> {
         if (node.name.referenceValue === "Main landing page") {
             return {
                 ...node,
-                name: {
-                    ...node.name,
-                    referenceValue: "Default Landing Page",
-                },
+                name: defaultRoot.name,
                 title: defaultCustomText.rootTitle,
                 content: defaultCustomText.rootSubtitle,
                 icon: config.logo || process.env["REACT_APP_LOGO_PATH"] || "img/logo-eyeseetea.png",
