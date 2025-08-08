@@ -8,13 +8,12 @@ import MenuItem from "@material-ui/core/MenuItem";
 import i18n from "../../../utils/i18n";
 
 type TitleMenuProps = {
-    hideMenu: boolean;
     importTranslations: () => void;
     exportTranslations: () => Promise<void>;
 };
 
 export const TitleMenu: React.FC<TitleMenuProps> = props => {
-    const { hideMenu, exportTranslations, importTranslations } = props;
+    const { exportTranslations, importTranslations } = props;
 
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const menuOpen = Boolean(menuAnchor);
@@ -54,21 +53,18 @@ export const TitleMenu: React.FC<TitleMenuProps> = props => {
     return (
         <Box display="flex" alignItems="center">
             {i18n.t("Customize main landing page")}
-            {!hideMenu && (
-                <>
-                    <IconButton onClick={handleClickMenu}>
-                        <MoreVertIcon />
-                    </IconButton>
-                    <Menu anchorEl={menuAnchor} open={menuOpen} onClose={handleCloseMenu}>
-                        {menuAction.map(action => (
-                            <StyledMenuItem key={action.key} onClick={action.onClick}>
-                                {action.icon}
-                                {action.text}
-                            </StyledMenuItem>
-                        ))}
-                    </Menu>
-                </>
-            )}
+
+            <IconButton onClick={handleClickMenu}>
+                <MoreVertIcon />
+            </IconButton>
+            <Menu anchorEl={menuAnchor} open={menuOpen} onClose={handleCloseMenu}>
+                {menuAction.map(action => (
+                    <StyledMenuItem key={action.key} onClick={action.onClick}>
+                        {action.icon}
+                        {action.text}
+                    </StyledMenuItem>
+                ))}
+            </Menu>
         </Box>
     );
 };

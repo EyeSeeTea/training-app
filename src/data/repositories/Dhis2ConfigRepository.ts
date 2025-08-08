@@ -1,4 +1,4 @@
-import _, { merge, omitBy } from "lodash";
+import _, { merge } from "lodash";
 
 import { ConfigRepository } from "../../domain/repositories/ConfigRepository";
 import { D2Api } from "../../types/d2-api";
@@ -46,11 +46,8 @@ export class Dhis2ConfigRepository implements ConfigRepository {
     }
 
     public async get(): Promise<Config> {
-        return (
-            (await this.storageClient
-                .getObject<PersistedConfig>(Namespaces.CONFIG)
-                .then(config => getMergedConfig(config))) ?? {}
-        );
+        const persistedConfig = await this.storageClient.getObject<PersistedConfig>(Namespaces.CONFIG);
+        return getMergedConfig(persistedConfig);
     }
 
     public async save(update: PartialConfig): Promise<Config> {
@@ -100,11 +97,19 @@ export class Dhis2ConfigRepository implements ConfigRepository {
     }
 }
 
-export function getMergedConfig(config: Maybe<PartialConfig>): Config {
-    const cleanCustomText = omitBy(config?.customText, value => value === null);
+function getMergedConfig(config: Maybe<PartialConfig>): Config {
     const defaultConfig = getDefaultConfig();
-    return merge({}, defaultConfig, {
+    const defaultCustomText = defaultConfig.customText;
+
+    const mergedCustomText = {
+        rootTitle: config?.customText?.rootTitle ?? defaultCustomText.rootTitle,
+        rootSubtitle: config?.customText?.rootSubtitle ?? defaultCustomText.rootSubtitle,
+    };
+
+    const { customText: _, ...defaultConfigWithoutCustomText } = defaultConfig;
+
+    return merge({}, defaultConfigWithoutCustomText, {
         ...config,
-        customText: cleanCustomText,
+        customText: mergedCustomText,
     });
 }

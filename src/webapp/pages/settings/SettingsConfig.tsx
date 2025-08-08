@@ -9,10 +9,7 @@ import { NamedRef } from "../../../domain/entities/Ref";
 import { useAppContext } from "../../contexts/app-context";
 import { TrainingModule } from "../../../domain/entities/TrainingModule";
 import { LandingNode } from "../../../domain/entities/LandingPage";
-import {
-    CustomizeSettingsDialog,
-    CustomizeSettingsSaveForm,
-} from "../../components/customize-settings-dialog/CustomizeSettingsDialog";
+import { CustomizeSettingsDialog } from "../../components/customize-settings-dialog/CustomizeSettingsDialog";
 import { buildSettingsPermissionDialogProps, buildSharingDescription } from "../../utils/sharing-settings";
 import {
     PermissionHandlerProps,
@@ -28,7 +25,7 @@ type SettingsConfigProps = {
 export const SettingsConfig: React.FC<SettingsConfigProps> = props => {
     const { modules, landings } = props;
     const { usecases, isAdmin, isLoading } = useAppContext();
-    const { appConfig, save, hasLoaded, logoInfo } = useAppConfigContext();
+    const { appConfig, save, hasLoaded } = useAppConfigContext();
     const snackbar = useSnackbar();
     const loading = useLoading();
 
@@ -42,13 +39,6 @@ export const SettingsConfig: React.FC<SettingsConfigProps> = props => {
     const openCustomizeSettingsDialog = useCallback(() => setShowCustomSettings(true), []);
     const closeCustomSettingsDialog = useCallback(() => setShowCustomSettings(false), []);
 
-    const saveCustomSettings = useCallback(
-        async (data: Partial<CustomizeSettingsSaveForm>) => {
-            await save(data);
-            closeCustomSettingsDialog();
-        },
-        [save, closeCustomSettingsDialog]
-    );
     const toggleShowAllModules = useCallback(() => {
         return save({
             showAllModules: !appConfig.showAllModules,
@@ -108,14 +98,7 @@ export const SettingsConfig: React.FC<SettingsConfigProps> = props => {
         <>
             {showPermissionDialog && <PermissionsDialog onClose={closePermissionsDialog} {...permissionsDialogProps} />}
             {dialogProps && <ConfirmationDialog isOpen={true} maxWidth={"lg"} fullWidth={true} {...dialogProps} />}
-            {showCustomSettings && (
-                <CustomizeSettingsDialog
-                    onSave={saveCustomSettings}
-                    customText={appConfig?.customText ?? emptyObject}
-                    onClose={closeCustomSettingsDialog}
-                    logo={logoInfo.logoPath}
-                />
-            )}
+            {showCustomSettings && <CustomizeSettingsDialog onClose={closeCustomSettingsDialog} />}
 
             <Group row={true}>
                 <ListItem button onClick={openSettingsPermission}>
@@ -175,8 +158,6 @@ export const SettingsConfig: React.FC<SettingsConfigProps> = props => {
         </>
     );
 };
-
-const emptyObject = {};
 
 const Group = styled(FormGroup)`
     margin-bottom: 35px;

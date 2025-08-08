@@ -19,22 +19,30 @@ export function useAppConfig() {
         [usecases.config]
     );
 
-    const reload = React.useCallback(async () => {
-        try {
-            const config = await usecases.config.get();
-            setAppConfig(config);
-            const hasAccess = await usecases.user.checkSettingsPermissions(config);
-            setHasSettingsAccess(hasAccess);
-        } catch (error) {
-            console.error("Error:", error);
-        } finally {
-            setHasLoaded(true);
-        }
-    }, [usecases.config, usecases.user]);
+    const reloadConfig = React.useCallback(
+        async () =>
+            usecases.config.get().then(config => {
+                setAppConfig(config);
+                return config;
+            }),
+        [usecases.config, usecases.user]
+    );
 
     React.useEffect(() => {
-        reload();
-    }, [usecases.config, usecases.user, reload]);
+        const fetchData = async () => {
+            try {
+                const config = await reloadConfig();
+                const hasAccess = await usecases.user.checkSettingsPermissions(config);
+                setHasSettingsAccess(hasAccess);
+            } catch (error) {
+                console.error("Error:", error);
+            } finally {
+                setHasLoaded(true);
+            }
+        };
+
+        fetchData();
+    }, [usecases.config, usecases.user]);
 
     return {
         appConfig,
@@ -42,7 +50,7 @@ export function useAppConfig() {
         hasSettingsAccess,
         logoInfo,
         hasLoaded,
-        reload,
+        reloadConfig,
     };
 }
 

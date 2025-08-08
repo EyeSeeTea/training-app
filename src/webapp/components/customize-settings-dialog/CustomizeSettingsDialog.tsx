@@ -5,28 +5,21 @@ import Typography from "@material-ui/core/Typography";
 
 import { ConfirmationDialog } from "@eyeseetea/d2-ui-components";
 import i18n from "../../../utils/i18n";
-import { CustomText, CustomTextInfo } from "../../../domain/entities/CustomText";
+import { CustomTextInfo } from "../../../domain/entities/CustomText";
 import { ImportTranslationDialog } from "../import-translation-dialog/ImportTranslationDialog";
 import { useCustomizeSettingsDialog } from "./useCustomizeSettingsDialog";
 import { TitleMenu } from "./TitleMenu";
 
-export type CustomizeSettingsSaveForm = {
-    customText: Partial<CustomText>;
-    logo: string;
-};
-
-export type CustomSettingsDialogProps = CustomizeSettingsSaveForm & {
-    onSave: (data: Partial<CustomizeSettingsSaveForm>) => Promise<void>;
+export type CustomSettingsDialogProps = {
     onClose: () => void;
 };
 
 export const CustomizeSettingsDialog: React.FC<CustomSettingsDialogProps> = props => {
-    const { onSave, customText, logo, onClose } = props;
+    const { onClose } = props;
     const {
         logoVal,
         customTextVal,
         customTextKeys,
-        isCustomTextDefault,
         disableSave,
         save,
         onChangeField,
@@ -35,17 +28,11 @@ export const CustomizeSettingsDialog: React.FC<CustomSettingsDialogProps> = prop
         handleTranslationUpload,
         exportTranslations,
         importTranslations,
-    } = useCustomizeSettingsDialog({ logo, customText, onSave });
+    } = useCustomizeSettingsDialog(props);
 
     return (
         <ConfirmationDialog
-            title={
-                <TitleMenu
-                    hideMenu={isCustomTextDefault}
-                    exportTranslations={exportTranslations}
-                    importTranslations={importTranslations}
-                />
-            }
+            title={<TitleMenu exportTranslations={exportTranslations} importTranslations={importTranslations} />}
             isOpen={true}
             fullWidth={true}
             onSave={save}

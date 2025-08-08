@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { useState, useCallback, useRef, ChangeEvent } from "react";
 
-import { CustomText, CustomTextFields, getDefaultCustomText } from "../../../domain/entities/CustomText";
+import { CustomText, CustomTextFields } from "../../../domain/entities/CustomText";
 import { ImportTranslationRef } from "../import-translation-dialog/ImportTranslationDialog";
 import { CustomSettingsDialogProps } from "./CustomizeSettingsDialog";
 import { useAppContext } from "../../contexts/app-context";
@@ -9,34 +9,32 @@ import { useAppConfigContext } from "../../contexts/AppConfigProvider";
 import { useImportExportTranslation } from "../../hooks/useImportExportTranslation";
 import { useLoading } from "@eyeseetea/d2-ui-components";
 import i18n from "../../../utils/i18n";
+import { TranslatableText } from "../../../domain/entities/TranslatableText";
 
-export const useCustomizeSettingsDialog = ({
-    logo,
-    customText,
-    onSave,
-}: Omit<CustomSettingsDialogProps, "onClose">) => {
-    const { appConfig, reload } = useAppConfigContext();
-    const appCustomText = appConfig.customText;
-    const defaultCustomText = getDefaultCustomText();
+export const useCustomizeSettingsDialog = (props: CustomSettingsDialogProps) => {
+    const { onClose } = props;
+    const { appConfig, logoInfo, reloadConfig, save: saveConfig } = useAppConfigContext();
+    const logo = logoInfo.logoPath;
+
     const { exportTranslation, importTranslation } = useImportExportTranslation();
     const { usecases } = useAppContext();
     const loading = useLoading();
 
     const [logoVal, setLogo] = useState<string>(logo);
-    const [customTextVal, setCustomText] = useState<Partial<CustomText>>(customText);
+    const [customTextVal, setCustomText] = useState(appConfig.customText);
     const translationImportRef = useRef<ImportTranslationRef>(null);
 
     const logoHasChanges = logoVal !== logo;
-    const isCustomTextDefault = _.isEqual(customText, defaultCustomText);
-    const customTextHasChanges = !_.isEqual(customTextVal, appCustomText);
+    const customTextHasChanges = !_.isEqual(customTextVal, appConfig.customText);
     const disableSave = !logoHasChanges && !customTextHasChanges;
 
-    const save = useCallback(() => {
-        onSave({
-            ...(customTextHasChanges ? { customText: { ...customText, ...customTextVal } } : {}),
+    const save = useCallback(async () => {
+        await saveConfig({
+            ...(customTextHasChanges ? { customText: { ...appConfig.customText, ...customTextVal } } : {}),
             ...(logoHasChanges ? { logo: logoVal } : {}),
         });
-    }, [onSave, customText, customTextVal, customTextHasChanges, logoVal, logoHasChanges]);
+        onClose();
+    }, [saveConfig, appConfig.customText, customTextVal, customTextHasChanges, logoVal, logoHasChanges]);
 
     const onChangeField = (field: keyof CustomText) => {
         return (event: React.ChangeEvent<{ value: string }>) => {
@@ -59,9 +57,11 @@ export const useCustomizeSettingsDialog = ({
     const handleTranslationUpload = useCallback(
         async (_key: string | undefined, lang: string, terms: Record<string, string>) => {
             await importTranslation(() => usecases.config.importTranslations(lang, terms));
-            await reload();
+            await reloadConfig().then(config => {
+                setCustomText(prev => updateCustomTextState(prev, config.customText));
+            });
         },
-        [usecases, importTranslation, reload]
+        [usecases, importTranslation, reloadConfig, appConfig]
     );
 
     const exportTranslations = useCallback(async () => {
@@ -78,7 +78,6 @@ export const useCustomizeSettingsDialog = ({
         logoVal,
         customTextVal,
         customTextKeys: CustomTextFields,
-        isCustomTextDefault,
         disableSave,
         save,
         onChangeField,
@@ -89,3 +88,20 @@ export const useCustomizeSettingsDialog = ({
         handleTranslationUpload,
     };
 };
+
+function updateCustomTextItem(prevItem: TranslatableText, currentItem: TranslatableText): TranslatableText {
+    return currentItem.translations
+        ? {
+              ...prevItem,
+              translations: currentItem.translations,
+          }
+        : prevItem;
+}
+
+function updateCustomTextState(prev: CustomText, current: CustomText): CustomText {
+    return {
+        ...prev,
+        rootTitle: updateCustomTextItem(prev.rootTitle, current.rootTitle),
+        rootSubtitle: updateCustomTextItem(prev.rootSubtitle, current.rootSubtitle),
+    };
+}

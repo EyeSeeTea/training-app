@@ -13,13 +13,19 @@ export function getDefaultCustomText(): CustomText {
     return {
         rootTitle: {
             key: "root-title",
-            referenceValue: i18n.t("Welcome to training on DHIS2"),
-            translations: {},
+            referenceValue: "Welcome to training on DHIS2",
+            translations: {
+                fr: i18n.t("Welcome to training on DHIS2", { lng: "fr" }),
+                es: i18n.t("Welcome to training on DHIS2", { lng: "es" }),
+            },
         },
         rootSubtitle: {
             key: "root-subtitle",
-            referenceValue: i18n.t("What do you want to learn in DHIS2?"),
-            translations: {},
+            referenceValue: "What do you want to learn in DHIS2?",
+            translations: {
+                fr: i18n.t("What do you want to learn in DHIS2?", { lng: "fr" }),
+                es: i18n.t("What do you want to learn in DHIS2?", { lng: "es" }),
+            },
         },
     };
 }

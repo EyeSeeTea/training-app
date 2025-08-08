@@ -24,9 +24,21 @@ export class SaveConfigUseCase implements UseCase {
 
         return Object.entries(customText).reduce((acc, [key, value]) => {
             if (isEmpty(value)) return acc;
-            else if (isEqual(value, defaultCustomText[key as keyof CustomText]) || !value.referenceValue)
+
+            const defaultValue = defaultCustomText[key as keyof CustomText];
+            const hasEqualReferenceValue = value.referenceValue === defaultValue?.referenceValue;
+            const hasEmptyOrEqualTranslation =
+                isEmpty(value.translations) ||
+                Object.values(value.translations || {}).every(
+                    translation => !translation || translation.trim() === ""
+                ) ||
+                isEqual(value.translations, defaultValue?.translations);
+
+            if (hasEqualReferenceValue && hasEmptyOrEqualTranslation) {
                 return { ...acc, [key]: undefined };
-            else return { ...acc, [key]: value };
+            }
+
+            return { ...acc, [key]: value };
         }, {});
     }
 }
