@@ -54,7 +54,7 @@ export function useModuleTableAction(): ModuleListTableAction {
         uploadFile: ({ data, name }) => usecases.document.uploadFile(data, name),
         installApp: ({ id }) => usecases.instance.installApp(id),
         addStep: async ({ id, title }) => {
-            await withModule(id, module => addStep(module, title), i18n.t("Unable to update module contents"));
+            await withModule(id, module => addStep(module, title), i18n.t("Unable to add step"));
         },
         addPage: async ({ id, step, value }) => {
             await withModule(id, module => addPage(module, step, value), i18n.t("Unable to add page"));
