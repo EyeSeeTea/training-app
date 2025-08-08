@@ -22,7 +22,7 @@ async function migrate(api: D2Api, debug: Debug): Promise<void> {
     debug("Updating default landing page title and content with custom text");
     debug("Updating default landing page icon with customized or default logo");
     const updatedLandingNodes = landingNodes.map(node => {
-        if (node.name.referenceValue === "Main landing page") {
+        if (node.name.referenceValue === "Main landing page" && node.type === "root") {
             return {
                 ...node,
                 name: defaultRoot.name,
