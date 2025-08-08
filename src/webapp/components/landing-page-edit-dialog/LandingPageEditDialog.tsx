@@ -7,35 +7,12 @@ import {
 import { TextField } from "@material-ui/core";
 import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
 import styled from "styled-components";
-import { generateUid } from "../../../data/utils/uid";
-import { LandingNode, LandingNodeType } from "../../../domain/entities/LandingPage";
+import { getDefaultLandingNode, LandingNode, LandingNodeType } from "../../../domain/entities/LandingPage";
 import i18n from "../../../utils/i18n";
 import { useAppContext } from "../../contexts/app-context";
 import { MarkdownEditor } from "../markdown-editor/MarkdownEditor";
 import { MarkdownViewer } from "../markdown-viewer/MarkdownViewer";
 import { ModalBody } from "../modal";
-
-const buildDefaultNode = (props: { type: LandingNodeType; parent: string; order: number; executeOnInit: boolean }) => {
-    const { type, parent, order, executeOnInit } = props;
-    return {
-        id: generateUid(),
-        type,
-        parent,
-        icon: "",
-        order,
-        name: { key: "", referenceValue: "", translations: {} },
-        title: undefined,
-        content: undefined,
-        children: [],
-        modules: [],
-        permissions: {
-            publicAccess: "r-------",
-            userAccesses: [],
-            userGroupAccesses: [],
-        },
-        executeOnInit: executeOnInit,
-    };
-};
 
 export const LandingPageEditDialog: React.FC<LandingPageEditDialogProps> = props => {
     const { type, parent, order, initialNode, onSave } = props;
@@ -45,9 +22,7 @@ export const LandingPageEditDialog: React.FC<LandingPageEditDialogProps> = props
     const { modules, translate, usecases } = useAppContext();
     const snackbar = useSnackbar();
 
-    const [value, setValue] = useState<LandingNode>(
-        initialNode ?? buildDefaultNode({ type, parent, order, executeOnInit: true })
-    );
+    const [value, setValue] = useState<LandingNode>(initialNode ?? getDefaultLandingNode({ type, parent, order }));
 
     const items = useMemo(
         () =>

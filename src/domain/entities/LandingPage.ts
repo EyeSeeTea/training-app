@@ -2,6 +2,7 @@ import { Codec, GetSchemaType, Schema } from "../../utils/codec";
 import { TranslatableText, TranslatableTextModel } from "./TranslatableText";
 import { SharedProperties, SharedPropertiesModel } from "./Ref";
 import { User, validateUserPermission } from "../../data/entities/User";
+import { generateUid } from "../../data/utils/uid";
 
 export const LandingPageNodeTypeModel = Schema.oneOf([
     Schema.exact("root"),
@@ -52,8 +53,29 @@ export const buildOrderedLandingNodes = (nodes: LandingNode[]): OrderedLandingNo
     }));
 };
 
-export function getUserRootLandings(nodes: LandingNode[], currentUser: User) {
+export function getUserRootLandings(nodes: LandingNode[], user: User) {
     return nodes.filter(node => {
-        return node.type === "root" && validateUserPermission(node.permissions, "read", currentUser);
+        return node.type === "root" && validateUserPermission(node.permissions, "read", user);
     });
+}
+
+export function getDefaultLandingNode(props: { type: LandingNodeType; parent: string; order: number }): LandingNode {
+    const { type, parent, order } = props;
+    return {
+        id: generateUid(),
+        type,
+        parent,
+        icon: "",
+        order,
+        name: { key: "", referenceValue: "", translations: {} },
+        title: undefined,
+        content: undefined,
+        children: [],
+        modules: [],
+        permissions: {
+            publicAccess: "r-------",
+            userAccesses: [],
+            userGroupAccesses: [],
+        },
+    };
 }
