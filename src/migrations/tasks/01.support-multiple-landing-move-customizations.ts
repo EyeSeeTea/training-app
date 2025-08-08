@@ -26,8 +26,8 @@ async function migrate(api: D2Api, debug: Debug): Promise<void> {
             return {
                 ...node,
                 name: defaultRoot.name,
-                title: defaultCustomText.rootTitle,
-                content: defaultCustomText.rootSubtitle,
+                title: config.customText?.rootTitle ?? defaultCustomText.rootTitle,
+                content: config.customText?.rootSubtitle ?? defaultCustomText.rootSubtitle,
                 icon: config.logo || process.env["REACT_APP_LOGO_PATH"] || "img/logo-eyeseetea.png",
             };
         }
@@ -51,9 +51,9 @@ function saveLandingNodes(api: D2Api, landingNodes: PersistedLandingPage[]): Pro
 function getConfig(api: D2Api): Promise<PersistedConfig> {
     const dataStore = api.dataStore(dataStoreNamespace);
     return dataStore
-        .get<PersistedLandingPage[]>(Namespaces.CONFIG)
+        .get<PersistedConfig>(Namespaces.CONFIG)
         .getData()
-        .then(nodes => nodes || {});
+        .then(config => config || {});
 }
 
 const migration: Migration = { name: "Move customizations to default landing node", migrate };
