@@ -11,8 +11,7 @@ import {
 } from "../../../domain/helpers/TrainingModuleHelpers";
 import i18n from "../../../utils/i18n";
 import { ModuleListTableAction } from "./ModuleListTable";
-import { PartialTrainingModule, TrainingModule } from "../../../domain/entities/TrainingModule";
-import { Maybe } from "../../../types/utils";
+import { PartialTrainingModule } from "../../../domain/entities/TrainingModule";
 
 export function useModuleTableAction(): ModuleListTableAction {
     const { usecases, setAppState } = useAppContext();
