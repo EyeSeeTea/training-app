@@ -11,6 +11,8 @@ import { PersistedLandingPage } from "../entities/PersistedLandingPage";
 import { generateUid } from "../utils/uid";
 import { D2Api } from "../../types/d2-api";
 import { DocumentRepository } from "../../domain/repositories/DocumentRepository";
+import { Either } from "../../domain/entities/Either";
+import { fromPurify } from "../utils/either";
 
 export class LandingPageDefaultRepository implements LandingPageRepository {
     private storageClient: StorageClient;
@@ -33,19 +35,19 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
                     .then(root => [root]);
             }
 
-            const validations = roots.map(root =>
-                LandingNodeModel.decode(buildDomainLandingNode(root, _.flatten(persisted)))
-            );
-
-            _.forEach(validations, validation => {
-                if (validation.isLeft()) {
-                    console.error(validation.extract());
-
-                    throw new Error(validation.extract());
-                }
+            const validations = roots.map(root => {
+                const node = buildDomainLandingNode(root, _.flatten(persisted));
+                const purifyEither = LandingNodeModel.decode(node);
+                return fromPurify(purifyEither);
             });
 
-            return _.flatten(validations.map(validation => _.compact([validation.toMaybe().extract()])));
+            return Either.sequence(validations).match({
+                success: nodes => nodes,
+                error: error => {
+                    console.error(error);
+                    throw new Error(error);
+                },
+            });
         } catch (error: any) {
             console.error(error);
             return [];
