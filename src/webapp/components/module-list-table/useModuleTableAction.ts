@@ -11,13 +11,21 @@ import {
 } from "../../../domain/helpers/TrainingModuleHelpers";
 import i18n from "../../../utils/i18n";
 import { ModuleListTableAction } from "./ModuleListTable";
+import { PartialTrainingModule, TrainingModule } from "../../../domain/entities/TrainingModule";
+import { Maybe } from "../../../types/utils";
 
 export function useModuleTableAction(): ModuleListTableAction {
     const { usecases, setAppState } = useAppContext();
     const snackbar = useSnackbar();
 
-    const getModule = (id: string) => {
-        return usecases.modules.get(id, { autoInstallDefaultModules: true });
+    const withModule = async (
+        id: string,
+        action: (module: PartialTrainingModule) => PartialTrainingModule,
+        message: string
+    ) => {
+        const module = await usecases.modules.get(id, { autoInstallDefaultModules: true });
+        if (module) return usecases.modules.update(action(module));
+        else snackbar.error(message);
     };
 
     return {
@@ -28,9 +36,11 @@ export function useModuleTableAction(): ModuleListTableAction {
             setAppState({ type: "CLONE_MODULE", module: id });
         },
         editContents: async ({ id, text, value }) => {
-            const module = await getModule(id);
-            if (module) await usecases.modules.update(updateTranslation(module, text.key, value));
-            else snackbar.error(i18n.t("Unable to update module contents"));
+            await withModule(
+                id,
+                module => updateTranslation(module, text.key, value),
+                i18n.t("Unable to update module contents")
+            );
         },
         deleteModules: ({ ids }) => usecases.modules.delete(ids),
         resetModules: ({ ids }) => usecases.modules.resetDefaultValue(ids),
@@ -40,31 +50,21 @@ export function useModuleTableAction(): ModuleListTableAction {
                 return;
             }
 
-            const module = await getModule(id);
-            if (module) await usecases.modules.update(updateOrder(module, from, to));
-            else snackbar.error(i18n.t("Unable to move item"));
+            await withModule(id, module => updateOrder(module, from, to), i18n.t("Unable to move item"));
         },
         uploadFile: ({ data, name }) => usecases.document.uploadFile(data, name),
         installApp: ({ id }) => usecases.instance.installApp(id),
         addStep: async ({ id, title }) => {
-            const module = await getModule(id);
-            if (module) await usecases.modules.update(addStep(module, title));
-            else snackbar.error(i18n.t("Unable to add step"));
+            await withModule(id, module => addStep(module, title), i18n.t("Unable to update module contents"));
         },
         addPage: async ({ id, step, value }) => {
-            const module = await getModule(id);
-            if (module) await usecases.modules.update(addPage(module, step, value));
-            else snackbar.error(i18n.t("Unable to add page"));
+            await withModule(id, module => addPage(module, step, value), i18n.t("Unable to add page"));
         },
         deleteStep: async ({ id, step }) => {
-            const module = await getModule(id);
-            if (module) await usecases.modules.update(removeStep(module, step));
-            else snackbar.error(i18n.t("Unable to remove step"));
+            await withModule(id, module => removeStep(module, step), i18n.t("Unable to remove step"));
         },
         deletePage: async ({ id, step, page }) => {
-            const module = await getModule(id);
-            if (module) await usecases.modules.update(removePage(module, step, page));
-            else snackbar.error(i18n.t("Unable to remove page"));
+            await withModule(id, module => removePage(module, step, page), i18n.t("Unable to remove page"));
         },
     };
 }
