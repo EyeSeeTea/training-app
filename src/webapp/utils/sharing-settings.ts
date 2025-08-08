@@ -1,11 +1,10 @@
 import i18n from "../../utils/i18n";
-import { Maybe } from "../../types/utils";
 import { NamedRef } from "../../domain/entities/Ref";
 import { Permission } from "../../domain/entities/Permission";
 import { PermissionsDialogProps } from "../components/permissions-dialog/PermissionsDialog";
 
-export function buildSharingDescription(props: Maybe<{ users?: NamedRef[]; userGroups?: NamedRef[] }>) {
-    const { users, userGroups } = { users: [], userGroups: [], ...(props || {}) };
+export function buildSharingDescription(props: { users: NamedRef[]; userGroups: NamedRef[] }) {
+    const { users, userGroups } = props;
     const usersCount = users?.length ?? 0;
     const userGroupsCount = userGroups?.length ?? 0;
 

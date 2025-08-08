@@ -1,15 +1,18 @@
 import { useCallback } from "react";
 import _ from "lodash";
-import i18n from "../../utils/i18n";
-import { LandingNode } from "../../domain/entities/LandingPage";
-import { useAppContext } from "../contexts/app-context";
-import { LandingPageEditDialogProps } from "../components/landing-page-edit-dialog/LandingPageEditDialog";
+import i18n from "../../../utils/i18n";
+import { LandingNode } from "../../../domain/entities/LandingPage";
+import { useAppContext } from "../../contexts/app-context";
+import { LandingPageEditDialogProps } from "../../components/landing-page-edit-dialog/LandingPageEditDialog";
 
 const flattenRows = (rows: LandingNode[]): LandingNode[] => {
     return _.flatMap(rows, row => [row, ...flattenRows(row.children)]);
 };
 
-export function useLandingNodeActions(nodes: LandingNode[], setDialogProps: (props: LandingPageEditDialogProps | undefined) => void) {
+export function useLandingNodeActions(
+    nodes: LandingNode[],
+    setDialogProps: (props: LandingPageEditDialogProps | undefined) => void
+) {
     const { usecases, reload } = useAppContext();
 
     const doSaveLandingNode = useCallback(

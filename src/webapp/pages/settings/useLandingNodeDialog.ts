@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { LandingPageEditDialogProps } from "../../components/landing-page-edit-dialog/LandingPageEditDialog";
 import { LandingNode } from "../../../domain/entities/LandingPage";
-import { useLandingNodeActions } from "../../hooks/useLandingNodeActions";
+import { useLandingNodeActions } from "./useLandingNodeActions";
 
 export function useLandingNodeDialog(props: { nodes: LandingNode[] }) {
     const { nodes } = props;
