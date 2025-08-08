@@ -27,7 +27,7 @@ export const validateUserPermission = (
 
     const isAdmin = isSuperAdmin(currentUser);
 
-    const isUserOwner = user?.id === currentUser?.id;
+    const isUserOwner = user?.id && user?.id === currentUser.id;
     const isPublic = publicAccess.substring(0, 2).includes(token);
 
     const hasUserAccess = !!_(userAccesses)
