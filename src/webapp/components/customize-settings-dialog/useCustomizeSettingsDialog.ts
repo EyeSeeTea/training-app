@@ -34,7 +34,7 @@ export const useCustomizeSettingsDialog = (props: CustomSettingsDialogProps) => 
             ...(logoHasChanges ? { logo: logoVal } : {}),
         });
         onClose();
-    }, [saveConfig, appConfig.customText, customTextVal, customTextHasChanges, logoVal, logoHasChanges]);
+    }, [saveConfig, appConfig.customText, customTextVal, customTextHasChanges, logoVal, logoHasChanges, onClose]);
 
     const onChangeField = (field: keyof CustomText) => {
         return (event: React.ChangeEvent<{ value: string }>) => {
@@ -61,7 +61,7 @@ export const useCustomizeSettingsDialog = (props: CustomSettingsDialogProps) => 
                 setCustomText(prev => updateCustomTextState(prev, config.customText));
             });
         },
-        [usecases, importTranslation, reloadConfig, appConfig]
+        [usecases, importTranslation, reloadConfig]
     );
 
     const exportTranslations = useCallback(async () => {

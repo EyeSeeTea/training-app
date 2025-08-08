@@ -2,8 +2,9 @@ import React, { useMemo, useState } from "react";
 import _ from "lodash";
 
 import { useAppContext } from "../contexts/app-context";
-import { Config, getDefaultConfig, PartialConfig } from "../../domain/entities/Config";
+import { Config, getDefaultConfig } from "../../domain/entities/Config";
 import { Maybe } from "../../types/utils";
+import { PartialConfig } from "../../domain/usecases/SaveConfigUseCase";
 
 export function useAppConfig() {
     const { usecases } = useAppContext();
@@ -12,20 +13,21 @@ export function useAppConfig() {
     const [hasLoaded, setHasLoaded] = useState(false);
     const logoInfo = useMemo(() => getLogoInfo(appConfig?.logo), [appConfig]);
 
-    const save = React.useCallback(
-        (config: PartialConfig) => {
-            return usecases.config.save(config).then(setAppConfig);
-        },
-        [usecases.config]
-    );
-
     const reloadConfig = React.useCallback(
         async () =>
             usecases.config.get().then(config => {
                 setAppConfig(config);
                 return config;
             }),
-        [usecases.config, usecases.user]
+        [usecases.config]
+    );
+
+    const save = React.useCallback(
+        async (config: PartialConfig) => {
+            await usecases.config.save(config);
+            await reloadConfig();
+        },
+        [usecases.config, reloadConfig]
     );
 
     React.useEffect(() => {
@@ -42,7 +44,7 @@ export function useAppConfig() {
         };
 
         fetchData();
-    }, [usecases.config, usecases.user]);
+    }, [usecases.config, usecases.user, reloadConfig]);
 
     return {
         appConfig,
