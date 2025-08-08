@@ -1,4 +1,4 @@
-import _, { merge } from "lodash";
+import _, { isEmpty, isEqual, merge } from "lodash";
 
 import { ConfigRepository } from "../../domain/repositories/ConfigRepository";
 import { D2Api } from "../../types/d2-api";
@@ -8,8 +8,8 @@ import { Namespaces } from "../clients/storage/Namespaces";
 import { StorageClient } from "../clients/storage/StorageClient";
 import { User } from "../entities/User";
 import { setTranslationValue, TranslatableText } from "../../domain/entities/TranslatableText";
-import { CustomText } from "../../domain/entities/CustomText";
-import { Config, getDefaultConfig, PartialConfig } from "../../domain/entities/Config";
+import { CustomText, getDefaultCustomText } from "../../domain/entities/CustomText";
+import { Config, getDefaultConfig } from "../../domain/entities/Config";
 import { PersistedConfig } from "../entities/PersistedConfig";
 import { Maybe } from "../../types/utils";
 
@@ -50,20 +50,11 @@ export class Dhis2ConfigRepository implements ConfigRepository {
         return getMergedConfig(persistedConfig);
     }
 
-    public async save(update: PartialConfig): Promise<Config> {
-        const config = await this.get();
-        const updatedConfig: PersistedConfig = {
-            ...config,
+    public async save(update: Config): Promise<void> {
+        return this.storageClient.saveObject(Namespaces.CONFIG, {
             ...update,
-            settingsPermissions: {
-                users: update.settingsPermissions?.users ?? config.settingsPermissions?.users ?? [],
-                userGroups: update.settingsPermissions?.userGroups ?? config.settingsPermissions?.userGroups ?? [],
-            },
-        };
-
-        return this.storageClient
-            .saveObject(Namespaces.CONFIG, updatedConfig)
-            .then(() => getMergedConfig(updatedConfig));
+            customText: cleanCustomText(update.customText),
+        });
     }
 
     public async importTranslations(language: string, terms: Record<string, string>): Promise<TranslatableText[]> {
@@ -82,7 +73,15 @@ export class Dhis2ConfigRepository implements ConfigRepository {
                 : undefined,
         };
 
-        const updatedConfig = await this.save({ customText: translatedText });
+        const updatedConfig: Config = {
+            ...config,
+            customText: {
+                rootTitle: translatedText.rootTitle ?? config.customText.rootTitle,
+                rootSubtitle: translatedText.rootSubtitle ?? config.customText.rootSubtitle,
+            },
+        };
+
+        await this.save(updatedConfig);
 
         return this.extractTranslatableText(updatedConfig);
     }
@@ -97,7 +96,7 @@ export class Dhis2ConfigRepository implements ConfigRepository {
     }
 }
 
-function getMergedConfig(config: Maybe<PartialConfig>): Config {
+function getMergedConfig(config: Maybe<PersistedConfig>): Config {
     const defaultConfig = getDefaultConfig();
     const defaultCustomText = defaultConfig.customText;
 
@@ -112,4 +111,25 @@ function getMergedConfig(config: Maybe<PartialConfig>): Config {
         ...config,
         customText: mergedCustomText,
     });
+}
+
+function cleanCustomText(customText: Partial<CustomText>): Partial<CustomText> {
+    const defaultCustomText = getDefaultCustomText();
+
+    return Object.entries(customText).reduce((acc, [key, value]) => {
+        if (isEmpty(value)) return acc;
+
+        const defaultValue = defaultCustomText[key as keyof CustomText];
+        const hasEqualReferenceValue = value.referenceValue === defaultValue?.referenceValue;
+        const hasEmptyOrEqualTranslation =
+            isEmpty(value.translations) ||
+            Object.values(value.translations || {}).every(translation => !translation || translation.trim() === "") ||
+            isEqual(value.translations, defaultValue?.translations);
+
+        if (hasEqualReferenceValue && hasEmptyOrEqualTranslation) {
+            return { ...acc, [key]: undefined };
+        }
+
+        return { ...acc, [key]: value };
+    }, {});
 }

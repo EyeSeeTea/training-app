@@ -8,11 +8,6 @@ export type Config = {
     customText: CustomText;
 };
 
-export type PartialConfig = Pick<Partial<Config>, "showAllModules" | "logo"> & {
-    settingsPermissions?: Partial<Permission>;
-    customText?: Partial<CustomText>;
-};
-
 export function getDefaultConfig(): Config {
     return {
         showAllModules: true,

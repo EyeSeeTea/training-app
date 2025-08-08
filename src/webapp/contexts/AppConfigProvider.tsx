@@ -1,7 +1,8 @@
 import React, { createContext, useContext } from "react";
 import { useAppConfig } from "../hooks/useAppConfig";
 import { LogoInfo } from "../hooks/useAppConfig";
-import { Config, PartialConfig } from "../../domain/entities/Config";
+import { Config } from "../../domain/entities/Config";
+import { PartialConfig } from "../../domain/usecases/SaveConfigUseCase";
 
 interface ConfigContextState {
     appConfig: Config;
