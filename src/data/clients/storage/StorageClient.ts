@@ -34,9 +34,9 @@ export abstract class StorageClient {
         const advancedProperties = NamespaceProperties[key] ?? [];
         const baseElements = elements.map(element => _.omit(element, advancedProperties));
 
-        const updatedData = baseElements.reduce(
+        const updatedData = baseElements.reduce<Partial<T>[]>(
             (acc, baseElement) => this.updateObjectInCollection(acc, baseElement),
-            oldData as Partial<T>[]
+            oldData
         );
 
         await this.saveObject(key, updatedData);
@@ -61,7 +61,7 @@ export abstract class StorageClient {
         const advancedProperties = NamespaceProperties[key] ?? [];
         const baseElement = _.omit(element, advancedProperties);
 
-        const oldData: T[] = (await this.getObject(key)) ?? [];
+        const oldData = (await this.getObject<T[]>(key)) ?? [];
         const updatedData = this.updateObjectInCollection(oldData, baseElement);
 
         // Save base element directly into collection: model
