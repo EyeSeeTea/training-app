@@ -85,7 +85,7 @@ msgstr "Importar traducciones JSON"
 
 #, fuzzy
 msgid "Customize main landing page"
-msgstr "Personalizar la página de portada"
+msgstr "Personalizar la página principal"
 
 msgid "Exporting translations"
 msgstr "Exportación de traducciones"
@@ -160,9 +160,8 @@ msgstr "Sí"
 msgid "No"
 msgstr "No"
 
-#, fuzzy
 msgid "Access to landing page"
-msgstr "Exportar la página de destino"
+msgstr "Acceso a la página de destino"
 
 msgid "Add section"
 msgstr "Añadir sección "
@@ -176,9 +175,8 @@ msgstr "Añadir categoría"
 msgid "Edit"
 msgstr "Editar"
 
-#, fuzzy
 msgid "Sharing settings"
-msgstr "Ajustes"
+msgstr "Configuración para compartir"
 
 msgid "Delete"
 msgstr "Borrar"
@@ -236,9 +234,8 @@ msgstr ""
 msgid "Migrating..."
 msgstr ""
 
-#, fuzzy
 msgid "Continue to the App"
-msgstr "Continuar el tutorial"
+msgstr "Continuar con la aplicación"
 
 msgid ""
 "The app needs to run pending migrations (from version {{instanceVersion}} to "
@@ -619,13 +616,11 @@ msgstr ""
 msgid "First load can take a couple of minutes, please wait..."
 msgstr "La primera carga puede tardar un par de minutos, por favor espere..."
 
-#, fuzzy
 msgid "Module"
-msgstr "Módulos"
+msgstr "Módulo"
 
-#, fuzzy
 msgid "Landing Page"
-msgstr "Bienvenido"
+msgstr "Página de destino"
 
 msgid "Clean-up unused documents"
 msgstr "Limpiar los documentos no utilizados"
@@ -651,9 +646,8 @@ msgstr "Una lista con todos los módulos existentes es visible"
 msgid "The list with all the existing  modules is hidden"
 msgstr "La lista con todos los módulos existentes está oculta"
 
-#, fuzzy
 msgid "Customize landing page selection"
-msgstr "Personalizar el texto de la página de destino"
+msgstr "Personalizar la selección de la página de destino"
 
 msgid "Update the logo or content"
 msgstr "Actualizar el logotipo o el contenido"
@@ -670,25 +664,18 @@ msgstr "Configuración general"
 msgid "Training modules"
 msgstr "Módulos de formación"
 
-#, fuzzy
 msgid "Add Landing Page"
-msgstr "Bienvenido"
+msgstr "Agregar página de destino"
 
-#, fuzzy
 msgid "Accessible to {{usersCount}} users and {{userGroupsCount}} user groups"
-msgstr ""
-"Accesible para los usuarios {{users}} y los grupos de usuarios {{userGroups}}"
+msgstr "Accesible para {{usersCount}} usuarios y {{userGroupsCount}} grupos de usuarios"
 
-#, fuzzy
 msgid "Accessible to {{usersCount}} users"
-msgstr "Accesible para los usuarios de {{users}}"
+msgstr "Accesible para {{usersCount}} usuarios"
 
-#, fuzzy
 msgid "Accessible to {{userGroupsCount}} user groups"
-msgstr "Accesible a los grupos de usuarios {{userGroups}}"
+msgstr "Accesible a {{userGroupsCount}} grupos de usuarios"
 
 msgid "Only accessible to system administrators"
 msgstr "Sólo accesible para los administradores del sistema"
 
-#~ msgid "Home page logo"
-#~ msgstr "Logotipo de la página de inicio"

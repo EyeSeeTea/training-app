@@ -83,9 +83,8 @@ msgstr "Exportation des traductions en JSON"
 msgid "Import JSON translations"
 msgstr "Importer des traductions JSON"
 
-#, fuzzy
 msgid "Customize main landing page"
-msgstr "Personnaliser la page de couverture"
+msgstr "Personnaliser la page d'accueil principale"
 
 msgid "Exporting translations"
 msgstr "Exportation des traductions"
@@ -160,9 +159,8 @@ msgstr "Oui"
 msgid "No"
 msgstr "Pas de"
 
-#, fuzzy
 msgid "Access to landing page"
-msgstr "Exportation de la page de renvoi"
+msgstr "Accès à la page d’atterrissage"
 
 msgid "Add section"
 msgstr "Ajouter une section"
@@ -176,9 +174,8 @@ msgstr "Ajouter une catégorie"
 msgid "Edit"
 msgstr "Modifier"
 
-#, fuzzy
 msgid "Sharing settings"
-msgstr "Paramètres"
+msgstr "Paramètres de partage"
 
 msgid "Delete"
 msgstr "Supprimer"
@@ -236,9 +233,8 @@ msgstr ""
 msgid "Migrating..."
 msgstr ""
 
-#, fuzzy
 msgid "Continue to the App"
-msgstr "Continuer le tutoriel"
+msgstr "Continuer vers l’application"
 
 msgid ""
 "The app needs to run pending migrations (from version {{instanceVersion}} to "
@@ -620,11 +616,9 @@ msgid "First load can take a couple of minutes, please wait..."
 msgstr ""
 "Le premier chargement peut prendre quelques minutes, veuillez patienter..."
 
-#, fuzzy
 msgid "Module"
-msgstr "Modules"
+msgstr "Module"
 
-#, fuzzy
 msgid "Landing Page"
 msgstr "Page d'atterrissage"
 
@@ -652,9 +646,8 @@ msgstr "Une liste avec tous les modules existants est visible"
 msgid "The list with all the existing  modules is hidden"
 msgstr "La liste avec tous les modules existants est cachée"
 
-#, fuzzy
 msgid "Customize landing page selection"
-msgstr "Personnaliser le texte de la page d'accueil"
+msgstr "Personnaliser la sélection de la page d'atterrissage"
 
 msgid "Update the logo or content"
 msgstr "Mettre à jour le logo ou le contenu"
@@ -671,26 +664,17 @@ msgstr "Paramètres généraux"
 msgid "Training modules"
 msgstr "Modules de formation"
 
-#, fuzzy
 msgid "Add Landing Page"
-msgstr "Page d'atterrissage"
+msgstr "Ajouter une page d'atterrissage"
 
-#, fuzzy
 msgid "Accessible to {{usersCount}} users and {{userGroupsCount}} user groups"
-msgstr ""
-"Accessible aux utilisateurs {{users}} et aux groupes d'utilisateurs "
-"{{userGroups}}."
+msgstr "Accessible à {{usersCount}} utilisateurs et à {{userGroupsCount}} groupes d'utilisateurs"
 
-#, fuzzy
 msgid "Accessible to {{usersCount}} users"
-msgstr "Accessible aux {{users}} utilisateurs"
+msgstr "Accessible à {{usersCount}} utilisateurs"
 
-#, fuzzy
 msgid "Accessible to {{userGroupsCount}} user groups"
-msgstr "Accessible aux groupes d'utilisateurs {{userGroups}}"
+msgstr "Accessible à {{userGroupsCount}} groupes d'utilisateurs"
 
 msgid "Only accessible to system administrators"
 msgstr "Uniquement accessible aux administrateurs du système"
-
-#~ msgid "Home page logo"
-#~ msgstr "Logo de la page d'accueil"
