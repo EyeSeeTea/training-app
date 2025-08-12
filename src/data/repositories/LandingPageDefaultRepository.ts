@@ -30,9 +30,8 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
             const roots = persisted.filter(({ parent }) => parent === "none");
 
             if (!persisted.length || !roots.length) {
-                return this.saveDefaultLandingPage()
-                    .then(root => buildDomainLandingNode(root, []))
-                    .then(root => [root]);
+                const defaultRoot = await this.saveDefaultLandingPage();
+                return [buildDomainLandingNode(defaultRoot, [])];
             }
 
             const validations = roots.map(root => {
