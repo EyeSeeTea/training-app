@@ -283,7 +283,6 @@ function buildTableActions(props: BuildTableActionsProps): TableAction<LandingNo
                 await usecases.landings.delete(ids);
                 await reload();
             },
-            isActive: nodes => _.every(nodes, item => item.id !== "root"),
         },
         {
             name: "export-landing-page",
