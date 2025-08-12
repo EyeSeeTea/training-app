@@ -96,6 +96,7 @@ export const LandingPageListTable: React.FC<LandingPageListTableProps> = props =
     const handleTranslationUpload = useCallback(
         async (_key: string | undefined, lang: string, terms: Record<string, string>) => {
             await importTranslation(() => usecases.landings.importTranslations(lang, terms));
+            await reload();
         },
         [usecases.landings, importTranslation]
     );
