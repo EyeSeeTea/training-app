@@ -25,7 +25,7 @@ export function useLandingNodeActions(
             title: i18n.t("Add Landing Page"),
             type: "root",
             parent: "none",
-            order: 0,
+            order: nodes.length,
             onCancel: () => setDialogProps(undefined),
             onSave: doSaveLandingNode,
         });
