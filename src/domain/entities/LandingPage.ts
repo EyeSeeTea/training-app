@@ -3,6 +3,7 @@ import { TranslatableText, TranslatableTextModel } from "./TranslatableText";
 import { SharedProperties, SharedPropertiesModel } from "./Ref";
 import { User, validateUserPermission } from "../../data/entities/User";
 import { generateUid } from "../../data/utils/uid";
+import _ from "lodash";
 
 export const LandingPageNodeTypeModel = Schema.oneOf([
     Schema.exact("root"),
@@ -78,4 +79,8 @@ export function getDefaultLandingNode(props: { type: LandingNodeType; parent: st
             userGroupAccesses: [],
         },
     };
+}
+
+export function flattenNodes(nodes: LandingNode[]): LandingNode[] {
+    return _.flatMap(nodes, row => [row, ...flattenNodes(row.children)]);
 }

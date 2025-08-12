@@ -1,13 +1,9 @@
 import { useCallback } from "react";
 import _ from "lodash";
 import i18n from "../../../utils/i18n";
-import { LandingNode } from "../../../domain/entities/LandingPage";
+import { flattenNodes, LandingNode } from "../../../domain/entities/LandingPage";
 import { useAppContext } from "../../contexts/app-context";
 import { LandingPageEditDialogProps } from "../../components/landing-page-edit-dialog/LandingPageEditDialog";
-
-const flattenRows = (rows: LandingNode[]): LandingNode[] => {
-    return _.flatMap(rows, row => [row, ...flattenRows(row.children)]);
-};
 
 export function useLandingNodeActions(
     nodes: LandingNode[],
@@ -37,7 +33,7 @@ export function useLandingNodeActions(
 
     const onAddSection = useCallback(
         (ids: string[]) => {
-            const parent = flattenRows(nodes).find(({ id }) => id === ids[0]);
+            const parent = flattenNodes(nodes).find(({ id }) => id === ids[0]);
             if (!parent) return;
 
             setDialogProps({
@@ -54,7 +50,7 @@ export function useLandingNodeActions(
 
     const onAddSubSection = useCallback(
         (ids: string[]) => {
-            const parent = flattenRows(nodes).find(({ id }) => id === ids[0]);
+            const parent = flattenNodes(nodes).find(({ id }) => id === ids[0]);
             if (!parent) return;
 
             setDialogProps({
@@ -71,7 +67,7 @@ export function useLandingNodeActions(
 
     const onAddCategory = useCallback(
         (ids: string[]) => {
-            const parent = flattenRows(nodes).find(({ id }) => id === ids[0]);
+            const parent = flattenNodes(nodes).find(({ id }) => id === ids[0]);
             if (!parent) return;
 
             setDialogProps({
@@ -88,7 +84,7 @@ export function useLandingNodeActions(
 
     const onEditLandingNode = useCallback(
         (ids: string[]) => {
-            const parent = flattenRows(nodes).find(({ id }) => id === ids[0]);
+            const parent = flattenNodes(nodes).find(({ id }) => id === ids[0]);
             if (!parent) return;
 
             setDialogProps({

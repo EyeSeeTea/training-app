@@ -57,8 +57,7 @@ export class Either<Error, Data> {
 
     static sequence<Error, Data>(eithers: Either<Error, Data>[]): Either<Error, Data[]> {
         return eithers.reduce(
-            (acc: Either<Error, Data[]>, current: Either<Error, Data>) =>
-                Either.map2([acc, current], (accData, currentData) => [...accData, currentData]),
+            (acc, current) => Either.map2([acc, current], (accData, currentData) => [...accData, currentData]),
             Either.success<Error, Data[]>([])
         );
     }

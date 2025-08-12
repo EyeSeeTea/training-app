@@ -58,7 +58,7 @@ export const useCustomizeSettingsDialog = (props: CustomSettingsDialogProps) => 
         async (_key: string | undefined, lang: string, terms: Record<string, string>) => {
             await importTranslation(() => usecases.config.importTranslations(lang, terms));
             await reloadConfig().then(config => {
-                setCustomText(prev => updateCustomTextState(prev, config.customText));
+                setCustomText(prev => updateStateTranslations(prev, config.customText));
             });
         },
         [usecases, importTranslation, reloadConfig]
@@ -89,7 +89,7 @@ export const useCustomizeSettingsDialog = (props: CustomSettingsDialogProps) => 
     };
 };
 
-function updateCustomTextItem(prevItem: TranslatableText, currentItem: TranslatableText): TranslatableText {
+function updateItemTranslation(prevItem: TranslatableText, currentItem: TranslatableText): TranslatableText {
     return currentItem.translations
         ? {
               ...prevItem,
@@ -98,10 +98,10 @@ function updateCustomTextItem(prevItem: TranslatableText, currentItem: Translata
         : prevItem;
 }
 
-function updateCustomTextState(prev: CustomText, current: CustomText): CustomText {
+function updateStateTranslations(prev: CustomText, current: CustomText): CustomText {
     return {
         ...prev,
-        rootTitle: updateCustomTextItem(prev.rootTitle, current.rootTitle),
-        rootSubtitle: updateCustomTextItem(prev.rootSubtitle, current.rootSubtitle),
+        rootTitle: updateItemTranslation(prev.rootTitle, current.rootTitle),
+        rootSubtitle: updateItemTranslation(prev.rootSubtitle, current.rootSubtitle),
     };
 }
