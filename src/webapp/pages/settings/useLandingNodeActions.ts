@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import _ from "lodash";
 import i18n from "../../../utils/i18n";
 import { flattenNodes, LandingNode } from "../../../domain/entities/LandingPage";
 import { useAppContext } from "../../contexts/app-context";
@@ -29,7 +28,7 @@ export function useLandingNodeActions(
             onCancel: () => setDialogProps(undefined),
             onSave: doSaveLandingNode,
         });
-    }, [doSaveLandingNode, setDialogProps]);
+    }, [doSaveLandingNode, setDialogProps, nodes]);
 
     const onAddSection = useCallback(
         (ids: string[]) => {

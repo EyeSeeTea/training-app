@@ -98,7 +98,7 @@ export const LandingPageListTable: React.FC<LandingPageListTableProps> = props =
             await importTranslation(() => usecases.landings.importTranslations(lang, terms));
             await reload();
         },
-        [usecases.landings, importTranslation]
+        [usecases.landings, importTranslation, reload]
     );
 
     const actions: TableAction<LandingNode>[] = useMemo(
