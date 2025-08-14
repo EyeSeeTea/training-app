@@ -53,13 +53,13 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
         }
     }
 
-    private async _list(ids?: string[]): Promise<PersistedLandingPage[]> {
+    private async _list(rootIds?: string[]): Promise<PersistedLandingPage[]> {
         const pages = await this.storageClient.listObjectsInCollection<PersistedLandingPage>(Namespaces.LANDING_PAGES);
 
-        if (!ids) {
+        if (!rootIds) {
             return pages;
         } else {
-            const filterByIds = pages.filter(({ id }) => ids.includes(id));
+            const filterByIds = pages.filter(({ id, type }) => rootIds.includes(id) && type === "root");
             return filterByIds.flatMap(page => [page, ...this.getAllDescendants(page.id, pages)]);
         }
     }
@@ -71,12 +71,7 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
     }
 
     public async export(ids: string[]): Promise<void> {
-        const nodes = await this._list(ids);
-        const toExport = _(nodes)
-            .flatMap(node => extractChildrenNodes(buildDomainLandingNode(node, nodes), node.parent))
-            .flatten()
-            .value();
-
+        const toExport = await this._list(ids);
         return this.importExportClient.export(toExport);
     }
 
@@ -94,19 +89,14 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
 
     public async delete(ids: string[]): Promise<void> {
         const nodes = await this._list(ids);
-        const toDelete = _(nodes)
-            .map(node => LandingNodeModel.decode(buildDomainLandingNode(node, nodes)).toMaybe().extract())
-            .compact()
-            .flatMap(node => [node.id, extractChildrenNodes(node, node.parent).map(({ id }) => id)])
-            .flatten()
-            .value();
+        const toDelete = nodes.map(node => node.id);
 
         await this.storageClient.removeObjectsInCollection(Namespaces.LANDING_PAGES, toDelete);
     }
 
     public async extractTranslations(id: string): Promise<TranslatableText[]> {
         const nodes = await this._list([id]);
-        if (!nodes) throw new Error(`Unable to load landing pages`);
+        if (!nodes.length) throw new Error(`Unable to load landing pages`);
         return this.extractTranslatableText(nodes);
     }
 
