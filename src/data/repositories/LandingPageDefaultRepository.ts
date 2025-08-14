@@ -53,14 +53,17 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
         }
     }
 
-    private async _list(rootIds?: string[]): Promise<PersistedLandingPage[]> {
+    private async _list(ids?: string[]): Promise<PersistedLandingPage[]> {
         const pages = await this.storageClient.listObjectsInCollection<PersistedLandingPage>(Namespaces.LANDING_PAGES);
 
-        if (!rootIds) {
+        if (!ids) {
             return pages;
         } else {
-            const filterByIds = pages.filter(({ id, type }) => rootIds.includes(id) && type === "root");
-            return filterByIds.flatMap(page => [page, ...this.getAllDescendants(page.id, pages)]);
+            const filterByIds = pages.filter(({ id }) => ids.includes(id));
+            return _(filterByIds)
+                .flatMap(page => [page, ...this.getAllDescendants(page.id, pages)])
+                .uniqBy(page => page.id)
+                .value();
         }
     }
 
