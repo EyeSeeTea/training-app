@@ -82,7 +82,6 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
 
     public async import(files: File[]): Promise<PersistedLandingPage[]> {
         const items = await this.importExportClient.import<PersistedLandingPage>(files);
-        // TODO: Do not overwrite existing landing page
         await this.storageClient.saveObjectsInCollection(Namespaces.LANDING_PAGES, items);
 
         return items;
