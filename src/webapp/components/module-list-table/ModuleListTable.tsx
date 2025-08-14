@@ -78,6 +78,7 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
         async (key: string | undefined, lang: string, terms: Record<string, string>) => {
             if (!key) return;
             await importTranslation(() => usecases.modules.importTranslations(lang, terms, key));
+            await refreshRows();
         },
         [usecases, importTranslation]
     );
