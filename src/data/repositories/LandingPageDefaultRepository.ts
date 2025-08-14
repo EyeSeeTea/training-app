@@ -56,21 +56,27 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
     private async _list(ids?: string[]): Promise<PersistedLandingPage[]> {
         const pages = await this.storageClient.listObjectsInCollection<PersistedLandingPage>(Namespaces.LANDING_PAGES);
 
+        const pageParentMap = _(pages)
+            .groupBy(page => page.parent)
+            .value();
+
         if (!ids) {
             return pages;
         } else {
-            const filterByIds = pages.filter(({ id }) => ids.includes(id));
-            return _(filterByIds)
-                .flatMap(page => [page, ...this.getAllDescendants(page.id, pages)])
+            return _(pages)
+                .filter(({ id }) => ids.includes(id))
+                .flatMap(page => [page, ...this.getAllDescendants(page.id, pageParentMap)])
                 .uniqBy(page => page.id)
                 .value();
         }
     }
 
-    private getAllDescendants(parentId: string, nodes: PersistedLandingPage[]): PersistedLandingPage[] {
-        return nodes
-            .filter(node => node.parent === parentId)
-            .flatMap(child => [child, ...this.getAllDescendants(child.id, nodes)]);
+    private getAllDescendants(
+        parentId: string,
+        parentMap: Record<string, PersistedLandingPage[]>
+    ): PersistedLandingPage[] {
+        const children = parentMap[parentId] || [];
+        return children.flatMap(child => [child, ...this.getAllDescendants(child.id, parentMap)]);
     }
 
     public async export(ids: string[]): Promise<void> {
