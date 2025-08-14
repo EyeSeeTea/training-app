@@ -80,7 +80,7 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
             await importTranslation(() => usecases.modules.importTranslations(lang, terms, key));
             await refreshRows();
         },
-        [usecases, importTranslation]
+        [usecases, importTranslation, refreshRows]
     );
 
     return (
