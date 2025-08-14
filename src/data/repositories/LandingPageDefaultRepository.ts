@@ -120,7 +120,7 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
             translatedModels
         );
 
-        return this.extractTranslatableText(models);
+        return this.extractTranslatableText(translatedModels);
     }
 
     private async saveDefaultLandingPage(): Promise<PersistedLandingPage> {

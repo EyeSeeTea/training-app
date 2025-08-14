@@ -226,7 +226,7 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
 
         await this.saveDataStore(translatedModel);
 
-        return this.extractTranslatableText(model);
+        return this.extractTranslatableText(translatedModel);
     }
 
     @cache()
