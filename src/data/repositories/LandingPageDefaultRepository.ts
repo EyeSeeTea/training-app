@@ -55,7 +55,19 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
 
     private async _list(ids?: string[]): Promise<PersistedLandingPage[]> {
         const pages = await this.storageClient.listObjectsInCollection<PersistedLandingPage>(Namespaces.LANDING_PAGES);
-        return ids ? pages.filter(({ id }) => ids.includes(id)) : pages;
+
+        if (!ids) {
+            return pages;
+        } else {
+            const filterByIds = pages.filter(({ id }) => ids.includes(id));
+            return filterByIds.flatMap(page => [page, ...this.getAllDescendants(page.id, pages)]);
+        }
+    }
+
+    private getAllDescendants(parentId: string, nodes: PersistedLandingPage[]): PersistedLandingPage[] {
+        return nodes
+            .filter(node => node.parent === parentId)
+            .flatMap(child => [child, ...this.getAllDescendants(child.id, nodes)]);
     }
 
     public async export(ids: string[]): Promise<void> {
@@ -94,11 +106,9 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
     }
 
     public async extractTranslations(id: string): Promise<TranslatableText[]> {
-        const nodes = await this._list();
-        const models = nodes.filter(node => node.id === id || node.parent === id);
-        if (!models.length) throw new Error(`Unable to load landing pages`);
-
-        return this.extractTranslatableText(models);
+        const nodes = await this._list([id]);
+        if (!nodes) throw new Error(`Unable to load landing pages`);
+        return this.extractTranslatableText(nodes);
     }
 
     private extractTranslatableText(models: PersistedLandingPage[]): TranslatableText[] {
