@@ -1,12 +1,12 @@
 import React from "react";
 import styled from "styled-components";
-import { TrainingModule } from "../domain/entities/TrainingModule";
-import { TranslateMethod } from "../domain/entities/TranslatableText";
-import i18n from "../utils/i18n";
-import { MainButton } from "../webapp/components/main-button/MainButton";
-import { Modal, ModalContent, ModalFooter, ModalTitle } from "../webapp/components/modal";
-import { Bullet } from "../webapp/components/training-wizard/stepper/Bullet";
-import { Label, Line, Step } from "../webapp/pages/summary/SummaryStep";
+import { TrainingModule } from "../../domain/entities/TrainingModule";
+import { TranslateMethod } from "../../domain/entities/TranslatableText";
+import i18n from "../../utils/i18n";
+import { MainButton } from "../../webapp/components/main-button/MainButton";
+import { Modal, ModalContent, ModalFooter, ModalTitle } from "../../webapp/components/modal";
+import { Bullet } from "../../webapp/components/training-wizard/stepper/Bullet";
+import { Label, Line, Step } from "../../webapp/pages/summary/SummaryStep";
 import { HeaderButtonsProps } from "./TutorialRoot";
 
 export type SummaryProps = {

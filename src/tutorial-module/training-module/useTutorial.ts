@@ -1,6 +1,6 @@
 import React from "react";
-import { TrainingModule } from "../domain/entities/TrainingModule";
-import { Maybe } from "../types/utils";
+import { TrainingModule } from "../../domain/entities/TrainingModule";
+import { Maybe } from "../../types/utils";
 
 export type ModuleStepType = "welcome" | "contents" | "steps" | "final" | "summary";
 

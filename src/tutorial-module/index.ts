@@ -1,1 +1,1 @@
-export { TutorialModule } from "./TutorialRoot";
+export { TutorialModule } from "./training-module/TutorialRoot";
