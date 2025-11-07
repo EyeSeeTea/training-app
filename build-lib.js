@@ -58,7 +58,7 @@ function moveToPeerDependencies(packageJson) {
             "@dhis2/d2-ui-forms",
             "@dhis2/ui",
         ],
-        ["@eyeseetea/d2-api", "@eyeseetea/d2-ui-components"],
+        ["@eyeseetea/d2-ui-components"],
         ["purify-ts"],
         ["d2", "d2-manifest"],
     ].flat();
