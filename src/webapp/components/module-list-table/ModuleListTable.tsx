@@ -26,10 +26,8 @@ import { AlertIcon } from "../alert-icon/AlertIcon";
 import { Dropzone, DropzoneRef } from "../dropzone/Dropzone";
 import { ImportTranslationDialog, ImportTranslationRef } from "../import-translation-dialog/ImportTranslationDialog";
 import { InputDialog, InputDialogProps } from "../input-dialog/InputDialog";
-import { MarkdownEditorDialog, MarkdownEditorDialogProps } from "../markdown-editor/MarkdownEditorDialog";
-import { MarkdownViewer } from "../markdown-viewer/MarkdownViewer";
-import { ModalBody } from "../modal";
 import { useImportExportTranslation } from "../../hooks/useImportExportTranslation";
+import { StepPreview } from "../markdown-editor/StepPreview";
 
 export interface ModuleListTableProps {
     rows: ListItem[];
@@ -742,23 +740,6 @@ const buildChildrenRows = (items: ListItem[]): ListItem[] => {
     const pages = _.flatMap([...items, ...steps], step => step?.pages);
     return _.compact([...items, ...steps, ...pages]);
 };
-
-const StepPreview: React.FC<{
-    className?: string;
-    value?: string;
-}> = ({ className, value }) => {
-    if (!value) return null;
-
-    return (
-        <StyledModalBody className={className}>
-            <MarkdownViewer source={value} />
-        </StyledModalBody>
-    );
-};
-
-const StyledModalBody = styled(ModalBody)`
-    max-width: 600px;
-`;
 
 const PageWrapper = styled.div`
     .MuiTableRow-root {

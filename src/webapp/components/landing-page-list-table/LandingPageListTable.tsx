@@ -20,13 +20,12 @@ import {
     buildOrderedLandingNodes,
 } from "../../../domain/entities/LandingPage";
 import i18n from "../../../utils/i18n";
-import { MarkdownViewer } from "../../components/markdown-viewer/MarkdownViewer";
 import { useAppContext } from "../../contexts/app-context";
 import { Dropzone, DropzoneRef } from "../dropzone/Dropzone";
 import { ImportTranslationDialog, ImportTranslationRef } from "../import-translation-dialog/ImportTranslationDialog";
 import { LandingPageEditDialog, LandingPageEditDialogProps } from "../landing-page-edit-dialog/LandingPageEditDialog";
-import { ModalBody } from "../modal";
 import { useImportExportTranslation } from "../../hooks/useImportExportTranslation";
+import { StepPreview } from "../markdown-editor/StepPreview";
 
 export const LandingPageListTable: React.FC<{ nodes: LandingNode[]; isLoading?: boolean }> = ({ nodes, isLoading }) => {
     const { usecases, reload } = useAppContext();
@@ -353,21 +352,4 @@ const flattenRows = (rows: LandingNode[]): LandingNode[] => {
 
 const ItemIcon = styled.img`
     width: 100px;
-`;
-
-const StepPreview: React.FC<{
-    className?: string;
-    value?: string;
-}> = ({ className, value }) => {
-    if (!value) return null;
-
-    return (
-        <StyledModalBody className={className}>
-            <MarkdownViewer source={value} />
-        </StyledModalBody>
-    );
-};
-
-const StyledModalBody = styled(ModalBody)`
-    max-width: 600px;
 `;
