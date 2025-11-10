@@ -8,8 +8,8 @@ const dtsFilePath = path.join(distPath, "index.d.ts");
 const modulePath = path.join(distPath, "tutorial-module", "index.js");
 
 // File contents
-const jsContent = 'export { TutorialModule } from "./tutorial-module/index";';
-const dtsContent = 'export { TutorialModule } from "./tutorial-module/TutorialRoot";';
+const jsContent = 'export * from "./tutorial-module/index";';
+const dtsContent = 'export * from "./tutorial-module/index";';
 
 function validateDistFolder() {
     if (!fs.existsSync(distPath)) {
