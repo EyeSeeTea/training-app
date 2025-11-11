@@ -9,6 +9,7 @@ import {
     removePage,
     removeStep,
     updateOrder,
+    updatePageBindings,
     updateTranslation,
 } from "../../../domain/helpers/TrainingModuleHelpers";
 import i18n from "../../../utils/i18n";
@@ -143,6 +144,13 @@ export const SettingsPage: React.FC = () => {
                 if (module) await usecases.modules.update(updateTranslation(module, text.key, value));
                 else snackbar.error(i18n.t("Unable to update module contents"));
             },
+            editPage: async ({ id, text, page: { id: pageId, value, bindings } }) => {
+                const module = await getModule(id);
+                if (module) {
+                    const updatedModule = bindings ? updatePageBindings(module, { id: pageId, bindings }) : module;
+                    await usecases.modules.update(updateTranslation(updatedModule, text.key, value));
+                } else snackbar.error(i18n.t("Unable to update module contents"));
+            },
             deleteModules: ({ ids }) => usecases.modules.delete(ids),
             resetModules: ({ ids }) => usecases.modules.resetDefaultValue(ids),
             swap: async ({ type, id, from, to }) => {
@@ -162,9 +170,9 @@ export const SettingsPage: React.FC = () => {
                 if (module) await usecases.modules.update(addStep(module, title));
                 else snackbar.error(i18n.t("Unable to add step"));
             },
-            addPage: async ({ id, step, value }) => {
+            addPage: async ({ id, step, page }) => {
                 const module = await getModule(id);
-                if (module) await usecases.modules.update(addPage(module, step, value));
+                if (module) await usecases.modules.update(addPage(module, step, page));
                 else snackbar.error(i18n.t("Unable to add page"));
             },
             deleteStep: async ({ id, step }) => {

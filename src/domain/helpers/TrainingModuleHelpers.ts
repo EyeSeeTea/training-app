@@ -1,6 +1,7 @@
 import { swapById } from "../../utils/array";
 import { PartialTrainingModule } from "../entities/TrainingModule";
 import { TranslatableText } from "../entities/TranslatableText";
+import { PageBinding } from "../entities/PageBinding";
 
 export const updateTranslation = (
     module: PartialTrainingModule,
@@ -30,6 +31,23 @@ export const updateTranslation = (
         },
     };
 };
+
+export function updatePageBindings(
+    module: PartialTrainingModule,
+    page: { id: string; bindings: PageBinding[] }
+): PartialTrainingModule {
+    const { id: pageId, bindings } = page;
+    return {
+        ...module,
+        contents: {
+            ...module.contents,
+            steps: module.contents.steps.map(step => ({
+                ...step,
+                pages: step.pages.map(page => (page.id === pageId ? { ...page, bindings } : page)),
+            })),
+        },
+    };
+}
 
 export const enforceKeyName = (model: PartialTrainingModule): PartialTrainingModule => {
     return {
@@ -89,7 +107,12 @@ export const addStep = (model: PartialTrainingModule, title: string): PartialTra
     });
 };
 
-export const addPage = (model: PartialTrainingModule, stepKey: string, value: string): PartialTrainingModule => {
+export const addPage = (
+    model: PartialTrainingModule,
+    stepKey: string,
+    page: { value: string; bindings?: PageBinding[] }
+): PartialTrainingModule => {
+    const { value, bindings } = page;
     return enforceKeyName({
         ...model,
         contents: {
@@ -106,6 +129,7 @@ export const addPage = (model: PartialTrainingModule, stepKey: string, value: st
                             key: `${model.id}-step-${stepIdx + 1}-${step.pages.length + 1}`,
                             referenceValue: value,
                             translations: {},
+                            bindings: bindings || [],
                         },
                     ],
                 };

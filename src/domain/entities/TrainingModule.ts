@@ -3,6 +3,7 @@ import { GetSchemaType, Schema } from "../../utils/codec";
 import { BaseMetadataModel } from "./Ref";
 import { TranslatableTextModel } from "./TranslatableText";
 import { ModelValidation } from "./Validation";
+import { PageBindingModel } from "./PageBinding";
 
 export const TrainingModuleTypeModel = Schema.oneOf([
     Schema.exact("app"),
@@ -10,11 +11,16 @@ export const TrainingModuleTypeModel = Schema.oneOf([
     Schema.exact("widget"),
 ]);
 
+export const TrainingModulePageModel = Schema.extend(
+    TranslatableTextModel,
+    Schema.object({ id: Schema.string, bindings: Schema.optionalSafe(Schema.array(PageBindingModel), []) })
+);
+
 export const TrainingModuleStepModel = Schema.object({
     id: Schema.string,
     title: TranslatableTextModel,
     subtitle: Schema.optional(TranslatableTextModel),
-    pages: Schema.array(Schema.extend(TranslatableTextModel, Schema.object({ id: Schema.string }))),
+    pages: Schema.array(TrainingModulePageModel),
 });
 
 export const TrainingModuleContentsModel = Schema.object({
@@ -53,6 +59,7 @@ export type TrainingModule = GetSchemaType<typeof TrainingModuleModel>;
 export type TrainingModuleType = GetSchemaType<typeof TrainingModuleTypeModel>;
 export type TrainingModuleStep = GetSchemaType<typeof TrainingModuleStepModel>;
 export type TrainingModuleContents = GetSchemaType<typeof TrainingModuleContentsModel>;
+export type TrainingModulePage = GetSchemaType<typeof TrainingModulePageModel>;
 
 export type PartialTrainingModule = PartialBy<
     TrainingModule,

@@ -28,6 +28,8 @@ import { ImportTranslationDialog, ImportTranslationRef } from "../import-transla
 import { InputDialog, InputDialogProps } from "../input-dialog/InputDialog";
 import { useImportExportTranslation } from "../../hooks/useImportExportTranslation";
 import { StepPreview } from "../markdown-editor/StepPreview";
+import { PageEditorDialog, PageEditorProps } from "../page-editor/PageEditorDialog";
+import { PageBinding } from "../../../domain/entities/PageBinding";
 
 export interface ModuleListTableProps {
     rows: ListItem[];
@@ -51,7 +53,7 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
     const [selection, setSelection] = useState<TableSelection[]>([]);
 
     const [dialogProps, updateDialog] = useState<ConfirmationDialogProps | null>(null);
-    const [markdownDialogProps, updateMarkdownDialog] = useState<MarkdownEditorDialogProps | null>(null);
+    const [pageEditorDialog, updatePageEditorDialog] = useState<PageEditorProps | null>(null);
     const [inputDialogProps, updateInputDialog] = useState<InputDialogProps | null>(null);
 
     const handleFileUpload = useCallback(
@@ -190,18 +192,20 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
 
             const { uploadFile } = tableActions;
 
-            updateMarkdownDialog({
-                title: i18n.t("Add new page"),
-                markdownPreview: markdown => <StepPreview value={markdown} />,
+            updatePageEditorDialog({
                 onUpload: uploadFile
                     ? (data: ArrayBuffer, file: File) => uploadFile({ data, name: file.name })
                     : undefined,
-                onCancel: () => updateMarkdownDialog(null),
-                onSave: async value => {
-                    updateMarkdownDialog(null);
+                onCancel: () => updatePageEditorDialog(null),
+                onSave: async ({ referenceValue, bindings }) => {
+                    updatePageEditorDialog(null);
                     if (!row.moduleId || !tableActions.addPage) return;
 
-                    await tableActions.addPage({ id: row.moduleId, step: row.id, value });
+                    await tableActions.addPage({
+                        id: row.moduleId,
+                        step: row.id,
+                        page: { value: referenceValue, bindings },
+                    });
                     await refreshRows();
                 },
             });
@@ -290,19 +294,26 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
 
             const { uploadFile } = tableActions;
 
-            updateMarkdownDialog({
-                title: i18n.t("Edit contents of {{name}}", row),
-                initialValue: row.value.referenceValue,
-                markdownPreview: markdown => <StepPreview value={markdown} />,
+            updatePageEditorDialog({
+                page: {
+                    id: row.id,
+                    name: row.name,
+                    referenceValue: row.value.referenceValue,
+                    bindings: row.bindings || [],
+                },
                 onUpload: uploadFile
                     ? (data: ArrayBuffer, file: File) => uploadFile({ data, name: file.name })
                     : undefined,
-                onCancel: () => updateMarkdownDialog(null),
-                onSave: async value => {
-                    updateMarkdownDialog(null);
-                    if (!tableActions.editContents || !row.value || !row.moduleId) return;
+                onCancel: () => updatePageEditorDialog(null),
+                onSave: async ({ referenceValue, bindings }) => {
+                    updatePageEditorDialog(null);
+                    if (!tableActions.editPage || !row.value || !row.moduleId) return;
 
-                    await tableActions.editContents({ id: row.moduleId, text: row.value, value });
+                    await tableActions.editPage({
+                        id: row.moduleId,
+                        text: row.value,
+                        page: { id: row.id, value: referenceValue, bindings },
+                    });
                     await refreshRows();
                 },
             });
@@ -483,9 +494,7 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
                 icon: <Icon>edit</Icon>,
                 onClick: editPage,
                 isActive: rows => {
-                    return (
-                        !!tableActions.editContents && _.every(rows, item => item.rowType === "page" && item.editable)
-                    );
+                    return !!tableActions.editPage && _.every(rows, item => item.rowType === "page" && item.editable);
                 },
             },
             {
@@ -644,7 +653,7 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
         <PageWrapper>
             {dialogProps && <ConfirmationDialog isOpen={true} maxWidth={"xl"} {...dialogProps} />}
             {inputDialogProps && <InputDialog isOpen={true} fullWidth={true} maxWidth={"md"} {...inputDialogProps} />}
-            {markdownDialogProps && <MarkdownEditorDialog {...markdownDialogProps} />}
+            {pageEditorDialog && <PageEditorDialog {...pageEditorDialog} />}
 
             <ImportTranslationDialog type="module" ref={translationImportRef} onSave={handleTranslationUpload} />
 
@@ -698,6 +707,7 @@ export interface ListItemPage {
     position: number;
     lastPosition: number;
     editable: boolean;
+    bindings: PageBinding[];
 }
 
 export const buildListModules = (modules: TrainingModule[]): ListItemModule[] => {
@@ -721,7 +731,7 @@ export const buildListSteps = (model: PartialTrainingModule, steps: TrainingModu
         position: stepIdx,
         lastPosition: steps.length - 1,
         editable: model.editable ?? true,
-        pages: pages.map(({ id: pageId, ...value }, pageIdx) => ({
+        pages: pages.map(({ id: pageId, bindings, ...value }, pageIdx) => ({
             id: pageId,
             stepId,
             moduleId: model.id,
@@ -730,6 +740,7 @@ export const buildListSteps = (model: PartialTrainingModule, steps: TrainingModu
             position: pageIdx,
             lastPosition: pages.length - 1,
             editable: model.editable ?? true,
+            bindings,
             value,
         })),
     }));
@@ -752,8 +763,13 @@ export type ModuleListTableAction = {
     openCloneModulePage?: (params: { id: string }) => void;
     openCreateModulePage?: () => void;
     editContents?: (params: { id: string; text: TranslatableText; value: string }) => Promise<void>;
+    editPage?: (params: {
+        id: string;
+        text: TranslatableText;
+        page: { id: string; value: string; bindings?: PageBinding[] };
+    }) => Promise<void>;
     addStep?: (params: { id: string; title: string }) => Promise<void>;
-    addPage?: (params: { id: string; step: string; value: string }) => Promise<void>;
+    addPage?: (params: { id: string; step: string; page: { value: string; bindings: PageBinding[] } }) => Promise<void>;
     deleteStep?: (params: { id: string; step: string }) => Promise<void>;
     deletePage?: (params: { id: string; step: string; page: string }) => Promise<void>;
     deleteModules?: (params: { ids: string[] }) => Promise<void>;
