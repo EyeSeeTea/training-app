@@ -4,13 +4,16 @@ import { EventType, isEventType } from "../../domain/entities/PageBinding";
 import { Optional } from "../../types/utils";
 import { InteractiveTrainingContextState } from "./InteractiveTrainingProvider";
 import { EventPageIdsByTrainingId, getEventPageIdsByTrainingIdMap, getSectionPageIds } from "./utils";
+import { createLocationObserver } from "./LocaionObserver";
 
 export function useBindEvents(props: InteractiveTrainingContextState) {
     const { trigger, pages, events = ["click", "focus", "hover", "section"] } = props;
+    const noPages = !pages.length;
 
     const pathname = useCurrentPathname();
     const trainingScopeRef = useRef<HTMLDivElement>(null);
     const [highlightedElement, setHighlightedElement] = useState<Element>();
+    const [lastTriggeredPath, setLastTriggeredPath] = useState("");
 
     const eventSet = useMemo<Set<EventType>>(() => new Set(events.filter(isEventType) as EventType[]), [events]);
 
@@ -21,7 +24,7 @@ export function useBindEvents(props: InteractiveTrainingContextState) {
 
     useEffect(() => {
         const root = trainingScopeRef.current;
-        if (!root) return;
+        if (!root || noPages) return;
         return setupEventListeners({
             root,
             eventSet,
@@ -30,16 +33,18 @@ export function useBindEvents(props: InteractiveTrainingContextState) {
             trigger,
             setHighlightedElement,
         });
-    }, [eventSet, eventPageIdsByTrainingId, sectionPageIds, trigger]);
+    }, [eventSet, eventPageIdsByTrainingId, sectionPageIds, trigger, noPages]);
 
     useEffect(() => {
-        if (events.includes("section")) {
-            trigger({ targetIds: sectionPageIds });
-        }
-    }, [sectionPageIds, trigger, events]);
+        if (!events.includes("section") || !sectionPageIds.length || noPages) return;
+        if (lastTriggeredPath === pathname) return;
+
+        setLastTriggeredPath(pathname);
+        trigger({ targetIds: sectionPageIds });
+    }, [pathname, sectionPageIds, trigger, events]);
 
     useEffect(() => {
-        if (!highlightedElement) return;
+        if (!highlightedElement || noPages) return;
         highlightedElement.classList.add("training-highlight");
 
         return () => {
@@ -51,38 +56,22 @@ export function useBindEvents(props: InteractiveTrainingContextState) {
 }
 
 function useCurrentPathname() {
-    const [pathname, setPathname] = useState(window.location.pathname);
-    const isPatchedRef = useRef(false);
-    const originalPushStateRef = useRef<typeof window.history.pushState>();
-    const originalReplaceStateRef = useRef<typeof window.history.replaceState>();
+    const [url, setUrl] = useState(() => window.location.pathname + window.location.hash);
+    const observerRef = useRef<ReturnType<typeof createLocationObserver>>();
 
     useEffect(() => {
-        const handleUrlChange = () => setPathname(window.location.pathname);
-
-        window.addEventListener("popstate", handleUrlChange);
-
-        if (!isPatchedRef.current) {
-            isPatchedRef.current = true;
-            originalPushStateRef.current = window.history.pushState;
-            originalReplaceStateRef.current = window.history.replaceState;
-
-            window.history.pushState = function (...args) {
-                originalPushStateRef.current!.apply(this, args);
-                handleUrlChange();
-            };
-
-            window.history.replaceState = function (...args) {
-                originalReplaceStateRef.current!.apply(this, args);
-                handleUrlChange();
-            };
+        if (!observerRef.current) {
+            observerRef.current = createLocationObserver();
         }
 
-        return () => {
-            window.removeEventListener("popstate", handleUrlChange);
+        const handleChange = () => {
+            const newUrl = window.location.pathname + window.location.hash;
+            setUrl(newUrl);
         };
+        return observerRef.current.subscribe(handleChange);
     }, []);
 
-    return pathname;
+    return url;
 }
 
 type SetupEventListenersProps = {

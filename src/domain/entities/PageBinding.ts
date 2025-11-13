@@ -128,15 +128,19 @@ export function isBindingType(value: string): value is BindingType {
 export function urlPatternToRegex(pattern: string): RegExp {
     const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
     const regexPattern = escaped
-        .replace(/\*\*/g, "<!GLOBSTAR!>") // Protect ** temporarily
-        .replace(/\*/g, "[^/]*") // * matches one segment
-        .replace(/<!GLOBSTAR!>/g, ".*"); // ** matches rest of path
-    return new RegExp("^" + regexPattern + "$");
+        .replace(/\*\*/g, "<!GLOBSTAR!>")
+        .replace(/\*/g, "[^/]*")
+        .replace(/<!GLOBSTAR!>/g, ".*");
+
+    return new RegExp("^(?:/#)?" + regexPattern + "$");
 }
 
 export function matchesUrlPattern(currentPath: string, pattern: string): boolean {
+    const normalizedPath = currentPath.replace(/^\/#/, "").split("?")[0];
+    if (!normalizedPath) return false;
+
     const regex = urlPatternToRegex(pattern);
-    return regex.test(currentPath);
+    return regex.test(normalizedPath);
 }
 
 export function isEventBinding(binding: PageBinding): binding is EventBinding {

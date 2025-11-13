@@ -92,7 +92,7 @@ function useTrainingPages(props: UseTrainingPages) {
         if (modules.length === 0) return [];
         return _(modules)
             .flatMap(module => module.contents.steps)
-            .flatMap(step => step.pages)
+            .flatMap(step => step.pages.filter(({ bindings }) => bindings.length > 0))
             .value();
     }, [modules]);
 
