@@ -6,6 +6,7 @@ const distPath = path.join(__dirname, "dist");
 const jsFilePath = path.join(distPath, "index.js");
 const dtsFilePath = path.join(distPath, "index.d.ts");
 const modulePath = path.join(distPath, "tutorial-module", "index.js");
+const srcPath = path.join(__dirname, "src");
 
 // File contents
 const jsContent = 'export * from "./tutorial-module/index";';
@@ -74,10 +75,35 @@ function moveToPeerDependencies(packageJson) {
     return packageJson;
 }
 
+function copyCssFiles() {
+    const copyRecursive = (src, dest) => {
+        if (fs.statSync(src).isDirectory()) {
+            if (!fs.existsSync(dest)) {
+                fs.mkdirSync(dest, { recursive: true });
+            }
+            fs.readdirSync(src).forEach(item => {
+                copyRecursive(path.join(src, item), path.join(dest, item));
+            });
+        } else if (src.endsWith(".css")) {
+            fs.copyFileSync(src, dest);
+            console.log(`Copied CSS: ${src} -> ${dest}`);
+        }
+    };
+
+    const tutorialModuleSrc = path.join(srcPath, "tutorial-module");
+    const tutorialModuleDest = path.join(distPath, "tutorial-module");
+
+    if (fs.existsSync(tutorialModuleSrc)) {
+        copyRecursive(tutorialModuleSrc, tutorialModuleDest);
+        console.log("CSS files copied successfully");
+    }
+}
+
 function start() {
     updatePackageJson();
     validateDistFolder();
     generateIndexJsWithTypes();
+    copyCssFiles();
 }
 
 start();

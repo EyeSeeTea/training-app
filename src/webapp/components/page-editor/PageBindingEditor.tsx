@@ -15,9 +15,13 @@ import styled from "styled-components";
 import React from "react";
 
 import {
+    BindingType,
     EventBinding,
-    IframeBinding,
+    EventType,
+    IFrameBinding,
+    IFrameEventType,
     isEventType,
+    isIFrameEventType,
     PageBinding,
     SectionBinding,
 } from "../../../domain/entities/PageBinding";
@@ -130,9 +134,9 @@ export const EventBindingEditor: React.FC<BindingEditor<EventBinding>> = props =
     return (
         <>
             <TextField
-                label={i18n.t("Page identifiers")}
-                onChange={event => handleChange("pageIdentifiers", event.target.value)}
-                value={binding.pageIdentifiers}
+                label={i18n.t("Training identifiers")}
+                onChange={event => handleChange("trainingIdentifiers", event.target.value)}
+                value={binding.trainingIdentifiers}
             />
             <StyledDropdown
                 label={i18n.t("Event type")}
@@ -158,8 +162,17 @@ export const SectionBindingEditor: React.FC<BindingEditor<SectionBinding>> = pro
     );
 };
 
-export const IFrameBindingEditor: React.FC<BindingEditor<IframeBinding>> = props => {
+export const IFrameBindingEditor: React.FC<BindingEditor<IFrameBinding>> = props => {
     const { binding, handleChange } = props;
+
+    const handleChangeEventType = React.useCallback(
+        (value?: string) => {
+            if (value && isIFrameEventType(value)) {
+                handleChange("eventType", value);
+            }
+        },
+        [handleChange]
+    );
 
     return (
         <>
@@ -168,24 +181,39 @@ export const IFrameBindingEditor: React.FC<BindingEditor<IframeBinding>> = props
                 onChange={event => handleChange("urlPattern", event.target.value)}
                 value={binding.urlPattern}
             />
+            <StyledDropdown
+                label={i18n.t("Event type")}
+                onChange={handleChangeEventType}
+                value={binding.eventType}
+                items={iFrameEventBindingTypeOptions()}
+            />
         </>
     );
 };
 
+const bindingTypeTextMap: Record<BindingType, string> = {
+    event: "Event",
+    section: "Section",
+    iframe: "iFrame",
+};
 const bindingTypeOptions = () => {
-    return [
-        { value: "event", text: "Event" },
-        { value: "section", text: "Section" },
-        { value: "iframe", text: "iFrame" },
-    ];
+    return Object.entries(bindingTypeTextMap).map(([value, text]) => ({ value, text }));
 };
 
+const iFrameEventTypeTextMap: Record<IFrameEventType, string> = {
+    click: "Click",
+    hover: "Hover",
+    all: "All",
+};
+const iFrameEventBindingTypeOptions = () => {
+    return Object.entries(iFrameEventTypeTextMap).map(([value, text]) => ({ value, text }));
+};
+const eventTypeTextMap: Record<EventType, string> = {
+    focus: "Focus",
+    ...iFrameEventTypeTextMap,
+};
 const eventBindingTypeOptions = () => {
-    return [
-        { value: "click", text: "Click" },
-        { value: "hover", text: "Hover" },
-        { value: "all", text: "all" },
-    ];
+    return Object.entries(eventTypeTextMap).map(([value, text]) => ({ value, text }));
 };
 
 const FlexEnd = styled(Grid)`

@@ -2,13 +2,26 @@ import { Codec, Schema } from "../../utils/codec";
 import { generateUid } from "../../data/utils/uid";
 import { Optional } from "../../types/utils";
 
-const EVENT_TYPES = ["click", "hover", "all"] as const;
+const IFRAME_EVENT_TYPES = ["click", "hover", "all"] as const;
+const EVENT_TYPES = ["focus", ...IFRAME_EVENT_TYPES] as const;
 const BINDING_TYPES = ["event", "section", "iframe"] as const;
 
 export type EventType = typeof EVENT_TYPES[number];
+export type IFrameEventType = typeof IFRAME_EVENT_TYPES[number];
 export type BindingType = typeof BINDING_TYPES[number];
 
-export const EventTypeModel = Schema.oneOf([Schema.exact("click"), Schema.exact("hover"), Schema.exact("all")]);
+export const IFrameEventTypeModel: Codec<IFrameEventType> = Schema.oneOf([
+    Schema.exact("click"),
+    Schema.exact("hover"),
+    Schema.exact("all"),
+]);
+
+export const EventTypeModel: Codec<EventType> = Schema.oneOf([
+    Schema.exact("focus"),
+    Schema.exact("click"),
+    Schema.exact("hover"),
+    Schema.exact("all"),
+]);
 
 type BaseBinding = {
     id: string;
@@ -17,7 +30,7 @@ type BaseBinding = {
 
 export type EventBinding = BaseBinding & {
     type: "event";
-    pageIdentifiers: string;
+    trainingIdentifiers: string;
     eventType: EventType;
 };
 
@@ -26,13 +39,13 @@ export type SectionBinding = BaseBinding & {
     urlPattern: string;
 };
 
-export type IframeBinding = BaseBinding & {
+export type IFrameBinding = BaseBinding & {
     type: "iframe";
     urlPattern: string;
-    eventType: EventType;
+    eventType: IFrameEventType;
 };
 
-export type PageBinding = EventBinding | SectionBinding | IframeBinding;
+export type PageBinding = EventBinding | SectionBinding | IFrameBinding;
 
 const baseEventBinding = {
     id: Schema.nonEmptyString,
@@ -42,7 +55,7 @@ const baseEventBinding = {
 export const EventBindingModel: Codec<EventBinding> = Schema.object({
     ...baseEventBinding,
     type: Schema.exact("event"),
-    pageIdentifiers: Schema.string,
+    trainingIdentifiers: Schema.string,
     eventType: EventTypeModel,
 });
 
@@ -52,11 +65,11 @@ export const SectionBindingModel: Codec<SectionBinding> = Schema.object({
     urlPattern: Schema.nonEmptyString,
 });
 
-export const IframeBindingModel: Codec<IframeBinding> = Schema.object({
+export const IframeBindingModel: Codec<IFrameBinding> = Schema.object({
     ...baseEventBinding,
     type: Schema.exact("iframe"),
     urlPattern: Schema.nonEmptyString,
-    eventType: EventTypeModel,
+    eventType: IFrameEventTypeModel,
 });
 
 export const PageBindingModel: Codec<PageBinding> = Schema.oneOf([
@@ -69,7 +82,7 @@ const defaultEventBinding = (): EventBinding => ({
     id: generateUid(),
     description: undefined,
     type: "event",
-    pageIdentifiers: "",
+    trainingIdentifiers: "",
     eventType: "click",
 });
 
@@ -80,7 +93,7 @@ const defaultSectionBinding = (): SectionBinding => ({
     urlPattern: "*/*",
 });
 
-const defaultIFrameBinding = (): IframeBinding => ({
+const defaultIFrameBinding = (): IFrameBinding => ({
     id: generateUid(),
     description: undefined,
     type: "iframe",
@@ -100,6 +113,10 @@ export function getDefaultBinding(type: BindingType): PageBinding {
     }
 }
 
+export function isIFrameEventType(value: string): value is IFrameEventType {
+    return IFRAME_EVENT_TYPES.includes(value as IFrameEventType);
+}
+
 export function isEventType(value: string): value is EventType {
     return EVENT_TYPES.includes(value as EventType);
 }
@@ -110,16 +127,29 @@ export function isBindingType(value: string): value is BindingType {
 
 export function urlPatternToRegex(pattern: string): RegExp {
     const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
-    const regexPattern = escaped.replace(/\*/g, "[^/]*");
-    return new RegExp(regexPattern + "(?:[?#]|$)");
+    const regexPattern = escaped
+        .replace(/\*\*/g, "<!GLOBSTAR!>") // Protect ** temporarily
+        .replace(/\*/g, "[^/]*") // * matches one segment
+        .replace(/<!GLOBSTAR!>/g, ".*"); // ** matches rest of path
+    return new RegExp("^" + regexPattern + "$");
 }
 
-export function matchesUrlPattern(currentUrl: string, pattern: string): boolean {
+export function matchesUrlPattern(currentPath: string, pattern: string): boolean {
     const regex = urlPatternToRegex(pattern);
-    try {
-        const pathname = new URL(currentUrl, window.location.origin).pathname;
-        return regex.test(pathname);
-    } catch {
-        return regex.test(currentUrl);
-    }
+    return regex.test(currentPath);
+}
+
+export function isEventBinding(binding: PageBinding): binding is EventBinding {
+    return binding.type === "event";
+}
+export function isSectionBinding(binding: PageBinding): binding is SectionBinding {
+    return binding.type === "section";
+}
+
+export function getEventBindingIdentifiers(binding: EventBinding): string[] {
+    if (!binding.trainingIdentifiers) return [];
+    return binding.trainingIdentifiers
+        .split(",")
+        .map(id => id.trim())
+        .filter(id => id.length > 0 && id !== "undefined" && id !== "null");
 }

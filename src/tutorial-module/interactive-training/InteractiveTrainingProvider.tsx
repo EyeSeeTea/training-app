@@ -1,84 +1,110 @@
-import React, { createContext } from "react";
+import React, { createContext, useCallback, useEffect, useMemo, useState } from "react";
+import _ from "lodash";
 
-import { TrainingModule } from "../../domain/entities/TrainingModule";
+import { TrainingModule, TrainingModulePage } from "../../domain/entities/TrainingModule";
 import { getCompositionRoot } from "../../webapp/CompositionRoot";
 import { buildTranslate, TranslatableText } from "../../domain/entities/TranslatableText";
 import { ActionButton } from "../../webapp/components/action-button/ActionButton";
-
-import { LoadingProvider, SnackbarProvider } from "@eyeseetea/d2-ui-components";
 import { D2Api } from "../../types/d2-api";
 import { Maybe } from "../../types/utils";
 import { InteractiveTrainingModal } from "./InteractiveTrainingModal";
+import { useBindEvents } from "./useBindEvents";
+import "./InteractiveTrainingProvider.css";
 
-type InteractiveTrainingContextState = {
-    modules: TrainingModule[];
-    trigger: (props: { targetId: string; kind?: string; value?: unknown }) => void;
+type TrainingEventKind = "click" | "hover" | "focus" | "section";
+
+export type InteractiveTrainingContextState = {
+    pages: TrainingModulePage[];
+    trigger: (props: { targetIds: string[] }) => void;
+    events?: TrainingEventKind[];
 };
 export const InteractiveTrainingContext = createContext<Maybe<InteractiveTrainingContextState>>(undefined);
 
-export type TutorialModuleProps = {
+type TutorialModuleProps = {
     baseUrl?: string;
     locale?: string;
+    events?: TrainingEventKind[];
 };
-
-export type UseTutorialModuleProps = { baseUrl: string };
-function useTraining(props: UseTutorialModuleProps) {
-    const { baseUrl } = props;
-    const compositionRoot = React.useMemo(() => getCompositionRoot(new D2Api({ baseUrl: baseUrl })), [baseUrl]);
-    const [modules, setModules] = React.useState<TrainingModule[]>();
-
-    React.useEffect(() => {
-        compositionRoot.usecases.modules
-            .list()
-            .then(setModules)
-            .catch(() => {
-                console.error(`No modules found`);
-            });
-    }, [compositionRoot]);
-
-    return modules;
-}
-
 export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props => {
-    const { baseUrl, locale = "en", children } = props;
-    const [content, setContent] = React.useState<TranslatableText>();
-    const [moduleState, setModuleState] = React.useState<"default" | "minimized">("default");
-    const modules = useTraining({ baseUrl: baseUrl || "" });
+    const { baseUrl, locale = "en", events, children } = props;
+    const [contents, setContents] = useState<TranslatableText[]>([]);
+    const [moduleState, setModuleState] = useState<"default" | "minimized">("minimized");
+    const pages = useTrainingPages({ baseUrl: baseUrl || "" });
 
-    const translateMethod = React.useMemo(() => buildTranslate(locale), [locale]);
+    const pageMap = useMemo(() => _.keyBy(pages, p => p.id), [pages]);
 
-    const trigger = React.useCallback(
-        (props: { targetId: string; kind?: string }) => {
-            const { targetId } = props;
-            const [moduleId, stepId] = targetId.split(".");
-            const module = modules?.find(module => module.id === moduleId);
-            console.log("trigger", props, modules, targetId);
-            if (module) {
-                const step = module.contents.steps.find(step => step.id === stepId) || module.contents.steps[0];
-                if (step) {
-                    setContent(step.pages[0]);
-                }
+    const translateMethod = useMemo(() => buildTranslate(locale), [locale]);
+
+    const trigger = useCallback(
+        (props: { targetIds: string[] }) => {
+            const { targetIds } = props;
+            const targetPages = _(targetIds)
+                .map(targetId => pageMap[targetId])
+                .compact()
+                .value();
+            console.log("trigger", props, targetPages, targetIds);
+            if (targetPages.length > 0) {
+                setContents(targetPages);
             }
         },
-        [modules]
+        [pageMap]
     );
 
-    if (!modules) return null;
-    if (moduleState === "minimized") return <ActionButton onClick={() => setModuleState("default")} />;
+    const minimizeTraining = useCallback(() => {
+        setModuleState("minimized");
+    }, []);
+    const isMinimized = moduleState === "minimized";
+    const scopeClass = isMinimized ? "training-scope-minimized" : "training-scope";
+
+    const contextValue = useMemo(() => ({ pages, trigger, events }), [pages, trigger, events]);
+    const { trainingScopeRef } = useBindEvents(contextValue);
 
     return (
-        <InteractiveTrainingContext.Provider
-            value={{
-                modules,
-                trigger,
-            }}
-        >
-            <LoadingProvider>
-                <SnackbarProvider>
-                    {children}
-                    <InteractiveTrainingModal translate={translateMethod} minimized={false} content={content} />
-                </SnackbarProvider>
-            </LoadingProvider>
+        <InteractiveTrainingContext.Provider value={contextValue}>
+            <div ref={trainingScopeRef} className={scopeClass}>
+                {children}
+            </div>
+            {pages.length > 0 && (
+                <>
+                    {isMinimized ? (
+                        <ActionButton onClick={() => setModuleState("default")} />
+                    ) : (
+                        <InteractiveTrainingModal
+                            translate={translateMethod}
+                            minimized={isMinimized}
+                            contents={contents}
+                            onMinimize={minimizeTraining}
+                        />
+                    )}
+                </>
+            )}
         </InteractiveTrainingContext.Provider>
     );
 };
+
+type UseTrainingPages = { baseUrl: string };
+function useTrainingPages(props: UseTrainingPages) {
+    const { baseUrl } = props;
+    const compositionRoot = useMemo(() => getCompositionRoot(new D2Api({ baseUrl: baseUrl })), [baseUrl]);
+    const [modules, setModules] = useState<TrainingModule[]>([]);
+
+    const pages = useMemo(() => {
+        if (modules.length === 0) return [];
+        return _(modules)
+            .flatMap(module => module.contents.steps)
+            .flatMap(step => step.pages)
+            .value();
+    }, [modules]);
+
+    useEffect(() => {
+        compositionRoot.usecases.modules
+            .list()
+            .then(setModules)
+            .catch(error => {
+                console.error(`No modules found:`, error);
+                setModules([]);
+            });
+    }, [compositionRoot]);
+
+    return pages;
+}

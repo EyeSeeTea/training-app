@@ -1,20 +1,25 @@
 import styled from "styled-components";
+import React, { useMemo } from "react";
 import { Modal, ModalContent } from "../../webapp/components/modal";
 import { MarkdownViewer } from "../../webapp/components/markdown-viewer/MarkdownViewer";
-import React from "react";
 import { TranslatableText, TranslateMethod } from "../../domain/entities/TranslatableText";
 
 type TrainingModalProps = {
-    content?: TranslatableText;
+    contents: TranslatableText[];
     translate: TranslateMethod;
 };
 
 export const InteractiveTrainingModal: React.FC<React.ComponentProps<typeof Modal> & TrainingModalProps> = props => {
-    const { content, translate, onMinimize } = props;
+    const { contents, translate, onMinimize } = props;
+
+    const content = useMemo(
+        () => contents.reduce((acc, content) => `${acc}\n\n${translate(content)}`, ""),
+        [contents, translate]
+    );
 
     return (
         <StyledModal onMinimize={onMinimize} centerChildren={true}>
-            <ModalContent>{content && <MarkdownViewer source={translate(content)} />}</ModalContent>
+            <ModalContent>{content && <MarkdownViewer source={content} />}</ModalContent>
         </StyledModal>
     );
 };

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Traning App - UI Interface\n"
-"POT-Creation-Date: 2025-04-07T11:18:42.330Z\n"
+"POT-Creation-Date: 2025-11-13T05:27:36.638Z\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -313,14 +313,8 @@ msgstr "¿Está seguro de que quiere eliminar la página seleccionada?"
 msgid "Delete page"
 msgstr "Borrar página"
 
-msgid "Add new page"
-msgstr "Añadir nueva página"
-
 msgid "Edit step"
 msgstr "Editar paso"
-
-msgid "Edit contents of {{name}}"
-msgstr "Editar contenidos de {{name}}"
 
 msgid "Installing application"
 msgstr "Instalando aplicación"
@@ -390,6 +384,39 @@ msgstr "Exportar módulo"
 
 msgid "Import modules"
 msgstr "Importar módulos"
+
+msgid "Binding"
+msgstr ""
+
+msgid "Description"
+msgstr "Descripción"
+
+msgid "Config"
+msgstr ""
+
+msgid "Binding type"
+msgstr "Tipo de enlace"
+
+msgid "Add binding"
+msgstr "Añadir enlace"
+
+msgid "Training identifiers"
+msgstr "Identificadores de formación"
+
+msgid "Event type"
+msgstr ""
+
+msgid "URL Pattern"
+msgstr ""
+
+msgid "Edit contents of {{name}}"
+msgstr "Editar contenidos de {{name}}"
+
+msgid "Add new page"
+msgstr "Añadir nueva página"
+
+msgid "Interactive training bindings"
+msgstr ""
 
 msgid "Help"
 msgstr "Ayuda"

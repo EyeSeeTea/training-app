@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2025-04-07T11:18:42.330Z\n"
-"PO-Revision-Date: 2025-04-07T11:18:42.330Z\n"
+"POT-Creation-Date: 2025-11-13T05:27:36.638Z\n"
+"PO-Revision-Date: 2025-11-13T05:27:36.638Z\n"
 
 msgid "Welcome to training on DHIS2"
 msgstr ""
@@ -311,13 +311,7 @@ msgstr ""
 msgid "Delete page"
 msgstr ""
 
-msgid "Add new page"
-msgstr ""
-
 msgid "Edit step"
-msgstr ""
-
-msgid "Edit contents of {{name}}"
 msgstr ""
 
 msgid "Installing application"
@@ -383,6 +377,39 @@ msgid "Export module"
 msgstr ""
 
 msgid "Import modules"
+msgstr ""
+
+msgid "Binding"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Config"
+msgstr ""
+
+msgid "Binding type"
+msgstr ""
+
+msgid "Add binding"
+msgstr ""
+
+msgid "Training identifiers"
+msgstr ""
+
+msgid "Event type"
+msgstr ""
+
+msgid "URL Pattern"
+msgstr ""
+
+msgid "Edit contents of {{name}}"
+msgstr ""
+
+msgid "Add new page"
+msgstr ""
+
+msgid "Interactive training bindings"
 msgstr ""
 
 msgid "Help"

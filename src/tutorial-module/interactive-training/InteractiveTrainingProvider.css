@@ -1,0 +1,10 @@
+.training-scope .training-highlight {
+    outline: 2px solid #4A90E2;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
+    position: relative;
+    z-index: 1;
+    transition: outline 0.2s, box-shadow 0.2s;
+}
+
+
