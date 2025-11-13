@@ -7,9 +7,5 @@ export const TrainingWrapper: React.FC<{
     const { children, trainingId: id } = props;
     if (!id) return <>{children}</>;
 
-    return (
-        <div data-training-id={id} style={{ display: "contents" }}>
-            {children}
-        </div>
-    );
+    return <div data-training-id={id}>{children}</div>;
 };
