@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { EventType } from "../../domain/entities/PageBinding";
 import { Optional } from "../../types/utils";
@@ -6,8 +6,12 @@ import { InteractiveTrainingContextState } from "./InteractiveTrainingProvider";
 import { EventPageIdsByTrainingId, getEventPageIdsByTrainingIdMap, getSectionPageIds } from "./utils";
 import { createLocationObserver } from "./LocaionObserver";
 
-export function useBindEvents(props: InteractiveTrainingContextState) {
-    const { trigger, pages, events = ["click", "focus", "section"] } = props;
+type UseBindingEventProps = InteractiveTrainingContextState & {
+    highlightElementsWithBindings?: boolean;
+};
+
+export function useBindEvents(props: UseBindingEventProps) {
+    const { trigger, pages, events = ["click", "focus", "section"], highlightElementsWithBindings } = props;
     const noPages = !pages.length;
 
     const pathname = useCurrentPathname();
@@ -15,6 +19,10 @@ export function useBindEvents(props: InteractiveTrainingContextState) {
     const [highlightedElement, setHighlightedElement] = useState<Element>();
     const [lastTriggeredPath, setLastTriggeredPath] = useState("");
 
+    const updateHighlightedElement = useCallback((element: Optional<Element>) => {
+        if (!highlightElementsWithBindings) return;
+        else setHighlightedElement(element);
+    }, []);
     const eventSet = useMemo<Set<EventType>>(
         () => new Set(events.filter(e => e !== "section") as EventType[]),
         [events]
@@ -34,25 +42,29 @@ export function useBindEvents(props: InteractiveTrainingContextState) {
             eventPageIdsByTrainingId,
             sectionPageIds,
             trigger,
-            setHighlightedElement,
+            updateHighlightedElement,
         });
     }, [eventSet, eventPageIdsByTrainingId, sectionPageIds, trigger, noPages]);
 
     useEffect(() => {
         if (!events.includes("section") || !sectionPageIds.length || noPages) return;
-        if (lastTriggeredPath === pathname) return;
-
-        setLastTriggeredPath(pathname);
-        trigger({ targetIds: sectionPageIds });
+        else if (lastTriggeredPath === pathname) return;
+        else {
+            setLastTriggeredPath(pathname);
+            trigger({ targetIds: sectionPageIds });
+        }
     }, [pathname, sectionPageIds, trigger, events]);
 
     useEffect(() => {
-        if (!highlightedElement || noPages) return;
-        highlightedElement.classList.add("training-highlight");
+        if (!highlightElementsWithBindings) return;
+        else if (!highlightedElement || noPages) return;
+        else {
+            highlightedElement.classList.add("training-highlight");
 
-        return () => {
-            highlightedElement.classList.remove("training-highlight");
-        };
+            return () => {
+                highlightedElement.classList.remove("training-highlight");
+            };
+        }
     }, [highlightedElement]);
 
     return { trainingScopeRef };
@@ -77,22 +89,23 @@ function useCurrentPathname() {
     return url;
 }
 
+type EventListenerTypes = EventType | "hover";
 type SetupEventListenersProps = {
     root: HTMLDivElement;
     eventSet: Set<EventType>;
     eventPageIdsByTrainingId: EventPageIdsByTrainingId;
     sectionPageIds: string[];
     trigger: InteractiveTrainingContextState["trigger"];
-    setHighlightedElement: (element: Optional<Element>) => void;
+    updateHighlightedElement: (element: Optional<Element>) => void;
 };
 function setupEventListeners(props: SetupEventListenersProps) {
-    const { root, eventSet, eventPageIdsByTrainingId, trigger, sectionPageIds, setHighlightedElement } = props;
+    const { root, eventSet, eventPageIdsByTrainingId, trigger, sectionPageIds, updateHighlightedElement } = props;
 
     // capture: true - intercept events before component handlers
     // passive: true - don't block scrolling (we only observe, never preventDefault)
     const optsPassive: AddEventListenerOptions = { capture: true, passive: true };
 
-    const getPageIdsForTrainingElement = (element: Element, eventType: EventType): string[] => {
+    const getPageIdsForTrainingElement = (element: Element, eventType: EventListenerTypes): string[] => {
         const trainingId = element.getAttribute("data-training-id");
         if (!trainingId) return [];
 
@@ -104,7 +117,7 @@ function setupEventListeners(props: SetupEventListenersProps) {
         return pageIds.length > 0 ? pageIds : [];
     };
 
-    const findPageIdsFromTarget = (target: EventTarget | null, eventType: EventType): string[] => {
+    const findPageIdsFromTarget = (target: EventTarget | null, eventType: EventListenerTypes): string[] => {
         if (!(target instanceof Element)) return [];
 
         const selector = `[data-training-id]`;
@@ -113,13 +126,13 @@ function setupEventListeners(props: SetupEventListenersProps) {
             const match = element.closest(selector);
 
             if (!match || !root.contains(match)) {
-                setHighlightedElement(undefined);
+                updateHighlightedElement(undefined);
                 return [];
             }
 
             const pageIds = getPageIdsForTrainingElement(match, eventType);
             if (pageIds.length > 0) {
-                setHighlightedElement(match);
+                updateHighlightedElement(match);
                 return pageIds;
             } else {
                 const parent = match.parentElement;
@@ -145,6 +158,10 @@ function setupEventListeners(props: SetupEventListenersProps) {
         trigger({ targetIds: pageIds });
     };
 
+    const handleHover = (e: Event) => {
+        findPageIdsFromTarget(e.target, "hover");
+    };
+
     console.log("Registering event listeners on root:", root);
     console.log("Event set:", Array.from(eventSet));
 
@@ -156,9 +173,12 @@ function setupEventListeners(props: SetupEventListenersProps) {
         console.log("Adding focus listener");
         root.addEventListener("focusin", handleFocus, optsPassive);
     }
+    console.log("Adding mouseover listener");
+    root.addEventListener("mouseover", handleHover, optsPassive);
 
     return () => {
         if (eventSet.has("click")) root.removeEventListener("click", handleClick, optsPassive);
         if (eventSet.has("focus")) root.removeEventListener("focusin", handleFocus, optsPassive);
+        root.removeEventListener("mouseover", handleHover, optsPassive);
     };
 }

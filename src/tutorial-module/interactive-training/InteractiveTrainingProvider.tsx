@@ -24,9 +24,10 @@ type TutorialModuleProps = {
     baseUrl?: string;
     locale?: string;
     events?: TrainingEventKind[];
+    highlightElementsWithBindings?: boolean;
 };
 export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props => {
-    const { baseUrl, locale = "en", events, children } = props;
+    const { baseUrl, locale = "en", events, highlightElementsWithBindings, children } = props;
     const [contents, setContents] = useState<TranslatableText[]>([]);
     const [moduleState, setModuleState] = useState<"default" | "minimized">("minimized");
     const pages = useTrainingPages({ baseUrl: baseUrl || "" });
@@ -57,7 +58,7 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
     const scopeClass = isMinimized ? "training-scope-minimized" : "training-scope";
 
     const contextValue = useMemo(() => ({ pages, trigger, events }), [pages, trigger, events]);
-    const { trainingScopeRef } = useBindEvents(contextValue);
+    const { trainingScopeRef } = useBindEvents({ ...contextValue, highlightElementsWithBindings });
 
     return (
         <InteractiveTrainingContext.Provider value={contextValue}>
