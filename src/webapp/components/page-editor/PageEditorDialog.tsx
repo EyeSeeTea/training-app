@@ -1,7 +1,7 @@
 import React from "react";
 import { TrainingModulePage } from "../../../domain/entities/TrainingModule";
 import { MarkdownEditorDialog, MarkdownEditorDialogProps } from "../markdown-editor/MarkdownEditorDialog";
-import { getDefaultBinding, isBindingType, PageBinding } from "../../../domain/entities/PageBinding";
+import { BindingType, getDefaultBinding, PageBinding } from "../../../domain/entities/PageBinding";
 import i18n from "../../../utils/i18n";
 import { StepPreview } from "../markdown-editor/StepPreview";
 import { PageBindingEditor } from "./PageBindingEditor";
@@ -17,8 +17,6 @@ export type PageEditorProps = {
 
 export const PageEditorDialog: React.FC<PageEditorProps> = props => {
     const { page: initialPage, onSave, onCancel, onUpload } = props;
-
-    console.log("initialPage", initialPage);
 
     const { bindings, ...bindingActions } = usePageBindings(initialPage?.bindings);
 
@@ -68,8 +66,8 @@ export function usePageBindings(initialBindings: PageBinding[] = []) {
     );
 
     const handleChangeType = React.useCallback(
-        (id: string) => (value?: string) => {
-            if (value && isBindingType(value)) {
+        (id: string) => (value?: BindingType) => {
+            if (value) {
                 setBindings(prev =>
                     prev.map(binding =>
                         binding.id === id

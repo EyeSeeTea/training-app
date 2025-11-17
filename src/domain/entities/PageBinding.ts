@@ -113,18 +113,6 @@ export function getDefaultBinding(type: BindingType): PageBinding {
     }
 }
 
-export function isIFrameEventType(value: string): value is IFrameEventType {
-    return IFRAME_EVENT_TYPES.includes(value as IFrameEventType);
-}
-
-export function isEventType(value: string): value is EventType {
-    return EVENT_TYPES.includes(value as EventType);
-}
-
-export function isBindingType(value: string): value is BindingType {
-    return BINDING_TYPES.includes(value as BindingType);
-}
-
 export function urlPatternToRegex(pattern: string): RegExp {
     const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
     const regexPattern = escaped

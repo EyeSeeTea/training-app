@@ -1,4 +1,5 @@
 import {
+    Box,
     Button,
     Grid,
     Paper,
@@ -20,18 +21,17 @@ import {
     EventType,
     IFrameBinding,
     IFrameEventType,
-    isEventType,
-    isIFrameEventType,
     PageBinding,
     SectionBinding,
 } from "../../../domain/entities/PageBinding";
 import i18n from "../../../utils/i18n";
 import { Dropdown } from "@eyeseetea/d2-ui-components";
+import { DropdownItem } from "@eyeseetea/d2-ui-components/dropdown/GenericDropdown";
 
 type EditPageBindingProps = {
     bindings: PageBinding[];
     addBinding: () => void;
-    handleChangeType: (id: string) => (value?: string) => void;
+    handleChangeType: (id: string) => (value?: BindingType) => void;
     handleChange: <B extends PageBinding, K extends keyof B>(id: string) => (key: K, value: B[K]) => void;
     removeBinding: (id: string) => void;
 };
@@ -56,13 +56,15 @@ export const PageBindingEditor: React.FC<EditPageBindingProps> = props => {
                             {bindings.map(binding => (
                                 <TableRow key={binding.id}>
                                     <TableCell>
-                                        <StyledDropdown
-                                            label={i18n.t("Binding type")}
-                                            items={bindingTypeOptions()}
-                                            onChange={handleChangeType(binding.id)}
-                                            value={binding.type}
-                                            hideEmpty
-                                        />
+                                        <DropdownContainer>
+                                            <Dropdown
+                                                label={i18n.t("Binding type")}
+                                                items={bindingTypeOptions()}
+                                                onChange={handleChangeType(binding.id)}
+                                                value={binding.type}
+                                                hideEmpty
+                                            />
+                                        </DropdownContainer>
                                     </TableCell>
                                     <TableCell>
                                         <TextField
@@ -73,7 +75,7 @@ export const PageBindingEditor: React.FC<EditPageBindingProps> = props => {
                                             }
                                         />
                                     </TableCell>
-                                    <TableCell>
+                                    <StyledTableCell>
                                         {binding.type === "event" && (
                                             <EventBindingEditor
                                                 binding={binding}
@@ -92,7 +94,7 @@ export const PageBindingEditor: React.FC<EditPageBindingProps> = props => {
                                                 handleChange={handleChange(binding.id)}
                                             />
                                         )}
-                                    </TableCell>
+                                    </StyledTableCell>
                                     <TableCell>
                                         <Button onClick={() => removeBinding(binding.id)}>
                                             <DeleteOutline />
@@ -123,8 +125,8 @@ export const EventBindingEditor: React.FC<BindingEditor<EventBinding>> = props =
     const { binding, handleChange } = props;
 
     const handleChangeEventType = React.useCallback(
-        (value?: string) => {
-            if (value && isEventType(value)) {
+        (value?: EventType) => {
+            if (value) {
                 handleChange("eventType", value);
             }
         },
@@ -138,12 +140,14 @@ export const EventBindingEditor: React.FC<BindingEditor<EventBinding>> = props =
                 onChange={event => handleChange("trainingIdentifiers", event.target.value)}
                 value={binding.trainingIdentifiers}
             />
-            <StyledDropdown
-                label={i18n.t("Event type")}
-                onChange={handleChangeEventType}
-                value={binding.eventType}
-                items={eventBindingTypeOptions()}
-            />
+            <DropdownContainer>
+                <Dropdown
+                    label={i18n.t("Event type")}
+                    onChange={handleChangeEventType}
+                    value={binding.eventType}
+                    items={eventBindingTypeOptions()}
+                />
+            </DropdownContainer>
         </>
     );
 };
@@ -166,8 +170,8 @@ export const IFrameBindingEditor: React.FC<BindingEditor<IFrameBinding>> = props
     const { binding, handleChange } = props;
 
     const handleChangeEventType = React.useCallback(
-        (value?: string) => {
-            if (value && isIFrameEventType(value)) {
+        (value?: IFrameEventType) => {
+            if (value) {
                 handleChange("eventType", value);
             }
         },
@@ -181,40 +185,36 @@ export const IFrameBindingEditor: React.FC<BindingEditor<IFrameBinding>> = props
                 onChange={event => handleChange("urlPattern", event.target.value)}
                 value={binding.urlPattern}
             />
-            <StyledDropdown
-                label={i18n.t("Event type")}
-                onChange={handleChangeEventType}
-                value={binding.eventType}
-                items={iFrameEventBindingTypeOptions()}
-            />
+            <DropdownContainer>
+                <Dropdown
+                    label={i18n.t("Event type")}
+                    onChange={handleChangeEventType}
+                    value={binding.eventType}
+                    items={iFrameEventTypeOptions()}
+                />
+            </DropdownContainer>
         </>
     );
 };
 
-const bindingTypeTextMap: Record<BindingType, string> = {
-    event: "Event",
-    section: "Section",
-    iframe: "iFrame",
-};
-const bindingTypeOptions = () => {
-    return Object.entries(bindingTypeTextMap).map(([value, text]) => ({ value, text }));
-};
+function bindingTypeOptions(): DropdownItem<BindingType>[] {
+    return [
+        { value: "event", text: i18n.t("Event") },
+        { value: "section", text: i18n.t("Section") },
+        { value: "iframe", text: i18n.t("iFrame") },
+    ];
+}
 
-const iFrameEventTypeTextMap: Record<IFrameEventType, string> = {
-    click: "Click",
-    hover: "Hover",
-    all: "All",
-};
-const iFrameEventBindingTypeOptions = () => {
-    return Object.entries(iFrameEventTypeTextMap).map(([value, text]) => ({ value, text }));
-};
-const eventTypeTextMap: Record<EventType, string> = {
-    focus: "Focus",
-    ...iFrameEventTypeTextMap,
-};
-const eventBindingTypeOptions = () => {
-    return Object.entries(eventTypeTextMap).map(([value, text]) => ({ value, text }));
-};
+function iFrameEventTypeOptions(): DropdownItem<IFrameEventType>[] {
+    return [
+        { value: "click", text: i18n.t("Click") },
+        { value: "hover", text: i18n.t("Hover") },
+        { value: "all", text: i18n.t("All") },
+    ];
+}
+function eventBindingTypeOptions(): DropdownItem<EventType>[] {
+    return [{ value: "focus", text: i18n.t("Focus") }, ...iFrameEventTypeOptions()];
+}
 
 const FlexEnd = styled(Grid)`
     display: flex;
@@ -225,6 +225,16 @@ const StyledTable = styled(Table)`
     table-layout: fixed;
 `;
 
-const StyledDropdown = styled(Dropdown)`
+const StyledTableCell = styled(TableCell)`
+    display: flex;
+`;
+
+const DropdownContainer = styled(Box)`
     margin-top: 8px;
+    label {
+        color: #494949;
+    }
+    div {
+        color: black;
+    }
 `;
