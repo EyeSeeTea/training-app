@@ -11,7 +11,7 @@ import { InteractiveTrainingModal } from "./InteractiveTrainingModal";
 import { useBindEvents } from "./useBindEvents";
 import "./InteractiveTrainingProvider.css";
 
-type TrainingEventKind = "click" | "hover" | "focus" | "section";
+type TrainingEventKind = "click" | "focus" | "section";
 
 export type InteractiveTrainingContextState = {
     pages: TrainingModulePage[];

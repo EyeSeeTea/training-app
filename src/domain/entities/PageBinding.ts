@@ -2,7 +2,7 @@ import { Codec, Schema } from "../../utils/codec";
 import { generateUid } from "../../data/utils/uid";
 import { Optional } from "../../types/utils";
 
-const IFRAME_EVENT_TYPES = ["click", "hover", "all"] as const;
+const IFRAME_EVENT_TYPES = ["click", "all"] as const;
 const EVENT_TYPES = ["focus", ...IFRAME_EVENT_TYPES] as const;
 const BINDING_TYPES = ["event", "section", "iframe"] as const;
 
@@ -10,16 +10,11 @@ export type EventType = typeof EVENT_TYPES[number];
 export type IFrameEventType = typeof IFRAME_EVENT_TYPES[number];
 export type BindingType = typeof BINDING_TYPES[number];
 
-export const IFrameEventTypeModel: Codec<IFrameEventType> = Schema.oneOf([
-    Schema.exact("click"),
-    Schema.exact("hover"),
-    Schema.exact("all"),
-]);
+export const IFrameEventTypeModel: Codec<IFrameEventType> = Schema.oneOf([Schema.exact("click"), Schema.exact("all")]);
 
 export const EventTypeModel: Codec<EventType> = Schema.oneOf([
     Schema.exact("focus"),
     Schema.exact("click"),
-    Schema.exact("hover"),
     Schema.exact("all"),
 ]);
 

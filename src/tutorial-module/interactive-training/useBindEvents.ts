@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { EventType, isEventType } from "../../domain/entities/PageBinding";
+import { EventType } from "../../domain/entities/PageBinding";
 import { Optional } from "../../types/utils";
 import { InteractiveTrainingContextState } from "./InteractiveTrainingProvider";
 import { EventPageIdsByTrainingId, getEventPageIdsByTrainingIdMap, getSectionPageIds } from "./utils";
 import { createLocationObserver } from "./LocaionObserver";
 
 export function useBindEvents(props: InteractiveTrainingContextState) {
-    const { trigger, pages, events = ["click", "focus", "hover", "section"] } = props;
+    const { trigger, pages, events = ["click", "focus", "section"] } = props;
     const noPages = !pages.length;
 
     const pathname = useCurrentPathname();
@@ -15,7 +15,10 @@ export function useBindEvents(props: InteractiveTrainingContextState) {
     const [highlightedElement, setHighlightedElement] = useState<Element>();
     const [lastTriggeredPath, setLastTriggeredPath] = useState("");
 
-    const eventSet = useMemo<Set<EventType>>(() => new Set(events.filter(isEventType) as EventType[]), [events]);
+    const eventSet = useMemo<Set<EventType>>(
+        () => new Set(events.filter(e => e !== "section") as EventType[]),
+        [events]
+    );
 
     const eventPageIdsByTrainingId = useMemo(() => getEventPageIdsByTrainingIdMap(pages, eventSet), [pages, eventSet]);
     const sectionPageIds = useMemo(() => {
@@ -142,13 +145,6 @@ function setupEventListeners(props: SetupEventListenersProps) {
         trigger({ targetIds: pageIds });
     };
 
-    const handleHover = (e: Event) => {
-        const pageIds = findPageIdsFromTarget(e.target, "hover");
-        if (pageIds.length === 0) return;
-        console.log("handleHover fired", e.target);
-        trigger({ targetIds: pageIds });
-    };
-
     console.log("Registering event listeners on root:", root);
     console.log("Event set:", Array.from(eventSet));
 
@@ -160,14 +156,9 @@ function setupEventListeners(props: SetupEventListenersProps) {
         console.log("Adding focus listener");
         root.addEventListener("focusin", handleFocus, optsPassive);
     }
-    if (eventSet.has("hover")) {
-        console.log("Adding mouseover listener");
-        root.addEventListener("mouseover", handleHover, optsPassive);
-    }
 
     return () => {
         if (eventSet.has("click")) root.removeEventListener("click", handleClick, optsPassive);
         if (eventSet.has("focus")) root.removeEventListener("focusin", handleFocus, optsPassive);
-        if (eventSet.has("hover")) root.removeEventListener("mouseover", handleHover, optsPassive);
     };
 }

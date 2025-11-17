@@ -208,7 +208,6 @@ function bindingTypeOptions(): DropdownItem<BindingType>[] {
 function iFrameEventTypeOptions(): DropdownItem<IFrameEventType>[] {
     return [
         { value: "click", text: i18n.t("Click") },
-        { value: "hover", text: i18n.t("Hover") },
         { value: "all", text: i18n.t("All") },
     ];
 }
