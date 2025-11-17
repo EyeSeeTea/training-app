@@ -10,6 +10,7 @@ import { Maybe } from "../../types/utils";
 import { InteractiveTrainingModal } from "./InteractiveTrainingModal";
 import { useBindEvents } from "./useBindEvents";
 import "./InteractiveTrainingProvider.css";
+import { bind } from "./useInteractiveTrainingContext";
 
 type TrainingEventKind = "click" | "focus" | "section";
 
@@ -57,12 +58,19 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
     const isMinimized = moduleState === "minimized";
     const scopeClass = isMinimized ? "training-scope-minimized" : "training-scope";
 
-    const contextValue = useMemo(() => ({ pages, trigger, events }), [pages, trigger, events]);
-    const { trainingScopeRef } = useBindEvents({ ...contextValue, highlightElementsWithBindings });
+    const contextValue = useMemo(
+        () => ({ pages, trigger, events, highlightElementsWithBindings }),
+        [pages, trigger, events, highlightElementsWithBindings]
+    );
+    const { trainingScopeRef } = useBindEvents(contextValue);
 
     return (
         <InteractiveTrainingContext.Provider value={contextValue}>
-            <div ref={trainingScopeRef} className={scopeClass}>
+            <div
+                ref={trainingScopeRef}
+                className={scopeClass}
+                {...bind("interacting-training-default-container binding")}
+            >
                 {children}
             </div>
             {pages.length > 0 && (
@@ -93,14 +101,14 @@ function useTrainingPages(props: UseTrainingPages) {
         if (modules.length === 0) return [];
         return _(modules)
             .flatMap(module => module.contents.steps)
-            .flatMap(step => step.pages.filter(({ bindings }) => bindings.length > 0))
+            .flatMap(step => step.pages.filter(({ bindings = [] }) => bindings.length > 0))
             .value();
     }, [modules]);
 
     useEffect(() => {
         compositionRoot.usecases.modules
             .list()
-            .then(setModules)
+            .then(modules => setModules(modules ?? []))
             .catch(error => {
                 console.error(`No modules found:`, error);
                 setModules([]);

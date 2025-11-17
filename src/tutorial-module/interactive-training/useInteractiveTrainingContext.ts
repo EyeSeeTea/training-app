@@ -12,6 +12,6 @@ export function useInteractiveTrainingContext() {
     };
 }
 
-function bind(id: string) {
+export function bind(id: string) {
     return { "data-training-id": id };
 }
