@@ -23,8 +23,6 @@ export function useBindEvents(props: InteractiveTrainingContextState) {
 
     // use ref to avoid reregistering event listeners
     const currentEventRef = useRef<EventElement>();
-    const domEventSet = new Set(events.filter(e => e !== "section") as EventType[]);
-    const eventPageIdsByTrainingId = getEventPageIdsByTrainingIdMap(pages, domEventSet);
 
     const handleTrigger = useCallback(
         (payload: TriggerPayload) => {
@@ -41,6 +39,9 @@ export function useBindEvents(props: InteractiveTrainingContextState) {
         const root = trainingScopeRef.current;
         if (!root || noPages) return;
 
+        const domEventSet = new Set(events.filter(e => e !== "section") as EventType[]);
+        const eventPageIdsByTrainingId = getEventPageIdsByTrainingIdMap(pages, domEventSet);
+
         return setupEventListeners({
             root,
             eventSet: domEventSet,
@@ -48,7 +49,7 @@ export function useBindEvents(props: InteractiveTrainingContextState) {
             sectionPageIds,
             handleTrigger,
         });
-    }, [sectionPageIds, handleTrigger, noPages]);
+    }, [sectionPageIds, handleTrigger, events, pages, noPages]);
 
     // Handle section-based navigation events
     useEffect(() => {
@@ -57,7 +58,7 @@ export function useBindEvents(props: InteractiveTrainingContextState) {
 
         setLastTriggeredPath(location);
         doTrigger({ targetIds: sectionPageIds });
-    }, [location, sectionPageIds, doTrigger, lastTriggeredPath]);
+    }, [location, sectionPageIds, doTrigger, lastTriggeredPath, noPages, shouldHandleSectionEvent]);
 
     return { trainingScopeRef };
 }

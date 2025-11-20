@@ -26,7 +26,7 @@ export const ContainerConfigDialog: React.FC<ContainerConfigDialogProps> = props
             type: containerType,
             ...sideBarConfig,
         });
-    }, [onSave, sideBarConfig]);
+    }, [onSave, containerType, sideBarConfig]);
 
     const handleSidebarChange = useCallback(<K extends keyof SideBarConfig>(key: K, value: SideBarConfig[K]) => {
         setSideBarConfig(prev => ({
