@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Traning App - UI Interface\n"
-"POT-Creation-Date: 2025-11-13T05:27:36.638Z\n"
+"POT-Creation-Date: 2025-11-20T06:20:35.701Z\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -64,6 +64,33 @@ msgstr "Tutoriels"
 
 msgid "done"
 msgstr "Fait"
+
+msgid "Container Configuration"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Position"
+msgstr "Position"
+
+msgid "Width"
+msgstr ""
+
+msgid "Unit"
+msgstr ""
+
+msgid "Dialog"
+msgstr ""
+
+msgid "Side bar"
+msgstr ""
+
+msgid "Left"
+msgstr ""
+
+msgid "Right"
+msgstr ""
 
 msgid "Export JSON translations"
 msgstr "Exportation des traductions en JSON"
@@ -394,11 +421,11 @@ msgstr "Description"
 msgid "Config"
 msgstr "Configuration"
 
-msgid "Binding type"
-msgstr "Type de liaison"
-
 msgid "Add binding"
 msgstr "Ajouter une liaison"
+
+msgid "Binding type"
+msgstr "Type de liaison"
 
 #, fuzzy
 msgid "Training identifiers"
@@ -408,6 +435,21 @@ msgid "Event type"
 msgstr ""
 
 msgid "URL Pattern"
+msgstr ""
+
+msgid "Event"
+msgstr ""
+
+msgid "iFrame"
+msgstr ""
+
+msgid "Click"
+msgstr ""
+
+msgid "All"
+msgstr ""
+
+msgid "Focus"
 msgstr ""
 
 msgid "Edit contents of {{name}}"
@@ -652,6 +694,12 @@ msgstr "Il n'y a pas de documents inutilisés à nettoyer"
 
 msgid "There are {{total}} documents available to clean"
 msgstr "Il y a {{total}} documents disponibles à nettoyer"
+
+msgid "Configure container for interactive training"
+msgstr ""
+
+msgid "Update container type, dimensions, and position"
+msgstr ""
 
 msgid "Training modules"
 msgstr "Modules de formation"

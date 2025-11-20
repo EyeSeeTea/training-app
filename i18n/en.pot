@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2025-11-13T05:27:36.638Z\n"
-"PO-Revision-Date: 2025-11-13T05:27:36.638Z\n"
+"POT-Creation-Date: 2025-11-20T06:20:35.701Z\n"
+"PO-Revision-Date: 2025-11-20T06:20:35.701Z\n"
 
 msgid "Welcome to training on DHIS2"
 msgstr ""
@@ -63,6 +63,33 @@ msgid "Tutorial"
 msgstr ""
 
 msgid "done"
+msgstr ""
+
+msgid "Container Configuration"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Position"
+msgstr ""
+
+msgid "Width"
+msgstr ""
+
+msgid "Unit"
+msgstr ""
+
+msgid "Dialog"
+msgstr ""
+
+msgid "Side bar"
+msgstr ""
+
+msgid "Left"
+msgstr ""
+
+msgid "Right"
 msgstr ""
 
 msgid "Export JSON translations"
@@ -388,10 +415,10 @@ msgstr ""
 msgid "Config"
 msgstr ""
 
-msgid "Binding type"
+msgid "Add binding"
 msgstr ""
 
-msgid "Add binding"
+msgid "Binding type"
 msgstr ""
 
 msgid "Training identifiers"
@@ -401,6 +428,21 @@ msgid "Event type"
 msgstr ""
 
 msgid "URL Pattern"
+msgstr ""
+
+msgid "Event"
+msgstr ""
+
+msgid "iFrame"
+msgstr ""
+
+msgid "Click"
+msgstr ""
+
+msgid "All"
+msgstr ""
+
+msgid "Focus"
 msgstr ""
 
 msgid "Edit contents of {{name}}"
@@ -606,6 +648,12 @@ msgid "There are no unused documents to clean"
 msgstr ""
 
 msgid "There are {{total}} documents available to clean"
+msgstr ""
+
+msgid "Configure container for interactive training"
+msgstr ""
+
+msgid "Update container type, dimensions, and position"
 msgstr ""
 
 msgid "Training modules"

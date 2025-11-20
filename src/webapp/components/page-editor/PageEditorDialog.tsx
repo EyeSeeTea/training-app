@@ -65,24 +65,6 @@ export function usePageBindings(initialBindings: PageBinding[] = []) {
         []
     );
 
-    const handleChangeType = React.useCallback(
-        (id: string) => (value?: BindingType) => {
-            if (value) {
-                setBindings(prev =>
-                    prev.map(binding =>
-                        binding.id === id
-                            ? {
-                                  ...getDefaultBinding(value),
-                                  id,
-                              }
-                            : binding
-                    )
-                );
-            }
-        },
-        []
-    );
-
     const removeBinding = React.useCallback((id: string) => {
         setBindings(prev => prev.filter(binding => binding.id !== id));
     }, []);
@@ -90,7 +72,6 @@ export function usePageBindings(initialBindings: PageBinding[] = []) {
         bindings,
         addBinding,
         handleChange,
-        handleChangeType,
         removeBinding,
     };
 }

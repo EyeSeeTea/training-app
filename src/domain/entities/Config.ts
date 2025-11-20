@@ -7,6 +7,7 @@ export type Config = {
     showAllModules: boolean;
     logo: string;
     customText: CustomText;
+    containerConfig: ContainerConfig;
 };
 
 export type PartialConfig = RecursivePartial<Config>;
@@ -17,5 +18,17 @@ export function getDefaultConfig({ isDefault }: { isDefault?: Maybe<boolean> } =
         settingsPermissions: { users: [], userGroups: [] },
         customText: getDefaultCustomText({ isDefault }),
         logo: "",
+        containerConfig: defaultContainerConfig,
     };
 }
+
+export type SideBarConfig = {
+    type: "sidebar";
+    position: "left" | "right";
+    width: number;
+    unit: "px" | "%";
+};
+type DialogConfig = { type: "dialog" };
+export type ContainerConfig = SideBarConfig | DialogConfig;
+
+export const defaultContainerConfig: ContainerConfig = { type: "dialog" };

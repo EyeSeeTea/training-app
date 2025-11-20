@@ -2,6 +2,7 @@ import { ConfirmationDialog, ConfirmationDialogProps, useLoading, useSnackbar } 
 import { FormGroup, Icon, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
+
 import { NamedRef } from "../../../domain/entities/Ref";
 import {
     addPage,
@@ -22,6 +23,8 @@ import { useAppContext } from "../../contexts/app-context";
 import { DhisPage } from "../dhis/DhisPage";
 import { CustomizeSettingsDialog } from "../../components/customize-settings-dialog/CustomizeSettingsDialog";
 import { useAppConfigContext } from "../../contexts/AppConfigProvider";
+import { useContainerDialog } from "./useContainerDialog";
+import { ContainerConfigDialog } from "../../components/container-config-dialog/ContainerConfigDialog";
 
 export const SettingsPage: React.FC = () => {
     const { modules, landings, reload, usecases, setAppState, isLoading, isAdmin } = useAppContext();
@@ -30,6 +33,10 @@ export const SettingsPage: React.FC = () => {
 
     const snackbar = useSnackbar();
     const loading = useLoading();
+    const { onOpen: onOpenContainerConfig, containerConfigDialogProps } = useContainerDialog({
+        containerConfig: appConfig.containerConfig,
+        save: save,
+    });
 
     const [permissionsType, setPermissionsType] = useState<string | null>(null);
     const [showCustomSettings, setShowCustomSettings] = useState(false);
@@ -210,6 +217,7 @@ export const SettingsPage: React.FC = () => {
                     logo={logoInfo.logoPath}
                 />
             )}
+            {containerConfigDialogProps && <ContainerConfigDialog {...containerConfigDialogProps} />}
 
             {!!permissionsType && (
                 <PermissionsDialog
@@ -288,6 +296,16 @@ export const SettingsPage: React.FC = () => {
                             />
                         </ListItem>
                     )}
+
+                    <ListItem button onClick={onOpenContainerConfig}>
+                        <ListItemIcon>
+                            <Icon>web_asset</Icon>
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={i18n.t("Configure container for interactive training")}
+                            secondary={i18n.t("Update container type, dimensions, and position")}
+                        />
+                    </ListItem>
                 </Group>
 
                 <Title>{i18n.t("Landing page")}</Title>
