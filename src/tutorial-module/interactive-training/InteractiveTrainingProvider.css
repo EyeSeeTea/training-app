@@ -1,4 +1,4 @@
-.training-scope .training-highlight {
+.training-scope.highlight-training-elements [data-training-id]  {
     all: unset;
     box-sizing: border-box;
 

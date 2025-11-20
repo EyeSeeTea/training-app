@@ -29,12 +29,16 @@ type TutorialModuleProps = {
 };
 export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props => {
     const { baseUrl, locale = "en", events, highlightElementsWithBindings, children } = props;
-    const [contents, setContents] = useState<TranslatableText[]>([]);
-    const [moduleState, setModuleState] = useState<"default" | "minimized">("minimized");
+
     const pages = useTrainingPages({ baseUrl: baseUrl || "" });
 
-    const pageMap = useMemo(() => _.keyBy(pages, p => p.id), [pages]);
+    const [contents, setContents] = useState<TranslatableText[]>([]);
+    const [moduleState, setModuleState] = useState<"default" | "minimized">("minimized");
 
+    const isMinimized = moduleState === "minimized";
+    const highlightClass = highlightElementsWithBindings ? "highlight-training-elements" : "";
+
+    const pageMap = useMemo(() => _.keyBy(pages, p => p.id), [pages]);
     const translateMethod = useMemo(() => buildTranslate(locale), [locale]);
 
     const trigger = useCallback(
@@ -45,9 +49,7 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
                 .compact()
                 .value();
             console.log("trigger", props, targetPages, targetIds);
-            if (targetPages.length > 0) {
-                setContents(targetPages);
-            }
+            setContents(targetPages);
         },
         [pageMap]
     );
@@ -55,20 +57,15 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
     const minimizeTraining = useCallback(() => {
         setModuleState("minimized");
     }, []);
-    const isMinimized = moduleState === "minimized";
-    const scopeClass = isMinimized ? "training-scope-minimized" : "training-scope";
 
-    const contextValue = useMemo(
-        () => ({ pages, trigger, events, highlightElementsWithBindings }),
-        [pages, trigger, events, highlightElementsWithBindings]
-    );
+    const contextValue = useMemo(() => ({ pages, trigger, events }), [pages, trigger, events]);
     const { trainingScopeRef } = useBindEvents(contextValue);
 
     return (
         <InteractiveTrainingContext.Provider value={contextValue}>
             <div
                 ref={trainingScopeRef}
-                className={scopeClass}
+                className={`training-scope ${highlightClass}`}
                 {...bind("interacting-training-default-container binding")}
             >
                 {children}

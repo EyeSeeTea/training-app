@@ -6,10 +6,7 @@ export function useInteractiveTrainingContext() {
     if (!context) {
         throw new Error("useInteractiveTrainingContext must be used within InteractiveTrainingProvider");
     }
-    return {
-        bind: bind,
-        ...context,
-    };
+    return context;
 }
 
 export function bind(id: string) {

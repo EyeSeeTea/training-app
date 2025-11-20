@@ -1,66 +1,40 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { EventType } from "../../domain/entities/PageBinding";
-import { Optional } from "../../types/utils";
+import { EVENT_TYPE, EventType } from "../../domain/entities/PageBinding";
+import { Maybe } from "../../types/utils";
 import { InteractiveTrainingContextState } from "./InteractiveTrainingProvider";
 import { EventPageIdsByTrainingId, getEventPageIdsByTrainingIdMap, getSectionPageIds } from "./utils";
-import { createLocationObserver } from "./LocaionObserver";
+import { useCurrentLocation } from "./useCurrentLocation";
 
-type UseBindingEventProps = InteractiveTrainingContextState & {
-    highlightElementsWithBindings?: boolean;
-};
-type EventElement = { element: Element; trigger?: EventType };
+type EventElement = { element?: Element; trigger?: EventType };
 type TriggerPayload = EventElement & {
     targetIds: string[];
 };
 
-export function useBindEvents(props: UseBindingEventProps) {
-    const {
-        trigger: doTrigger,
-        pages,
-        events = ["click", "focus", "section"],
-        highlightElementsWithBindings = false,
-    } = props;
+export function useBindEvents(props: InteractiveTrainingContextState) {
+    const { trigger: doTrigger, pages, events = ["click", "focus", "section"] } = props;
     const noPages = pages.length === 0;
     const shouldHandleSectionEvent = events.includes("section");
 
-    const pathname = useCurrentPathname();
     const trainingScopeRef = useRef<HTMLDivElement>(null);
-    const [highlightedElement, setHighlightedElement] = useState<Element>();
-    const [currentEvent, setCurrentEvent] = useState<EventElement>();
     const [lastTriggeredPath, setLastTriggeredPath] = useState("");
+    const location = useCurrentLocation();
+    const sectionPageIds = useMemo(() => getSectionPageIds(location, pages), [location, pages]);
 
-    const domEventSet = useMemo<Set<EventType>>(
-        () => new Set(events.filter(e => e !== "section") as EventType[]),
-        [events]
-    );
-
-    const eventPageIdsByTrainingId = useMemo(
-        () => getEventPageIdsByTrainingIdMap(pages, domEventSet),
-        [pages, domEventSet]
-    );
-
-    const sectionPageIds = useMemo(() => getSectionPageIds(pathname, pages), [pathname, pages]);
-
-    const updateHighlightedElement = useCallback(
-        (element: Optional<Element>) => {
-            if (highlightElementsWithBindings) {
-                setHighlightedElement(element);
-            }
-        },
-        [highlightElementsWithBindings]
-    );
+    // use ref to avoid reregistering event listeners
+    const currentEventRef = useRef<EventElement>();
+    const domEventSet = new Set(events.filter(e => e !== "section") as EventType[]);
+    const eventPageIdsByTrainingId = getEventPageIdsByTrainingIdMap(pages, domEventSet);
 
     const handleTrigger = useCallback(
         (payload: TriggerPayload) => {
             const { targetIds, ...nextEvent } = payload;
-
-            if (shouldTriggerNextEvent(currentEvent, nextEvent)) {
+            if (shouldTriggerNextEvent(currentEventRef.current, nextEvent)) {
                 doTrigger({ targetIds });
-                setCurrentEvent(nextEvent);
+                currentEventRef.current = nextEvent;
             }
         },
-        [currentEvent, doTrigger]
+        [doTrigger]
     );
 
     useEffect(() => {
@@ -73,72 +47,31 @@ export function useBindEvents(props: UseBindingEventProps) {
             eventPageIdsByTrainingId,
             sectionPageIds,
             handleTrigger,
-            updateHighlightedElement,
-            highlightElementsWithBindings,
         });
-    }, [domEventSet, eventPageIdsByTrainingId, sectionPageIds, handleTrigger, updateHighlightedElement, noPages]);
+    }, [sectionPageIds, handleTrigger, noPages]);
 
     // Handle section-based navigation events
     useEffect(() => {
-        if (!shouldHandleSectionEvent || !sectionPageIds.length || noPages) return;
-        if (lastTriggeredPath === pathname) return;
+        if (!shouldHandleSectionEvent || noPages) return;
+        if (lastTriggeredPath === location) return;
 
-        setLastTriggeredPath(pathname);
+        setLastTriggeredPath(location);
         doTrigger({ targetIds: sectionPageIds });
-    }, [pathname, sectionPageIds, doTrigger, shouldHandleSectionEvent, lastTriggeredPath, noPages]);
-
-    // Apply highlight styling
-    useEffect(() => {
-        if (!highlightElementsWithBindings || !highlightedElement || noPages) return;
-
-        highlightedElement.classList.add("training-highlight");
-        return () => highlightedElement.classList.remove("training-highlight");
-    }, [highlightedElement, highlightElementsWithBindings, noPages]);
+    }, [location, sectionPageIds, doTrigger, lastTriggeredPath]);
 
     return { trainingScopeRef };
 }
 
-function useCurrentPathname() {
-    const [url, setUrl] = useState(() => window.location.pathname + window.location.hash);
-    const observerRef = useRef<ReturnType<typeof createLocationObserver>>();
-
-    useEffect(() => {
-        if (!observerRef.current) {
-            observerRef.current = createLocationObserver();
-        }
-
-        const handleChange = () => {
-            setUrl(window.location.pathname + window.location.hash);
-        };
-
-        return observerRef.current.subscribe(handleChange);
-    }, []);
-
-    return url;
-}
-
 type EventListenerType = EventType | "hover";
-
 type SetupEventListenersProps = {
     root: HTMLDivElement;
     eventSet: Set<EventType>;
     eventPageIdsByTrainingId: EventPageIdsByTrainingId;
     sectionPageIds: string[];
     handleTrigger: (payload: TriggerPayload) => void;
-    updateHighlightedElement: (element: Optional<Element>) => void;
-    highlightElementsWithBindings: boolean;
 };
-
 function setupEventListeners(props: SetupEventListenersProps) {
-    const {
-        root,
-        eventSet,
-        eventPageIdsByTrainingId,
-        sectionPageIds,
-        handleTrigger,
-        updateHighlightedElement,
-        highlightElementsWithBindings,
-    } = props;
+    const { root, eventSet, eventPageIdsByTrainingId, sectionPageIds, handleTrigger } = props;
 
     const eventOptions: AddEventListenerOptions = {
         capture: true, // Intercept events before component handlers
@@ -148,7 +81,7 @@ function setupEventListeners(props: SetupEventListenersProps) {
     const getPageIdsForElement = (
         element: Element,
         eventType: EventListenerType
-    ): Optional<{ pageIds: string[]; trigger?: EventListenerType }> => {
+    ): Maybe<{ pageIds: string[]; trigger?: EventListenerType }> => {
         const trainingId = element.getAttribute("data-training-id");
         if (!trainingId) return undefined;
 
@@ -161,95 +94,64 @@ function setupEventListeners(props: SetupEventListenersProps) {
         return { pageIds: sectionPageIds };
     };
 
-    const findTrainingElement = (
-        target: EventTarget | null,
-        eventType: EventListenerType
-    ): Optional<TriggerPayload> => {
+    const findTrainingElement = (target: EventTarget | null, eventType: EventListenerType): Maybe<TriggerPayload> => {
         if (!(target instanceof Element)) return undefined;
+        const defaultResult = { element: target, targetIds: [] };
 
-        const searchUpwards = (element: Element): Optional<TriggerPayload> => {
+        const searchUpwards = (element: Element): Maybe<TriggerPayload> => {
             const match = element.closest("[data-training-id]");
 
             if (!match || !root.contains(match)) {
-                updateHighlightedElement(undefined);
-                return undefined;
+                return defaultResult;
             }
 
             const result = getPageIdsForElement(match, eventType);
             if (result?.pageIds?.length) {
-                updateHighlightedElement(match);
                 return {
-                    element: match,
                     targetIds: result.pageIds,
                     trigger: result.trigger === "hover" ? undefined : result.trigger,
+                    element: target,
                 };
             }
 
             const parent = match.parentElement;
-            return parent ? searchUpwards(parent) : undefined;
+            return parent ? searchUpwards(parent) : defaultResult;
         };
 
         return searchUpwards(target);
     };
 
-    const handleClick = (e: Event) => {
-        const payload = findTrainingElement(e.target, "click");
-        if (!payload) return;
-
-        console.log("Click event triggered", e.target);
+    const handleEvent = (eventType: EventType) => (e: Event) => {
+        const payload = findTrainingElement(e.target, eventType);
+        if (!payload) return handleTrigger({ targetIds: [] });
         handleTrigger(payload);
     };
 
-    const handleFocus = (e: Event) => {
-        const payload = findTrainingElement(e.target, "focus");
-        if (!payload) return;
+    console.debug("Registering event listeners on root:", root);
+    console.debug("Event types:", Array.from(eventSet));
+    const clickHandler = handleEvent(EVENT_TYPE.click);
+    const focusHandler = handleEvent(EVENT_TYPE.focus);
 
-        console.log("Focus event triggered", e.target);
-        handleTrigger(payload);
-    };
-
-    const handleHover = (e: Event) => {
-        findTrainingElement(e.target, "hover");
-    };
-
-    console.log("Registering event listeners on root:", root);
-    console.log("Event types:", Array.from(eventSet));
-
-    // Register event listeners
-    if (eventSet.has("click")) {
-        console.log("Registering click listener");
-        root.addEventListener("click", handleClick, eventOptions);
+    if (eventSet.has(EVENT_TYPE.click)) {
+        root.addEventListener("click", clickHandler, eventOptions);
     }
-    if (eventSet.has("focus")) {
-        console.log("Registering focus listener");
-        root.addEventListener("focusin", handleFocus, eventOptions);
+    if (eventSet.has(EVENT_TYPE.focus)) {
+        root.addEventListener("focusin", focusHandler, eventOptions);
     }
-    if (highlightElementsWithBindings) {
-        root.addEventListener("mouseover", handleHover, eventOptions);
-        root.addEventListener("mouseover", handleHover, eventOptions);
-    }
-
-    // Cleanup function
     return () => {
-        if (eventSet.has("click")) root.removeEventListener("click", handleClick, eventOptions);
-        if (eventSet.has("focus")) root.removeEventListener("focusin", handleFocus, eventOptions);
-        if (highlightElementsWithBindings) root.removeEventListener("mouseover", handleHover, eventOptions);
+        if (eventSet.has("click")) root.removeEventListener("click", clickHandler, eventOptions);
+        if (eventSet.has("focus")) root.removeEventListener("focusin", focusHandler, eventOptions);
     };
 }
 
 //Priority order: focus > click > all
-function shouldTriggerNextEvent(prevEvent: Optional<EventElement>, nextEvent: Optional<EventElement>): boolean {
-    if (!prevEvent) return true;
-    if (!nextEvent) return false;
+function shouldTriggerNextEvent(prevEvent: Maybe<EventElement>, nextEvent: Maybe<EventElement>): boolean {
+    if (!prevEvent || !nextEvent) return true;
 
-    // Different elements or no previous trigger -> allow
-    if (prevEvent.element !== nextEvent.element || !prevEvent.trigger) return true;
+    const isDifferentElement = prevEvent.element !== nextEvent.element;
+    const isFirstTrigger = !prevEvent.trigger;
+    const isFocusEvent = nextEvent.trigger === "focus";
+    const isClickOverridingAll = nextEvent.trigger === "click" && prevEvent.trigger === "all";
 
-    // Focus events have highest priority
-    if (nextEvent.trigger === "focus") return true;
-
-    // Click events override 'all' events
-    if (nextEvent.trigger === "click" && prevEvent.trigger === "all") return true;
-
-    return false;
+    return isDifferentElement || isFirstTrigger || isFocusEvent || isClickOverridingAll;
 }
