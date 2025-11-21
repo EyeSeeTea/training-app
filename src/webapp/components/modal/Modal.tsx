@@ -27,7 +27,7 @@ export const Modal: React.FC<ModalProps> = ({
 
     useEffect(() => {
         if (resetPositionOnMinimize) setPosition({ x: 0, y: 0 });
-    }, [minimized]);
+    }, [minimized, resetPositionOnMinimize]);
 
     return (
         <DragContainer disabled={!allowDrag} handle={`#${dragId}`} position={position} onDrag={clearPosition}>
