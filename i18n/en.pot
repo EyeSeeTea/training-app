@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2025-11-21T01:03:34.445Z\n"
-"PO-Revision-Date: 2025-11-21T01:03:34.445Z\n"
+"POT-Creation-Date: 2025-11-21T05:35:53.502Z\n"
+"PO-Revision-Date: 2025-11-21T05:35:53.502Z\n"
 
 msgid "Welcome to training on DHIS2"
 msgstr ""
@@ -436,16 +436,13 @@ msgstr ""
 msgid "Event"
 msgstr ""
 
-msgid "iFrame"
-msgstr ""
-
 msgid "Click"
 msgstr ""
 
-msgid "All"
+msgid "Focus"
 msgstr ""
 
-msgid "Focus"
+msgid "All"
 msgstr ""
 
 msgid "Edit contents of {{name}}"

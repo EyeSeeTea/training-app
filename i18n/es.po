@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Traning App - UI Interface\n"
-"POT-Creation-Date: 2025-11-21T01:03:34.445Z\n"
+"POT-Creation-Date: 2025-11-21T05:35:53.502Z\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -442,16 +442,13 @@ msgstr ""
 msgid "Event"
 msgstr ""
 
-msgid "iFrame"
-msgstr ""
-
 msgid "Click"
 msgstr ""
 
-msgid "All"
+msgid "Focus"
 msgstr ""
 
-msgid "Focus"
+msgid "All"
 msgstr ""
 
 msgid "Edit contents of {{name}}"
