@@ -32,7 +32,7 @@ type TutorialModuleProps = {
 export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props => {
     const { baseUrl, locale = "en", events, highlightElementsWithBindings, children } = props;
 
-    const { pages, containerConfig } = useTrainingData({ baseUrl: baseUrl || "" });
+    const { pages, containerConfig, d2Api } = useTrainingData({ baseUrl: baseUrl || "" });
 
     const [moduleState, setModuleState] = useState<"default" | "minimized">("minimized");
     const [contents, setContents] = useState<TranslatableText[]>([]);
@@ -40,10 +40,10 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
     const pageMap = useMemo(() => _.keyBy(pages, p => p.id), [pages]);
     const translateMethod = useMemo(() => buildTranslate(locale), [locale]);
 
-    const textContent = useMemo(
-        () => contents.reduce((acc, content) => `${acc}\n\n${translateMethod(content)}`, ""),
-        [contents, translateMethod]
-    );
+    const textContent = useMemo(() => {
+        const translatedContent = contents.reduce((acc, content) => `${acc}\n\n${translateMethod(content)}`, "");
+        return baseUrl ? transformDocumentUrls(translatedContent, d2Api.apiPath) : translatedContent;
+    }, [contents, translateMethod, baseUrl, d2Api.apiPath]);
 
     const trigger = useCallback(
         (props: { targetIds: string[] }) => {
@@ -95,7 +95,8 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
 type UseTrainingData = { baseUrl: string };
 function useTrainingData(props: UseTrainingData) {
     const { baseUrl } = props;
-    const compositionRoot = useMemo(() => getCompositionRoot(new D2Api({ baseUrl: baseUrl })), [baseUrl]);
+    const d2Api = useMemo(() => new D2Api({ baseUrl }), [baseUrl]);
+    const compositionRoot = useMemo(() => getCompositionRoot(d2Api), [d2Api]);
     const [modules, setModules] = useState<TrainingModule[]>([]);
     const [containerConfig, setContainerConfig] = useState(defaultContainerConfig);
 
@@ -125,9 +126,13 @@ function useTrainingData(props: UseTrainingData) {
             });
     }, [compositionRoot]);
 
-    return { pages, containerConfig };
+    return { pages, containerConfig, d2Api };
 }
 
 const ActionButtonContainer = styled.div<{ hidden: boolean }>`
     visibility: ${({ hidden }) => (hidden ? "hidden" : "visible")};
 `;
+
+function transformDocumentUrls(content: string, apiBaseUrl: string): string {
+    return content.replace(/\.\.\/..\/(documents\/[^)\s"']+)/g, `${apiBaseUrl}/$1`);
+}
