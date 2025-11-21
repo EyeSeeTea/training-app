@@ -20,8 +20,6 @@ import {
     BindingType,
     EventBinding,
     EventType,
-    IFrameBinding,
-    IFrameEventType,
     PageBinding,
     SectionBinding,
 } from "../../../domain/entities/PageBinding";
@@ -106,7 +104,6 @@ const Binding: React.FC<BindingEditor> = props => {
             <StyledTableCell>
                 {binding.type === "event" && <EventBindingEditor binding={binding} handleChange={handleChange} />}
                 {binding.type === "section" && <SectionBindingEditor binding={binding} handleChange={handleChange} />}
-                {binding.type === "iframe" && <IFrameBindingEditor binding={binding} handleChange={handleChange} />}
             </StyledTableCell>
         </>
     );
@@ -149,46 +146,19 @@ const SectionBindingEditor: React.FC<BindingEditor<SectionBinding>> = props => {
     );
 };
 
-const IFrameBindingEditor: React.FC<BindingEditor<IFrameBinding>> = props => {
-    const { binding, handleChange } = props;
-
-    return (
-        <>
-            <TextField
-                label={i18n.t("URL Pattern")}
-                onChange={event => handleChange("urlPattern", event.target.value)}
-                value={binding.urlPattern}
-            />
-            <StyledDropdown
-                label={i18n.t("Event type")}
-                onChange={value => {
-                    if (value) handleChange("eventType", value);
-                }}
-                value={binding.eventType}
-                items={iFrameEventTypeOptions()}
-                hideEmpty
-            />
-        </>
-    );
-};
-
 function bindingTypeOptions(): DropdownItem<BindingType>[] {
     return [
         { value: "event", text: i18n.t("Event") },
         { value: "section", text: i18n.t("Section") },
-        { value: "iframe", text: i18n.t("iFrame") },
-    ];
-}
-
-function iFrameEventTypeOptions(): DropdownItem<IFrameEventType>[] {
-    return [
-        { value: "click", text: i18n.t("Click") },
-        { value: "all", text: i18n.t("All") },
     ];
 }
 
 function eventBindingTypeOptions(): DropdownItem<EventType>[] {
-    return [{ value: "focus", text: i18n.t("Focus") }, ...iFrameEventTypeOptions()];
+    return [
+        { value: "click", text: i18n.t("Click") },
+        { value: "focus", text: i18n.t("Focus") },
+        { value: "all", text: i18n.t("All") },
+    ];
 }
 
 const FlexEnd = styled(Grid)`

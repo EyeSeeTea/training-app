@@ -8,15 +8,11 @@ export const EVENT_TYPE = {
     all: "all",
 } as const;
 
-const IFRAME_EVENT_TYPES = [EVENT_TYPE.click, EVENT_TYPE.all] as const;
-const EVENT_TYPES = [EVENT_TYPE.focus, ...IFRAME_EVENT_TYPES] as const;
-const BINDING_TYPES = ["event", "section", "iframe"] as const;
+const EVENT_TYPES = [EVENT_TYPE.click, EVENT_TYPE.focus, EVENT_TYPE.all] as const;
+const BINDING_TYPES = ["event", "section"] as const;
 
 export type EventType = typeof EVENT_TYPES[number];
-export type IFrameEventType = typeof IFRAME_EVENT_TYPES[number];
 export type BindingType = typeof BINDING_TYPES[number];
-
-export const IFrameEventTypeModel: Codec<IFrameEventType> = Schema.oneOf([Schema.exact("click"), Schema.exact("all")]);
 
 export const EventTypeModel: Codec<EventType> = Schema.oneOf([
     Schema.exact("focus"),
@@ -40,13 +36,7 @@ export type SectionBinding = BaseBinding & {
     urlPattern: string;
 };
 
-export type IFrameBinding = BaseBinding & {
-    type: "iframe";
-    urlPattern: string;
-    eventType: IFrameEventType;
-};
-
-export type PageBinding = EventBinding | SectionBinding | IFrameBinding;
+export type PageBinding = EventBinding | SectionBinding;
 
 const baseEventBinding = {
     id: Schema.nonEmptyString,
@@ -66,18 +56,7 @@ export const SectionBindingModel: Codec<SectionBinding> = Schema.object({
     urlPattern: Schema.nonEmptyString,
 });
 
-export const IframeBindingModel: Codec<IFrameBinding> = Schema.object({
-    ...baseEventBinding,
-    type: Schema.exact("iframe"),
-    urlPattern: Schema.nonEmptyString,
-    eventType: IFrameEventTypeModel,
-});
-
-export const PageBindingModel: Codec<PageBinding> = Schema.oneOf([
-    EventBindingModel,
-    SectionBindingModel,
-    IframeBindingModel,
-]);
+export const PageBindingModel: Codec<PageBinding> = Schema.oneOf([EventBindingModel, SectionBindingModel]);
 
 const defaultEventBinding = (): EventBinding => ({
     id: generateUid(),
@@ -94,20 +73,10 @@ const defaultSectionBinding = (): SectionBinding => ({
     urlPattern: "*/*",
 });
 
-const defaultIFrameBinding = (): IFrameBinding => ({
-    id: generateUid(),
-    description: undefined,
-    type: "iframe",
-    urlPattern: "*/*",
-    eventType: "click",
-});
-
 export function getDefaultBinding(type: BindingType): PageBinding {
     switch (type) {
         case "section":
             return defaultSectionBinding();
-        case "iframe":
-            return defaultIFrameBinding();
         case "event":
         default:
             return defaultEventBinding();
