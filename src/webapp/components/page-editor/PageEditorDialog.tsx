@@ -1,7 +1,8 @@
 import React from "react";
+
 import { TrainingModulePage } from "../../../domain/entities/TrainingModule";
 import { MarkdownEditorDialog, MarkdownEditorDialogProps } from "../markdown-editor/MarkdownEditorDialog";
-import { BindingType, getDefaultBinding, PageBinding } from "../../../domain/entities/PageBinding";
+import { getDefaultBinding, PageBinding } from "../../../domain/entities/PageBinding";
 import i18n from "../../../utils/i18n";
 import { StepPreview } from "../markdown-editor/StepPreview";
 import { PageBindingEditor } from "./PageBindingEditor";
@@ -68,6 +69,7 @@ export function usePageBindings(initialBindings: PageBinding[] = []) {
     const removeBinding = React.useCallback((id: string) => {
         setBindings(prev => prev.filter(binding => binding.id !== id));
     }, []);
+
     return {
         bindings,
         addBinding,

@@ -33,25 +33,27 @@ export const ActionButton: React.FC<ActionButtonProps> = ({ onClick }) => {
 };
 
 const StyledFab = styled(Fab)`
-    position: fixed;
-    margin: 6px;
-    bottom: 20px;
-    right: 40px;
-    display: inline-flex;
-    cursor: pointer;
-    pointer-events: auto;
-    align-items: center;
-    padding: 0px 20px;
-    color: #fff;
-    background-color: #276696;
-    border-color: #367fa9;
-    border-radius: 100px;
+    &.MuiFab-root {
+        position: fixed;
+        margin: 6px;
+        bottom: 20px;
+        right: 40px;
+        display: inline-flex;
+        cursor: pointer;
+        pointer-events: auto;
+        align-items: center;
+        padding: 0px 20px;
+        color: #fff;
+        background-color: #276696;
+        border-color: #367fa9;
+        border-radius: 100px;
 
-    :hover {
-        background-color: #3c8dbc;
-    }
+        :hover {
+            background-color: #3c8dbc;
+        }
 
-    svg {
-        margin-right: 6px;
+        svg {
+            margin-right: 6px;
+        }
     }
 `;

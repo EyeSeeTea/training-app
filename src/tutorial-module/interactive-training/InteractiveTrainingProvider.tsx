@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from "react";
 import _ from "lodash";
+import styled from "styled-components";
 
 import { TrainingModule, TrainingModulePage } from "../../domain/entities/TrainingModule";
 import { getCompositionRoot } from "../../webapp/CompositionRoot";
@@ -7,10 +8,11 @@ import { buildTranslate, TranslatableText } from "../../domain/entities/Translat
 import { ActionButton } from "../../webapp/components/action-button/ActionButton";
 import { D2Api } from "../../types/d2-api";
 import { Maybe } from "../../types/utils";
-import { InteractiveTrainingModal } from "./InteractiveTrainingModal";
 import { useBindEvents } from "./useBindEvents";
 import "./InteractiveTrainingProvider.css";
 import { bind } from "./useInteractiveTrainingContext";
+import { defaultContainerConfig } from "../../domain/entities/Config";
+import { TrainingContainer } from "./TrainingContainer";
 
 type TrainingEventKind = "click" | "focus" | "section";
 
@@ -30,16 +32,18 @@ type TutorialModuleProps = {
 export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props => {
     const { baseUrl, locale = "en", events, highlightElementsWithBindings, children } = props;
 
-    const pages = useTrainingPages({ baseUrl: baseUrl || "" });
+    const { pages, containerConfig } = useTrainingData({ baseUrl: baseUrl || "" });
 
-    const [contents, setContents] = useState<TranslatableText[]>([]);
     const [moduleState, setModuleState] = useState<"default" | "minimized">("minimized");
-
-    const isMinimized = moduleState === "minimized";
-    const highlightClass = highlightElementsWithBindings ? "highlight-training-elements" : "";
+    const [contents, setContents] = useState<TranslatableText[]>([]);
 
     const pageMap = useMemo(() => _.keyBy(pages, p => p.id), [pages]);
     const translateMethod = useMemo(() => buildTranslate(locale), [locale]);
+
+    const textContent = useMemo(
+        () => contents.reduce((acc, content) => `${acc}\n\n${translateMethod(content)}`, ""),
+        [contents, translateMethod]
+    );
 
     const trigger = useCallback(
         (props: { targetIds: string[] }) => {
@@ -48,7 +52,6 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
                 .map(targetId => pageMap[targetId])
                 .compact()
                 .value();
-            console.log("trigger", props, targetPages, targetIds);
             setContents(targetPages);
         },
         [pageMap]
@@ -58,41 +61,43 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
         setModuleState("minimized");
     }, []);
 
+    const isMinimized = moduleState === "minimized";
+    const containerClass = `training-scope ${highlightElementsWithBindings ? "highlight-training-elements" : ""}`;
+
     const contextValue = useMemo(() => ({ pages, trigger, events }), [pages, trigger, events]);
     const { trainingScopeRef } = useBindEvents(contextValue);
 
     return (
         <InteractiveTrainingContext.Provider value={contextValue}>
-            <div
-                ref={trainingScopeRef}
-                className={`training-scope ${highlightClass}`}
-                {...bind("interacting-training-default-container binding")}
+            <TrainingContainer
+                containerConfig={containerConfig}
+                content={textContent}
+                isMinimized={isMinimized}
+                onMinimize={minimizeTraining}
             >
-                {children}
-            </div>
+                <div
+                    ref={trainingScopeRef}
+                    className={containerClass}
+                    {...bind("interacting-training-default-container")}
+                >
+                    {children}
+                </div>
+            </TrainingContainer>
             {pages.length > 0 && (
-                <>
-                    {isMinimized ? (
-                        <ActionButton onClick={() => setModuleState("default")} />
-                    ) : (
-                        <InteractiveTrainingModal
-                            translate={translateMethod}
-                            minimized={isMinimized}
-                            contents={contents}
-                            onMinimize={minimizeTraining}
-                        />
-                    )}
-                </>
+                <ActionButtonContainer hidden={!isMinimized}>
+                    <ActionButton onClick={() => setModuleState("default")} />
+                </ActionButtonContainer>
             )}
         </InteractiveTrainingContext.Provider>
     );
 };
 
-type UseTrainingPages = { baseUrl: string };
-function useTrainingPages(props: UseTrainingPages) {
+type UseTrainingData = { baseUrl: string };
+function useTrainingData(props: UseTrainingData) {
     const { baseUrl } = props;
     const compositionRoot = useMemo(() => getCompositionRoot(new D2Api({ baseUrl: baseUrl })), [baseUrl]);
     const [modules, setModules] = useState<TrainingModule[]>([]);
+    const [containerConfig, setContainerConfig] = useState(defaultContainerConfig);
 
     const pages = useMemo(() => {
         if (modules.length === 0) return [];
@@ -107,10 +112,22 @@ function useTrainingPages(props: UseTrainingPages) {
             .list()
             .then(modules => setModules(modules ?? []))
             .catch(error => {
-                console.error(`No modules found:`, error);
+                console.error(`Error fetching modules:`, error);
                 setModules([]);
+            });
+
+        compositionRoot.usecases.config
+            .get()
+            .then(config => setContainerConfig(config.containerConfig))
+            .catch(error => {
+                console.error(`Error fetching container config:`, error);
+                setContainerConfig(defaultContainerConfig);
             });
     }, [compositionRoot]);
 
-    return pages;
+    return { pages, containerConfig };
 }
+
+const ActionButtonContainer = styled.div<{ hidden: boolean }>`
+    visibility: ${({ hidden }) => (hidden ? "hidden" : "visible")};
+`;

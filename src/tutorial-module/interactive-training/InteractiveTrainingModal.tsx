@@ -1,24 +1,18 @@
 import styled from "styled-components";
-import React, { useMemo } from "react";
+import React from "react";
+
 import { Modal, ModalContent } from "../../webapp/components/modal";
 import { MarkdownViewer } from "../../webapp/components/markdown-viewer/MarkdownViewer";
-import { TranslatableText, TranslateMethod } from "../../domain/entities/TranslatableText";
 
 type TrainingModalProps = {
-    contents: TranslatableText[];
-    translate: TranslateMethod;
+    content: string;
 };
 
 export const InteractiveTrainingModal: React.FC<React.ComponentProps<typeof Modal> & TrainingModalProps> = props => {
-    const { contents, translate, onMinimize } = props;
-
-    const content = useMemo(
-        () => contents.reduce((acc, content) => `${acc}\n\n${translate(content)}`, ""),
-        [contents, translate]
-    );
+    const { content, ...modalProps } = props;
 
     return (
-        <StyledModal onMinimize={onMinimize} centerChildren={true}>
+        <StyledModal {...modalProps} centerChildren={true} allowDrag={true} resetPositionOnMinimize={false}>
             <ModalContent>{content && <MarkdownViewer source={content} />}</ModalContent>
         </StyledModal>
     );
@@ -30,6 +24,8 @@ const StyledModal = styled(Modal)`
     bottom: 20px;
     right: 40px;
     min-width: 600px;
+
+    visibility: ${({ minimized }) => (minimized ? "hidden" : "visible")};
 
     .MuiPaper-root {
         padding: ${({ minimized }) => (minimized ? "35px 0px 20px" : "inherit")};
