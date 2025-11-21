@@ -10,12 +10,13 @@ import i18n from "../../utils/i18n";
 type TrainingModalProps = {
     content: string;
     onMinimize: () => void;
+    minimized?: boolean;
 };
 
 export const InteractiveTrainingPanel: React.FC<TrainingModalProps> = props => {
-    const { content, onMinimize } = props;
+    const { content, onMinimize, minimized } = props;
     return (
-        <StyledPanel>
+        <StyledPanel minimized={minimized}>
             <CollapseIconContainer>
                 <MinimizeButton text={i18n.t("Collapse panel")}>
                     <MinimizeIcon onClick={onMinimize} />
@@ -26,10 +27,11 @@ export const InteractiveTrainingPanel: React.FC<TrainingModalProps> = props => {
     );
 };
 
-const StyledPanel = styled(Box)`
+const StyledPanel = styled(Box)<{ minimized?: boolean }>`
     background-color: #276696;
     border-left: 2px solid #2b5b77;
     position: relative;
+    visibility: ${({ minimized }) => (minimized ? "hidden" : "visible")};
 `;
 
 const CollapseIconContainer = styled.div`

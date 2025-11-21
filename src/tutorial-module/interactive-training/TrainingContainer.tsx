@@ -18,13 +18,13 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
     if (containerConfig.type === "sidebar") {
         return (
             <PaneledContainer
-                isMinimized={isMinimized}
+                className={isMinimized ? "" : "show-panel"}
                 isRight={containerConfig.position === "right"}
                 width={containerConfig.width}
                 unit={containerConfig.unit}
             >
                 <div>{children}</div>
-                {!isMinimized && <InteractiveTrainingPanel content={content} onMinimize={onMinimize} />}
+                <InteractiveTrainingPanel minimized={isMinimized} content={content} onMinimize={onMinimize} />
             </PaneledContainer>
         );
     } else {
@@ -41,24 +41,21 @@ const PaneledContainer = styled.div<{
     isRight: boolean;
     width: number;
     unit: SideBarConfig["unit"];
-    isMinimized: boolean;
 }>`
-    ${({ isMinimized, isRight, width, unit }) =>
-        !isMinimized &&
-        css`
-            display: flex;
-            flex-direction: ${isRight ? "row" : "row-reverse"};
-            width: 100%;
+    &.show-panel {
+        display: flex;
+        flex-direction: ${({ isRight }) => (isRight ? "row" : "row-reverse")};
+        width: 100%;
 
-            & > :first-child {
-                flex: 1 1 auto;
-                min-width: 0;
-            }
+        & > :first-child {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
 
-            & > :last-child {
-                flex: 0 0 ${width}${unit};
-                max-width: ${width}${unit};
-                height: 100vh;
-            }
-        `}
+        & > :last-child {
+            flex: 0 0 ${({ width, unit }) => `${width}${unit}`};
+            max-width: ${({ width, unit }) => `${width}${unit}`};
+            height: 100vh;
+        }
+    }
 `;

@@ -25,43 +25,36 @@ function getLocation() {
 
 function createLocationObserver() {
     const listeners = new Set<() => void>();
-    let isPatched = false;
 
-    function notify() {
-        listeners.forEach(function (fn) {
-            fn();
-        });
-    }
+    const notify = () => listeners.forEach(fn => fn());
 
-    function patch() {
-        if (isPatched) return;
-        isPatched = true;
-
-        const originalPushState = window.history.pushState;
-        const originalReplaceState = window.history.replaceState;
-
+    const patch = () => {
+        const { pushState, replaceState } = window.history;
         window.history.pushState = function (...args) {
-            originalPushState.apply(this, args);
+            pushState.apply(this, args);
             notify();
         };
-
         window.history.replaceState = function (...args) {
-            originalReplaceState.apply(this, args);
+            replaceState.apply(this, args);
             notify();
         };
-
         window.addEventListener("hashchange", notify);
         window.addEventListener("popstate", notify);
-    }
+    };
 
-    function subscribe(callback: () => void) {
-        patch();
+    const unpatch = () => {
+        window.removeEventListener("hashchange", notify);
+        window.removeEventListener("popstate", notify);
+    };
+
+    const subscribe = (callback: () => void) => {
+        if (listeners.size === 0) patch();
         listeners.add(callback);
-
-        return function unsubscribe() {
+        return () => {
             listeners.delete(callback);
+            if (listeners.size === 0) unpatch();
         };
-    }
+    };
 
     return { subscribe };
 }

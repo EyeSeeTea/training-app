@@ -13,6 +13,8 @@ import {
 import { Add, DeleteOutline } from "@material-ui/icons";
 import styled from "styled-components";
 import React from "react";
+import { Dropdown } from "@eyeseetea/d2-ui-components";
+import { DropdownItem } from "@eyeseetea/d2-ui-components/dropdown/GenericDropdown";
 
 import {
     BindingType,
@@ -24,13 +26,11 @@ import {
     SectionBinding,
 } from "../../../domain/entities/PageBinding";
 import i18n from "../../../utils/i18n";
-import { Dropdown } from "@eyeseetea/d2-ui-components";
-import { DropdownItem } from "@eyeseetea/d2-ui-components/dropdown/GenericDropdown";
 
 type EditPageBindingProps = {
     bindings: PageBinding[];
     addBinding: () => void;
-    handleChange: <B extends PageBinding, K extends keyof B>(id: string) => (key: K, value: B[K]) => void;
+    handleChange: <T extends PageBinding, K extends keyof T>(id: string) => (key: K, value: T[K]) => void;
     removeBinding: (id: string) => void;
 };
 
@@ -75,9 +75,9 @@ export const PageBindingEditor: React.FC<EditPageBindingProps> = props => {
     );
 };
 
-type BindingEditor<B extends PageBinding = PageBinding> = {
-    binding: B;
-    handleChange: <K extends keyof B>(key: K, value: B[K]) => void;
+type BindingEditor<T extends PageBinding = PageBinding> = {
+    binding: T;
+    handleChange: <K extends keyof T>(key: K, value: T[K]) => void;
 };
 
 const Binding: React.FC<BindingEditor> = props => {

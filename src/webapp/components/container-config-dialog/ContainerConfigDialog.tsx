@@ -83,7 +83,7 @@ export const ContainerConfigDialog: React.FC<ContainerConfigDialogProps> = props
     );
 };
 
-const defaultSidebarProps: SideBarProps = { position: "right", width: 20, unit: "%" };
+const defaultSidebarProps: SideBarProps = { position: "right", width: 30, unit: "%" };
 
 function getTypeOptions(): DropdownItem<ContainerConfig["type"]>[] {
     return [

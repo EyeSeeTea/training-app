@@ -1,4 +1,5 @@
 import _ from "lodash";
+
 import { TrainingModulePage } from "../../domain/entities/TrainingModule";
 import {
     EventType,

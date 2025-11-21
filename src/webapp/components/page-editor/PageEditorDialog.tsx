@@ -57,8 +57,8 @@ export function usePageBindings(initialBindings: PageBinding[] = []) {
     }, []);
 
     const handleChange = React.useCallback(
-        <B extends PageBinding, K extends keyof B>(id: string) =>
-            (key: K, value: B[K]) => {
+        <T extends PageBinding, K extends keyof T>(id: string) =>
+            (key: K, value: T[K]) => {
                 setBindings(prev =>
                     prev.map(binding => (binding.id === id ? ({ ...binding, [key]: value } as PageBinding) : binding))
                 );

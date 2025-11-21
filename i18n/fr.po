@@ -430,7 +430,6 @@ msgstr "Ajouter une liaison"
 msgid "Binding type"
 msgstr "Type de liaison"
 
-#, fuzzy
 msgid "Training identifiers"
 msgstr "Identifiants de formation"
 
