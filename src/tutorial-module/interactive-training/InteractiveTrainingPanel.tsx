@@ -57,7 +57,7 @@ const MinimizeButton = styled(Tooltip)`
 
 const Content = styled(Box)`
     height: calc(100% - 32px);
-    overflow-y: scroll;
+    overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #fff #6894b5;
     margin-top: 8px;
