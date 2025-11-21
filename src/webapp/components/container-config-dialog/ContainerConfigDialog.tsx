@@ -17,6 +17,7 @@ type SideBarProps = Omit<SideBarConfig, "type">;
 export const ContainerConfigDialog: React.FC<ContainerConfigDialogProps> = props => {
     const { onSave, onClose, containerConfig } = props;
     const { type, ...sideBarProps } = containerConfig || defaultContainerConfig;
+    const defaultSidebarProps = getDefaultSidebarProps();
 
     const [containerType, setContainerType] = useState<ContainerConfig["type"]>(type);
     const [sideBarConfig, setSideBarConfig] = useState<SideBarProps>({ ...defaultSidebarProps, ...sideBarProps });
@@ -83,7 +84,14 @@ export const ContainerConfigDialog: React.FC<ContainerConfigDialogProps> = props
     );
 };
 
-const defaultSidebarProps: SideBarProps = { position: "right", width: 30, unit: "%" };
+function getDefaultSidebarProps(): SideBarProps {
+    const { position, width, unit } = defaultContainerConfig;
+    return {
+        position,
+        width,
+        unit,
+    };
+}
 
 function getTypeOptions(): DropdownItem<ContainerConfig["type"]>[] {
     return [

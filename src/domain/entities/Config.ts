@@ -31,4 +31,4 @@ export type SideBarConfig = {
 type DialogConfig = { type: "dialog" };
 export type ContainerConfig = SideBarConfig | DialogConfig;
 
-export const defaultContainerConfig: ContainerConfig = { type: "dialog" };
+export const defaultContainerConfig: SideBarConfig = { type: "sidebar", position: "right", width: 30, unit: "%" };

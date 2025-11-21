@@ -11,7 +11,7 @@ import { Maybe } from "../../types/utils";
 import { useBindEvents } from "./useBindEvents";
 import "./InteractiveTrainingProvider.css";
 import { bind } from "./useInteractiveTrainingContext";
-import { defaultContainerConfig } from "../../domain/entities/Config";
+import { ContainerConfig, defaultContainerConfig } from "../../domain/entities/Config";
 import { TrainingContainer } from "./TrainingContainer";
 
 type TrainingEventKind = "click" | "focus" | "section";
@@ -98,7 +98,7 @@ function useTrainingData(props: UseTrainingData) {
     const d2Api = useMemo(() => new D2Api({ baseUrl }), [baseUrl]);
     const compositionRoot = useMemo(() => getCompositionRoot(d2Api), [d2Api]);
     const [modules, setModules] = useState<TrainingModule[]>([]);
-    const [containerConfig, setContainerConfig] = useState(defaultContainerConfig);
+    const [containerConfig, setContainerConfig] = useState<ContainerConfig>(defaultContainerConfig);
 
     const pages = useMemo(() => {
         if (modules.length === 0) return [];
