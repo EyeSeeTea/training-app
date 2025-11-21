@@ -55,6 +55,9 @@ const PaneledContainer = styled.div<{
         & > :last-child {
             flex: 0 0 ${({ width, unit }) => `${width}${unit}`};
             max-width: ${({ width, unit }) => `${width}${unit}`};
+            position: sticky;
+            top: 0;
+            align-self: flex-start;
             height: 100vh;
         }
     }

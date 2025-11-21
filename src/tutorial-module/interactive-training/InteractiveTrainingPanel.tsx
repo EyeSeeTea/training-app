@@ -35,10 +35,11 @@ const StyledPanel = styled(Box)<{ minimized?: boolean }>`
 `;
 
 const CollapseIconContainer = styled.div`
-    position: absolute;
-    top: 8px;
-    right: 8px;
+    display: flex;
+    padding-top: 12px;
+    padding-inline: 12px;
     color: white;
+    justify-content: end;
 `;
 
 const MinimizeButton = styled(Tooltip)`
@@ -55,5 +56,9 @@ const MinimizeButton = styled(Tooltip)`
 `;
 
 const Content = styled(Box)`
-    padding: 16px;
+    height: calc(100% - 32px);
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    scrollbar-color: #fff #6894b5;
+    margin-top: 8px;
 `;
