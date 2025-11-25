@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { EVENT_TYPE, EventType } from "../../domain/entities/PageBinding";
-import { Maybe } from "../../types/utils";
-import { InteractiveTrainingContextState } from "./InteractiveTrainingProvider";
-import { EventPageIdsByTrainingId, getEventPageIdsByTrainingIdMap, getSectionPageIds } from "./utils";
+import { EVENT_TYPE, EventType } from "../../../domain/entities/PageBinding";
+import { Maybe } from "../../../types/utils";
+import { InteractiveTrainingContextState } from "../InteractiveTrainingProvider";
+import { EventPageIdsByTrainingId, getEventPageIdsByTrainingIdMap, getSectionPageIds } from "../utils";
 import { useCurrentLocation } from "./useCurrentLocation";
 
 type EventElement = { element: Element; trigger?: EventType };

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { InteractiveTrainingContext } from "./InteractiveTrainingProvider";
+import { InteractiveTrainingContext } from "../InteractiveTrainingProvider";
 
 export function useInteractiveTrainingContext() {
     const context = useContext(InteractiveTrainingContext);
