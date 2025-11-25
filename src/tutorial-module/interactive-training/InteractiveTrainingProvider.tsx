@@ -29,6 +29,7 @@ type TutorialModuleProps = {
     events?: TrainingEventKind[];
     highlightElementsWithBindings?: boolean;
 };
+
 export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props => {
     const { baseUrl, locale = "en", events, highlightElementsWithBindings, children } = props;
 
@@ -42,7 +43,7 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
 
     const textContent = useMemo(() => {
         const translatedContent = contents.reduce((acc, content) => `${acc}\n\n${translateMethod(content)}`, "");
-        return baseUrl ? transformDocumentUrls(translatedContent, d2Api.apiPath) : translatedContent;
+        return baseUrl ? transformD2DocumentUrls(translatedContent, d2Api.apiPath) : translatedContent;
     }, [contents, translateMethod, baseUrl, d2Api.apiPath]);
 
     const trigger = useCallback(
@@ -93,6 +94,7 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
 };
 
 type UseTrainingData = { baseUrl: string };
+
 function useTrainingData(props: UseTrainingData) {
     const { baseUrl } = props;
     const d2Api = useMemo(() => new D2Api({ baseUrl }), [baseUrl]);
@@ -133,6 +135,6 @@ const ActionButtonContainer = styled.div<{ hidden: boolean }>`
     visibility: ${({ hidden }) => (hidden ? "hidden" : "visible")};
 `;
 
-function transformDocumentUrls(content: string, apiBaseUrl: string): string {
+function transformD2DocumentUrls(content: string, apiBaseUrl: string): string {
     return content.replace(/\.\.\/..\/(documents\/[^)\s"']+)/g, `${apiBaseUrl}/$1`);
 }

@@ -49,6 +49,7 @@ export const PageBindingEditor: React.FC<EditPageBindingProps> = props => {
                                 <TableCell></TableCell>
                             </TableRow>
                         </TableHead>
+
                         <TableBody>
                             {bindings.map(binding => (
                                 <TableRow key={binding.id}>
@@ -64,6 +65,7 @@ export const PageBindingEditor: React.FC<EditPageBindingProps> = props => {
                     </StyledTable>
                 </TableContainer>
             </Grid>
+
             <FlexEnd item xs={12}>
                 <Button variant="contained" onClick={addBinding}>
                     <Add />
