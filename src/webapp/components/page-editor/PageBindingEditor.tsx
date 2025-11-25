@@ -17,6 +17,7 @@ import { Dropdown } from "@eyeseetea/d2-ui-components";
 import { DropdownItem } from "@eyeseetea/d2-ui-components/dropdown/GenericDropdown";
 
 import {
+    BINDING_TYPE,
     BindingType,
     EventBinding,
     EventType,
@@ -102,8 +103,12 @@ const Binding: React.FC<BindingEditor> = props => {
                 />
             </TableCell>
             <StyledTableCell>
-                {binding.type === "event" && <EventBindingEditor binding={binding} handleChange={handleChange} />}
-                {binding.type === "section" && <SectionBindingEditor binding={binding} handleChange={handleChange} />}
+                {binding.type === BINDING_TYPE.event && (
+                    <EventBindingEditor binding={binding} handleChange={handleChange} />
+                )}
+                {binding.type === BINDING_TYPE.section && (
+                    <SectionBindingEditor binding={binding} handleChange={handleChange} />
+                )}
             </StyledTableCell>
         </>
     );
