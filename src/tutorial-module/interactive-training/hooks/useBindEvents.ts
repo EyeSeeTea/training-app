@@ -13,7 +13,7 @@ type TriggerPayload = {
 };
 
 export function useBindEvents(props: InteractiveTrainingContextState) {
-    const { trigger: doTrigger, pages, events = ["click", "focus", "section"] } = props;
+    const { trigger: doTrigger, pages, events } = props;
     const noPages = pages.length === 0;
     const shouldHandleSectionEvent = events.includes("section");
 

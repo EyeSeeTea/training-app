@@ -10,12 +10,13 @@ import { bind } from "./hooks/useInteractiveTrainingContext";
 import { TrainingContainer } from "./TrainingContainer";
 import { useModuleState, useTrainingContent, useTrainingData } from "./hooks/useInteractiveTraining";
 
-type TrainingEventKind = "click" | "focus" | "section";
+const trainingEventKinds = ["click", "focus", "section"];
+type TrainingEventKind = typeof trainingEventKinds[number];
 
 export type InteractiveTrainingContextState = {
     pages: TrainingModulePage[];
     trigger: (props: { targetIds: string[] }) => void;
-    events?: TrainingEventKind[];
+    events: TrainingEventKind[];
 };
 export const InteractiveTrainingContext = createContext<Maybe<InteractiveTrainingContextState>>(undefined);
 
@@ -27,7 +28,7 @@ type TutorialModuleProps = {
 };
 
 export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props => {
-    const { baseUrl, locale = "en", events, highlightElementsWithBindings, children } = props;
+    const { baseUrl, locale = "en", events = trainingEventKinds, highlightElementsWithBindings, children } = props;
 
     const { pages, containerConfig, d2Api } = useTrainingData({ baseUrl: baseUrl || "" });
     const { minimizeTraining, showTraining, isMinimized } = useModuleState();

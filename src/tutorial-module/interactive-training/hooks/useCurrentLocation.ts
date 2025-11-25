@@ -20,7 +20,7 @@ export function useCurrentLocation() {
 }
 
 function getLocation() {
-    return window.location.pathname + window.location.hash;
+    return window.location.pathname + window.location.hash.split("?")[0];
 }
 
 function createLocationObserver() {
