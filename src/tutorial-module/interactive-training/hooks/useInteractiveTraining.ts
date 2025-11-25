@@ -39,9 +39,8 @@ export function useTrainingContent(props: UseTrainingContentProps) {
         return transformD2DocumentUrls(translatedContent, d2Api.apiPath);
     }, [contents, translateMethod, d2Api.apiPath]);
 
-    const trigger = useCallback(
-        (props: { targetIds: string[] }) => {
-            const { targetIds } = props;
+    const setContentsImmediate = useCallback(
+        (targetIds: string[]) => {
             const targetPages = _(targetIds)
                 .map(targetId => pageMap[targetId])
                 .compact()
@@ -49,6 +48,23 @@ export function useTrainingContent(props: UseTrainingContentProps) {
             setContents(targetPages);
         },
         [pageMap]
+    );
+
+    // debounce because click triggers both focus and then click
+    // We want to avoid setting contents twice in quick succession
+    const debouncedSetContents = useMemo(() => _.debounce(setContentsImmediate, 120), [setContentsImmediate]);
+
+    useEffect(() => {
+        return () => {
+            debouncedSetContents.cancel();
+        };
+    }, [debouncedSetContents]);
+
+    const trigger = useCallback(
+        (props: { targetIds: string[] }) => {
+            debouncedSetContents(props.targetIds);
+        },
+        [debouncedSetContents]
     );
 
     return { textContent, trigger };
