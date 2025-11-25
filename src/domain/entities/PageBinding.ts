@@ -1,4 +1,3 @@
-import { Codec, Schema } from "../../utils/codec";
 import { generateUid } from "../../data/utils/uid";
 import { Maybe } from "../../types/utils";
 
@@ -8,17 +7,16 @@ export const EVENT_TYPE = {
     all: "all",
 } as const;
 
+export const BINDING_TYPE = {
+    event: "event",
+    section: "section",
+} as const;
+
 const EVENT_TYPES = [EVENT_TYPE.click, EVENT_TYPE.focus, EVENT_TYPE.all] as const;
-const BINDING_TYPES = ["event", "section"] as const;
+const BINDING_TYPES = [BINDING_TYPE.event, BINDING_TYPE.section] as const;
 
 export type EventType = typeof EVENT_TYPES[number];
 export type BindingType = typeof BINDING_TYPES[number];
-
-export const EventTypeModel: Codec<EventType> = Schema.oneOf([
-    Schema.exact("focus"),
-    Schema.exact("click"),
-    Schema.exact("all"),
-]);
 
 type BaseBinding = {
     id: string;
@@ -38,26 +36,6 @@ export type SectionBinding = BaseBinding & {
 
 export type PageBinding = EventBinding | SectionBinding;
 
-const baseEventBinding = {
-    id: Schema.nonEmptyString,
-    description: Schema.optional(Schema.string),
-};
-
-export const EventBindingModel: Codec<EventBinding> = Schema.object({
-    ...baseEventBinding,
-    type: Schema.exact("event"),
-    trainingIdentifiers: Schema.string,
-    eventType: EventTypeModel,
-});
-
-export const SectionBindingModel: Codec<SectionBinding> = Schema.object({
-    ...baseEventBinding,
-    type: Schema.exact("section"),
-    urlPattern: Schema.nonEmptyString,
-});
-
-export const PageBindingModel: Codec<PageBinding> = Schema.oneOf([EventBindingModel, SectionBindingModel]);
-
 const defaultEventBinding = (): EventBinding => ({
     id: generateUid(),
     description: undefined,
@@ -75,10 +53,9 @@ const defaultSectionBinding = (): SectionBinding => ({
 
 export function getDefaultBinding(type: BindingType): PageBinding {
     switch (type) {
-        case "section":
+        case BINDING_TYPE.section:
             return defaultSectionBinding();
-        case "event":
-        default:
+        case BINDING_TYPE.event:
             return defaultEventBinding();
     }
 }
@@ -102,10 +79,10 @@ export function matchesUrlPattern(currentPath: string, pattern: string): boolean
 }
 
 export function isEventBinding(binding: PageBinding): binding is EventBinding {
-    return binding.type === "event";
+    return binding.type === BINDING_TYPE.event;
 }
 export function isSectionBinding(binding: PageBinding): binding is SectionBinding {
-    return binding.type === "section";
+    return binding.type === BINDING_TYPE.section;
 }
 
 export function getEventBindingIdentifiers(binding: EventBinding): string[] {

@@ -4,19 +4,20 @@ import React from "react";
 import { Modal, ModalContent } from "../../webapp/components/modal";
 import { MarkdownViewer } from "../../webapp/components/markdown-viewer/MarkdownViewer";
 
-type TrainingModalProps = {
+type InteractiveTrainingModalProps = {
     content: string;
 };
 
-export const InteractiveTrainingModal: React.FC<React.ComponentProps<typeof Modal> & TrainingModalProps> = props => {
-    const { content, ...modalProps } = props;
+export const InteractiveTrainingModal: React.FC<React.ComponentProps<typeof Modal> & InteractiveTrainingModalProps> =
+    props => {
+        const { content, ...modalProps } = props;
 
-    return (
-        <StyledModal {...modalProps} centerChildren={true} allowDrag={true} resetPositionOnMinimize={false}>
-            <ModalContent>{content && <MarkdownViewer source={content} />}</ModalContent>
-        </StyledModal>
-    );
-};
+        return (
+            <StyledModal {...modalProps} centerChildren={true} allowDrag={true} resetPositionOnMinimize={false}>
+                <ModalContent>{content && <MarkdownViewer source={content} />}</ModalContent>
+            </StyledModal>
+        );
+    };
 
 const StyledModal = styled(Modal)`
     position: fixed;

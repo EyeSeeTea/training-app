@@ -2,7 +2,7 @@ import React from "react";
 
 import { TrainingModulePage } from "../../../domain/entities/TrainingModule";
 import { MarkdownEditorDialog, MarkdownEditorDialogProps } from "../markdown-editor/MarkdownEditorDialog";
-import { getDefaultBinding, PageBinding } from "../../../domain/entities/PageBinding";
+import { BINDING_TYPE, getDefaultBinding, PageBinding } from "../../../domain/entities/PageBinding";
 import i18n from "../../../utils/i18n";
 import { StepPreview } from "../markdown-editor/StepPreview";
 import { PageBindingEditor } from "./PageBindingEditor";
@@ -53,7 +53,7 @@ export const PageEditorDialog: React.FC<PageEditorProps> = props => {
 export function usePageBindings(initialBindings: PageBinding[] = []) {
     const [bindings, setBindings] = React.useState<PageBinding[]>(initialBindings);
     const addBinding = React.useCallback(() => {
-        setBindings(prev => [...prev, getDefaultBinding("event")]);
+        setBindings(prev => [...prev, getDefaultBinding(BINDING_TYPE.event)]);
     }, []);
 
     const handleChange = React.useCallback(

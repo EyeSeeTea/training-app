@@ -1,5 +1,5 @@
 import React from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 import { ContainerConfig, SideBarConfig } from "../../domain/entities/Config";
 import { InteractiveTrainingModal } from "./InteractiveTrainingModal";
@@ -15,25 +15,26 @@ type TrainingContainerProps = {
 export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
     const { containerConfig, content, isMinimized, onMinimize, children } = props;
 
-    if (containerConfig.type === "sidebar") {
-        return (
-            <PaneledContainer
-                className={isMinimized ? "" : "show-panel"}
-                isRight={containerConfig.position === "right"}
-                width={containerConfig.width}
-                unit={containerConfig.unit}
-            >
-                <div>{children}</div>
-                <InteractiveTrainingPanel minimized={isMinimized} content={content} onMinimize={onMinimize} />
-            </PaneledContainer>
-        );
-    } else {
-        return (
-            <>
-                {children}
-                <InteractiveTrainingModal minimized={isMinimized} content={content} onMinimize={onMinimize} />
-            </>
-        );
+    switch (containerConfig.type) {
+        case "sidebar":
+            return (
+                <PaneledContainer
+                    className={isMinimized ? "" : "show-panel"}
+                    isRight={containerConfig.position === "right"}
+                    width={containerConfig.width}
+                    unit={containerConfig.unit}
+                >
+                    <div>{children}</div>
+                    <InteractiveTrainingPanel minimized={isMinimized} content={content} onMinimize={onMinimize} />
+                </PaneledContainer>
+            );
+        case "dialog":
+            return (
+                <>
+                    {children}
+                    <InteractiveTrainingModal minimized={isMinimized} content={content} onMinimize={onMinimize} />
+                </>
+            );
     }
 };
 

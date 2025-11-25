@@ -17,6 +17,7 @@ import { Dropdown } from "@eyeseetea/d2-ui-components";
 import { DropdownItem } from "@eyeseetea/d2-ui-components/dropdown/GenericDropdown";
 
 import {
+    BINDING_TYPE,
     BindingType,
     EventBinding,
     EventType,
@@ -48,6 +49,7 @@ export const PageBindingEditor: React.FC<EditPageBindingProps> = props => {
                                 <TableCell></TableCell>
                             </TableRow>
                         </TableHead>
+
                         <TableBody>
                             {bindings.map(binding => (
                                 <TableRow key={binding.id}>
@@ -63,6 +65,7 @@ export const PageBindingEditor: React.FC<EditPageBindingProps> = props => {
                     </StyledTable>
                 </TableContainer>
             </Grid>
+
             <FlexEnd item xs={12}>
                 <Button variant="contained" onClick={addBinding}>
                     <Add />
@@ -102,8 +105,12 @@ const Binding: React.FC<BindingEditor> = props => {
                 />
             </TableCell>
             <StyledTableCell>
-                {binding.type === "event" && <EventBindingEditor binding={binding} handleChange={handleChange} />}
-                {binding.type === "section" && <SectionBindingEditor binding={binding} handleChange={handleChange} />}
+                {binding.type === BINDING_TYPE.event && (
+                    <EventBindingEditor binding={binding} handleChange={handleChange} />
+                )}
+                {binding.type === BINDING_TYPE.section && (
+                    <SectionBindingEditor binding={binding} handleChange={handleChange} />
+                )}
             </StyledTableCell>
         </>
     );
