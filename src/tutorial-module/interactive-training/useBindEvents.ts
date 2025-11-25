@@ -6,9 +6,10 @@ import { InteractiveTrainingContextState } from "./InteractiveTrainingProvider";
 import { EventPageIdsByTrainingId, getEventPageIdsByTrainingIdMap, getSectionPageIds } from "./utils";
 import { useCurrentLocation } from "./useCurrentLocation";
 
-type EventElement = { element?: Element; trigger?: EventType };
-type TriggerPayload = EventElement & {
+type EventElement = { element: Element; trigger?: EventType };
+type TriggerPayload = {
     targetIds: string[];
+    eventElement: Maybe<EventElement>;
 };
 
 export function useBindEvents(props: InteractiveTrainingContextState) {
@@ -26,7 +27,7 @@ export function useBindEvents(props: InteractiveTrainingContextState) {
 
     const handleTrigger = useCallback(
         (payload: TriggerPayload) => {
-            const { targetIds, ...nextEvent } = payload;
+            const { targetIds, eventElement: nextEvent } = payload;
             if (shouldTriggerNextEvent(currentEventRef.current, nextEvent)) {
                 doTrigger({ targetIds });
                 currentEventRef.current = nextEvent;
@@ -63,7 +64,6 @@ export function useBindEvents(props: InteractiveTrainingContextState) {
     return { trainingScopeRef };
 }
 
-type EventListenerType = EventType | "hover";
 type SetupEventListenersProps = {
     root: HTMLDivElement;
     eventSet: Set<EventType>;
@@ -81,37 +81,37 @@ function setupEventListeners(props: SetupEventListenersProps) {
 
     const getPageIdsForElement = (
         element: Element,
-        eventType: EventListenerType
-    ): Maybe<{ pageIds: string[]; trigger?: EventListenerType }> => {
-        const trainingId = element.getAttribute("data-training-id");
-        if (!trainingId) return undefined;
+        eventType: EventType
+    ): { targetIds: string[]; trigger?: EventType } => {
+        const trainingId = element.getAttribute("data-training-id") || "";
 
-        const pageIds = eventPageIdsByTrainingId[eventType]?.[trainingId];
-        if (pageIds) return { pageIds, trigger: eventType };
+        const targetIds = eventPageIdsByTrainingId[eventType]?.[trainingId];
+        if (targetIds) return { targetIds: targetIds, trigger: eventType };
 
         const allPageIds = eventPageIdsByTrainingId["all"]?.[trainingId];
-        if (allPageIds) return { pageIds: allPageIds, trigger: "all" };
+        if (allPageIds) return { targetIds: allPageIds, trigger: "all" };
 
-        return { pageIds: sectionPageIds };
+        return { targetIds: [] };
     };
 
-    const findTrainingElement = (target: EventTarget | null, eventType: EventListenerType): Maybe<TriggerPayload> => {
-        if (!(target instanceof Element)) return undefined;
-        const defaultResult = { element: target, targetIds: [] };
+    const findTrainingElement = (target: Element, eventType: EventType): TriggerPayload => {
+        const defaultResult = { targetIds: sectionPageIds, eventElement: { element: target } };
 
-        const searchUpwards = (element: Element): Maybe<TriggerPayload> => {
+        const searchUpwards = (element: Element): TriggerPayload => {
             const match = element.closest("[data-training-id]");
 
             if (!match || !root.contains(match)) {
                 return defaultResult;
             }
 
-            const result = getPageIdsForElement(match, eventType);
-            if (result?.pageIds?.length) {
+            const { targetIds, trigger } = getPageIdsForElement(match, eventType);
+            if (targetIds?.length) {
                 return {
-                    targetIds: result.pageIds,
-                    trigger: result.trigger === "hover" ? undefined : result.trigger,
-                    element: target,
+                    targetIds: targetIds,
+                    eventElement: {
+                        trigger: trigger,
+                        element: target,
+                    },
                 };
             }
 
@@ -123,9 +123,10 @@ function setupEventListeners(props: SetupEventListenersProps) {
     };
 
     const handleEvent = (eventType: EventType) => (e: Event) => {
-        const payload = findTrainingElement(e.target, eventType);
-        if (!payload) return handleTrigger({ targetIds: [] });
-        handleTrigger(payload);
+        if (e.target instanceof Element) {
+            const payload = findTrainingElement(e.target, eventType);
+            handleTrigger(payload);
+        }
     };
 
     console.debug("Registering event listeners on root:", root);
