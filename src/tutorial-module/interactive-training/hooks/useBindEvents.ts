@@ -5,6 +5,7 @@ import { Maybe } from "../../../types/utils";
 import { InteractiveTrainingContextState } from "../InteractiveTrainingProvider";
 import { EventPageIdsByTrainingId, getEventPageIdsByTrainingIdMap, getSectionPageIds } from "../utils";
 import { useCurrentLocation } from "./useCurrentLocation";
+import { dataTrainingAttribute } from "./useInteractiveTrainingContext";
 
 type EventElement = { element: Element; trigger?: EventType };
 type TriggerPayload = {
@@ -83,7 +84,7 @@ function setupEventListeners(props: SetupEventListenersProps) {
         element: Element,
         eventType: EventType
     ): { targetIds: string[]; trigger?: EventType } => {
-        const trainingId = element.getAttribute("data-training-id") || "";
+        const trainingId = element.getAttribute(dataTrainingAttribute) || "";
 
         const targetIds = eventPageIdsByTrainingId[eventType]?.[trainingId];
         if (targetIds) return { targetIds: targetIds, trigger: eventType };
@@ -98,7 +99,7 @@ function setupEventListeners(props: SetupEventListenersProps) {
         const defaultResult = { targetIds: sectionPageIds, eventElement: { element: target } };
 
         const searchUpwards = (element: Element): TriggerPayload => {
-            const match = element.closest("[data-training-id]");
+            const match = element.closest(`[${dataTrainingAttribute}]`);
 
             if (!match || !root.contains(match)) {
                 return defaultResult;

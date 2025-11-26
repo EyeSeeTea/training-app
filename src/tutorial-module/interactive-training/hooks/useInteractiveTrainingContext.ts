@@ -1,5 +1,8 @@
 import { useContext } from "react";
 import { InteractiveTrainingContext } from "../InteractiveTrainingProvider";
+import { Maybe } from "../../../types/utils";
+
+export const dataTrainingAttribute = "data-training-id";
 
 export function useInteractiveTrainingContext() {
     const context = useContext(InteractiveTrainingContext);
@@ -9,6 +12,6 @@ export function useInteractiveTrainingContext() {
     return context;
 }
 
-export function bind(id: string) {
-    return { "data-training-id": id };
+export function bindTrainingEvent(id: Maybe<string>) {
+    return id ? { [dataTrainingAttribute]: id } : {};
 }

@@ -6,7 +6,6 @@ import { ActionButton } from "../../webapp/components/action-button/ActionButton
 import { Maybe } from "../../types/utils";
 import { useBindEvents } from "./hooks/useBindEvents";
 import "./InteractiveTrainingProvider.css";
-import { bind } from "./hooks/useInteractiveTrainingContext";
 import { TrainingContainer } from "./TrainingContainer";
 import { useModuleState, useTrainingContent, useTrainingData } from "./hooks/useInteractiveTraining";
 
@@ -48,11 +47,7 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
                 isMinimized={isMinimized}
                 onMinimize={minimizeTraining}
             >
-                <div
-                    ref={trainingScopeRef}
-                    className={containerClass}
-                    {...bind("interacting-training-default-container")}
-                >
+                <div ref={trainingScopeRef} className={containerClass}>
                     {children}
                 </div>
             </TrainingContainer>
