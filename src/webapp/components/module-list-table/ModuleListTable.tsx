@@ -795,10 +795,7 @@ export type ModuleListTableAction = {
     openCloneModulePage?: (params: { id: string }) => void;
     openCreateModulePage?: () => void;
     editContents?: (params: { id: string; text: TranslatableText; value: string }) => Promise<void>;
-    editPagePermissions?: (params: {
-        id: string;
-        page: { id: string; permissions: SharedProperties };
-    }) => Promise<void>;
+    editPagePermissions: (params: { id: string; page: { id: string; permissions: SharedProperties } }) => Promise<void>;
     addStep?: (params: { id: string; title: string }) => Promise<void>;
     addPage?: (params: { id: string; step: string; value: string }) => Promise<void>;
     deleteStep?: (params: { id: string; step: string }) => Promise<void>;
