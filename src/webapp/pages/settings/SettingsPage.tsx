@@ -10,6 +10,7 @@ import {
     removeStep,
     updateOrder,
     updateTranslation,
+    updatePagePermissions,
 } from "../../../domain/helpers/TrainingModuleHelpers";
 import i18n from "../../../utils/i18n";
 import { ComponentParameter } from "../../../types/utils";
@@ -142,6 +143,13 @@ export const SettingsPage: React.FC = () => {
                 const module = await getModule(id);
                 if (module) await usecases.modules.update(updateTranslation(module, text.key, value));
                 else snackbar.error(i18n.t("Unable to update module contents"));
+            },
+            editPagePermissions: async ({ id, page: { id: pageId, permissions } }) => {
+                const module = await getModule(id);
+                if (module) {
+                    const updatedModule = updatePagePermissions(module, { id: pageId, permissions });
+                    await usecases.modules.update(updatedModule);
+                } else snackbar.error(i18n.t("Unable to update module contents"));
             },
             deleteModules: ({ ids }) => usecases.modules.delete(ids),
             resetModules: ({ ids }) => usecases.modules.resetDefaultValue(ids),

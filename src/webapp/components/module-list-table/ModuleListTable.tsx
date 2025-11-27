@@ -30,6 +30,9 @@ import { MarkdownEditorDialog, MarkdownEditorDialogProps } from "../markdown-edi
 import { MarkdownViewer } from "../markdown-viewer/MarkdownViewer";
 import { ModalBody } from "../modal";
 import { useImportExportTranslation } from "../../hooks/useImportExportTranslation";
+import { SharedProperties } from "../../../domain/entities/Ref";
+import { usePagePermissions } from "./usePagePermissions";
+import { PermissionsDialog } from "../permissions-dialog/PermissionsDialog";
 
 export interface ModuleListTableProps {
     rows: ListItem[];
@@ -46,6 +49,12 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
 
     const loading = useLoading();
     const snackbar = useSnackbar();
+
+    const { pagePermissionsDialog, openPagePermissions } = usePagePermissions({
+        rows: buildChildrenRows(rows),
+        onChange: tableActions.editPagePermissions,
+        refreshRows,
+    });
 
     const moduleImportRef = useRef<DropzoneRef>(null);
     const translationImportRef = useRef<ImportTranslationRef>(null);
@@ -491,6 +500,17 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
                 },
             },
             {
+                name: "edit-page-sharing-settings",
+                text: i18n.t("Sharing settings"),
+                icon: <Icon>share</Icon>,
+                onClick: openPagePermissions,
+                isActive: rows => {
+                    return (
+                        !!tableActions.editContents && _.every(rows, item => item.rowType === "page" && item.editable)
+                    );
+                },
+            },
+            {
                 name: "edit-step",
                 text: i18n.t("Edit step"),
                 icon: <Icon>edit</Icon>,
@@ -619,6 +639,7 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
             resetModules,
             exportModule,
             exportTranslations,
+            openPagePermissions,
         ]
     );
 
@@ -647,6 +668,7 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
             {dialogProps && <ConfirmationDialog isOpen={true} maxWidth={"xl"} {...dialogProps} />}
             {inputDialogProps && <InputDialog isOpen={true} fullWidth={true} maxWidth={"md"} {...inputDialogProps} />}
             {markdownDialogProps && <MarkdownEditorDialog {...markdownDialogProps} />}
+            {pagePermissionsDialog && <PermissionsDialog {...pagePermissionsDialog} />}
 
             <ImportTranslationDialog type="module" ref={translationImportRef} onSave={handleTranslationUpload} />
 
@@ -700,6 +722,7 @@ export interface ListItemPage {
     position: number;
     lastPosition: number;
     editable: boolean;
+    permissions: SharedProperties;
 }
 
 export const buildListModules = (modules: TrainingModule[]): ListItemModule[] => {
@@ -723,7 +746,7 @@ export const buildListSteps = (model: PartialTrainingModule, steps: TrainingModu
         position: stepIdx,
         lastPosition: steps.length - 1,
         editable: model.editable ?? true,
-        pages: pages.map(({ id: pageId, ...value }, pageIdx) => ({
+        pages: pages.map(({ id: pageId, permissions, ...value }, pageIdx) => ({
             id: pageId,
             stepId,
             moduleId: model.id,
@@ -732,6 +755,7 @@ export const buildListSteps = (model: PartialTrainingModule, steps: TrainingModu
             position: pageIdx,
             lastPosition: pages.length - 1,
             editable: model.editable ?? true,
+            permissions,
             value,
         })),
     }));
@@ -771,6 +795,10 @@ export type ModuleListTableAction = {
     openCloneModulePage?: (params: { id: string }) => void;
     openCreateModulePage?: () => void;
     editContents?: (params: { id: string; text: TranslatableText; value: string }) => Promise<void>;
+    editPagePermissions?: (params: {
+        id: string;
+        page: { id: string; permissions: SharedProperties };
+    }) => Promise<void>;
     addStep?: (params: { id: string; title: string }) => Promise<void>;
     addPage?: (params: { id: string; step: string; value: string }) => Promise<void>;
     deleteStep?: (params: { id: string; step: string }) => Promise<void>;

@@ -1,6 +1,7 @@
 import { swapById } from "../../utils/array";
-import { PartialTrainingModule } from "../entities/TrainingModule";
+import { defaultPagePermissions, PartialTrainingModule } from "../entities/TrainingModule";
 import { TranslatableText } from "../entities/TranslatableText";
+import { SharedProperties } from "../entities/Ref";
 
 export const updateTranslation = (
     module: PartialTrainingModule,
@@ -30,6 +31,23 @@ export const updateTranslation = (
         },
     };
 };
+
+export function updatePagePermissions(
+    module: PartialTrainingModule,
+    page: { id: string; permissions: SharedProperties }
+): PartialTrainingModule {
+    const { id: pageId, permissions } = page;
+    return {
+        ...module,
+        contents: {
+            ...module.contents,
+            steps: module.contents.steps.map(step => ({
+                ...step,
+                pages: step.pages.map(page => (page.id === pageId ? { ...page, permissions } : page)),
+            })),
+        },
+    };
+}
 
 export const enforceKeyName = (model: PartialTrainingModule): PartialTrainingModule => {
     return {
@@ -106,6 +124,8 @@ export const addPage = (model: PartialTrainingModule, stepKey: string, value: st
                             key: `${model.id}-step-${stepIdx + 1}-${step.pages.length + 1}`,
                             referenceValue: value,
                             translations: {},
+                            permissions: defaultPagePermissions,
+                            editable: false,
                         },
                     ],
                 };

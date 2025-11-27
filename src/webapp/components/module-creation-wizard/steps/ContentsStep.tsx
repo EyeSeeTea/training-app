@@ -5,6 +5,7 @@ import {
     removePage,
     removeStep,
     updateOrder,
+    updatePagePermissions,
     updateTranslation,
 } from "../../../../domain/helpers/TrainingModuleHelpers";
 import i18n from "../../../../utils/i18n";
@@ -37,6 +38,11 @@ export const ContentsStep: React.FC<ModuleCreationWizardStepProps> = ({ module, 
         () => ({
             uploadFile: ({ data, name }) => usecases.document.uploadFile(data, name),
             editContents: async ({ text, value }) => onChange(module => updateTranslation(module, text.key, value)),
+            editPagePermissions: async ({ page }) =>
+                onChange(module => {
+                    const { id, permissions } = page;
+                    return updatePagePermissions(module, { id, permissions });
+                }),
             swap: async ({ type, from, to }) => {
                 if (type === "module") return;
                 onChange(module => updateOrder(module, from, to));
