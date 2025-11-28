@@ -505,9 +505,7 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
                 icon: <Icon>share</Icon>,
                 onClick: openPagePermissions,
                 isActive: rows => {
-                    return (
-                        !!tableActions.editContents && _.every(rows, item => item.rowType === "page" && item.editable)
-                    );
+                    return _.every(rows, item => item.rowType === "page" && item.editable);
                 },
             },
             {
@@ -746,7 +744,7 @@ export const buildListSteps = (model: PartialTrainingModule, steps: TrainingModu
         position: stepIdx,
         lastPosition: steps.length - 1,
         editable: model.editable ?? true,
-        pages: pages.map(({ id: pageId, permissions, ...value }, pageIdx) => ({
+        pages: pages.map(({ id: pageId, permissions, editable, ...value }, pageIdx) => ({
             id: pageId,
             stepId,
             moduleId: model.id,
@@ -754,7 +752,7 @@ export const buildListSteps = (model: PartialTrainingModule, steps: TrainingModu
             rowType: "page",
             position: pageIdx,
             lastPosition: pages.length - 1,
-            editable: model.editable ?? true,
+            editable: model.editable ? editable : false,
             permissions,
             value,
         })),
