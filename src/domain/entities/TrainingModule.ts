@@ -135,3 +135,17 @@ export const defaultPagePermissions: SharedProperties = {
     userAccesses: [],
     userGroupAccesses: [],
 };
+
+export function removeEmptyPages(module: TrainingModule) {
+    return {
+        ...module,
+        contents: {
+            ...module.contents,
+            steps: module.contents.steps.filter(({ pages }) => pages.length > 0),
+        },
+    };
+}
+
+export function removeEmptyStepsFromModules(modules: TrainingModule[]): TrainingModule[] {
+    return modules.map(module => removeEmptyPages(module)).filter(({ contents }) => contents.steps.length > 0);
+}

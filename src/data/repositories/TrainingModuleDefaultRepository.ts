@@ -88,18 +88,16 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
 
             const domainModels = await this.buildDomainModels(modules);
 
-            return domainModels
-                .filter(model => model.contents.steps.length > 0)
-                .map(model => ({
-                    ...model,
-                    outdated: !!outdatedModules.find(({ id }) => model.id === id),
-                    builtin: !!defaultModules.find(({ id }) => model.id === id),
-                    progress: progress?.find(({ id }) => id === model.id) ?? {
-                        id: model.id,
-                        lastStep: 0,
-                        completed: false,
-                    },
-                }));
+            return domainModels.map(model => ({
+                ...model,
+                outdated: !!outdatedModules.find(({ id }) => model.id === id),
+                builtin: !!defaultModules.find(({ id }) => model.id === id),
+                progress: progress?.find(({ id }) => id === model.id) ?? {
+                    id: model.id,
+                    lastStep: 0,
+                    completed: false,
+                },
+            }));
         } catch (error: any) {
             console.error(error);
             return [];
@@ -332,20 +330,18 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
                 ...rest,
                 contents: {
                     ...contents,
-                    steps: contents.steps
-                        .map((step, stepIdx) => ({
-                            ...step,
-                            id: `${model.id}-step-${stepIdx}`,
-                            pages: step.pages
-                                .filter(page => checkPagePermissions(page, "read"))
-                                .map((page, pageIdx) => ({
-                                    ...page,
-                                    id: `${model.id}-page-${stepIdx}-${pageIdx}`,
-                                    permissions: page.permissions ?? defaultPagePermissions,
-                                    editable: checkPagePermissions(page, "write"),
-                                })),
-                        }))
-                        .filter(step => step.pages.length > 0),
+                    steps: contents.steps.map((step, stepIdx) => ({
+                        ...step,
+                        id: `${model.id}-step-${stepIdx}`,
+                        pages: step.pages
+                            .filter(page => checkPagePermissions(page, "read"))
+                            .map((page, pageIdx) => ({
+                                ...page,
+                                id: `${model.id}-page-${stepIdx}-${pageIdx}`,
+                                permissions: page.permissions ?? defaultPagePermissions,
+                                editable: checkPagePermissions(page, "write"),
+                            })),
+                    })),
                 },
                 installed: await this.instanceRepository.isAppInstalledByUrl(model.dhisLaunchUrl),
                 editable: validateUserPermission(model, "write", currentUser),
