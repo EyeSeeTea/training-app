@@ -1,6 +1,6 @@
 import { PartialBy } from "../../types/utils";
 import { GetSchemaType, Schema } from "../../utils/codec";
-import { BaseMetadataModel } from "./Ref";
+import { BaseMetadataModel, SharedProperties, SharedPropertiesModel } from "./Ref";
 import { TranslatableTextModel } from "./TranslatableText";
 import { ModelValidation } from "./Validation";
 
@@ -10,11 +10,16 @@ export const TrainingModuleTypeModel = Schema.oneOf([
     Schema.exact("widget"),
 ]);
 
+export const TrainingModulePageModel = Schema.extend(
+    TranslatableTextModel,
+    Schema.object({ id: Schema.string, editable: Schema.boolean, permissions: SharedPropertiesModel })
+);
+
 export const TrainingModuleStepModel = Schema.object({
     id: Schema.string,
     title: TranslatableTextModel,
     subtitle: Schema.optional(TranslatableTextModel),
-    pages: Schema.array(Schema.extend(TranslatableTextModel, Schema.object({ id: Schema.string }))),
+    pages: Schema.array(TrainingModulePageModel),
 });
 
 export const TrainingModuleContentsModel = Schema.object({
@@ -52,6 +57,7 @@ export const TrainingModuleModel = Schema.extend(
 export type TrainingModule = GetSchemaType<typeof TrainingModuleModel>;
 export type TrainingModuleType = GetSchemaType<typeof TrainingModuleTypeModel>;
 export type TrainingModuleStep = GetSchemaType<typeof TrainingModuleStepModel>;
+export type TrainingModulePage = GetSchemaType<typeof TrainingModulePageModel>;
 export type TrainingModuleContents = GetSchemaType<typeof TrainingModuleContentsModel>;
 
 export type PartialTrainingModule = PartialBy<
@@ -122,4 +128,10 @@ export const defaultTrainingModule: PartialTrainingModule = {
         welcome: { key: "module-welcome", referenceValue: "", translations: {} },
         steps: [],
     },
+};
+
+export const defaultPagePermissions: SharedProperties = {
+    publicAccess: "r-------",
+    userAccesses: [],
+    userGroupAccesses: [],
 };
