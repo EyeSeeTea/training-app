@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Traning App - UI Interface\n"
-"POT-Creation-Date: 2025-04-07T11:18:42.330Z\n"
+"POT-Creation-Date: 2026-01-12T02:42:56.804Z\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -376,6 +376,9 @@ msgstr "Duplicar módulo"
 msgid "Edit page"
 msgstr "Editar página"
 
+msgid "Sharing settings"
+msgstr "Ajustes de uso compartido"
+
 msgid "Delete module"
 msgstr "Eliminar modulo"
 
@@ -390,6 +393,9 @@ msgstr "Exportar módulo"
 
 msgid "Import modules"
 msgstr "Importar módulos"
+
+msgid "Page permissions"
+msgstr ""
 
 msgid "Help"
 msgstr "Ayuda"

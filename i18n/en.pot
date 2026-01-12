@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2025-04-07T11:18:42.330Z\n"
-"PO-Revision-Date: 2025-04-07T11:18:42.330Z\n"
+"POT-Creation-Date: 2026-01-12T02:42:56.804Z\n"
+"PO-Revision-Date: 2026-01-12T02:42:56.804Z\n"
 
 msgid "Welcome to training on DHIS2"
 msgstr ""
@@ -370,6 +370,9 @@ msgstr ""
 msgid "Edit page"
 msgstr ""
 
+msgid "Sharing settings"
+msgstr ""
+
 msgid "Delete module"
 msgstr ""
 
@@ -383,6 +386,9 @@ msgid "Export module"
 msgstr ""
 
 msgid "Import modules"
+msgstr ""
+
+msgid "Page permissions"
 msgstr ""
 
 msgid "Help"
