@@ -754,7 +754,7 @@ export const buildListSteps = (model: PartialTrainingModule, steps: TrainingModu
             rowType: "page",
             position: pageIdx,
             lastPosition: pages.length - 1,
-            editable: model.editable ? editable : false,
+            editable: editable,
             permissions,
             value,
         })),

@@ -288,7 +288,19 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
             icon: model.icon,
             type: model.type,
             disabled: model.disabled,
-            contents: model.contents,
+            contents: {
+                ...model.contents,
+                steps: model.contents.steps.map(step => ({
+                    ...step,
+                    pages: step.pages.map(page => ({
+                        id: page.id,
+                        permissions: page.permissions,
+                        key: page.key,
+                        referenceValue: page.referenceValue,
+                        translations: page.translations,
+                    })),
+                })),
+            },
             revision: options?.revision ?? model.revision,
             dhisVersionRange: model.dhisVersionRange,
             dhisAppKey: model.dhisAppKey,
@@ -322,7 +334,10 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
             const checkPagePermissions = (page: TrainingModulePageOptionalPermissions, permission: "read" | "write") =>
                 validateUserPagePermissions({
                     module: model,
-                    item: page,
+                    item: {
+                        ...page,
+                        permissions: page.permissions ?? defaultPagePermissions,
+                    },
                     permission,
                     currentUser,
                 });
@@ -372,6 +387,8 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
     }
 }
 
+//TODO: future improvement - implement domain level computed permissions
+// based on access string and module permissions
 function validateUserPagePermissions(props: {
     module: PersistedTrainingModule;
     item: TrainingModulePageOptionalPermissions;
@@ -380,16 +397,24 @@ function validateUserPagePermissions(props: {
 }) {
     const { module, item, permission, currentUser } = props;
     const { permissions } = item;
-    return (
-        !permissions ||
-        validateUserPermission(
-            {
-                ...permissions,
-                user: module.user,
-            },
-            permission,
-            currentUser
-        )
+
+    const moduleAllows = validateUserPermission(module, permission, currentUser);
+    if (!moduleAllows) return false;
+    if (!permissions) return true;
+
+    const { userAccesses: moduleUserAccess, userGroupAccesses, user } = module;
+
+    // module permissions used as main page gate
+    // module user and group permissions are used as fallback for page permissions
+    return validateUserPermission(
+        {
+            ...permissions,
+            user,
+            userAccesses: permissions.userAccesses.length ? permissions.userAccesses : moduleUserAccess,
+            userGroupAccesses: permissions.userGroupAccesses.length ? permissions.userGroupAccesses : userGroupAccesses,
+        },
+        permission,
+        currentUser
     );
 }
 

@@ -137,7 +137,7 @@ export const addPage = (model: PartialTrainingModule, stepKey: string, value: st
                             referenceValue: value,
                             translations: {},
                             permissions: defaultPagePermissions,
-                            editable: false,
+                            editable: true,
                         },
                     ],
                 };
