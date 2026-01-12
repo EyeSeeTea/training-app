@@ -21,9 +21,11 @@ export function usePagePermissions(props: UsePagePermissions) {
                       object: { name: i18n.t("Page permissions"), ...activeRow.permissions },
                       onChange: async (sharedUpdate: SharedUpdate) => {
                           if (!onChange) return;
+                          const { publicAccess, userAccesses, userGroupAccesses } = sharedUpdate;
                           const permissions = {
-                              ...activeRow.permissions,
-                              ...sharedUpdate,
+                              publicAccess: publicAccess ?? activeRow.permissions.publicAccess,
+                              userAccesses: userAccesses ?? activeRow.permissions.userAccesses,
+                              userGroupAccesses: userGroupAccesses ?? activeRow.permissions.userGroupAccesses,
                           };
                           await onChange({ id: activeRow.moduleId, page: { id: activeRow.id, permissions } });
                           await refreshRows();
