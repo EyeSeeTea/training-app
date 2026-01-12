@@ -25,6 +25,7 @@ import { User, validateUserPermission } from "../entities/User";
 import { getMajorVersion } from "../utils/d2-api";
 import { D2Api } from "../../types/d2-api";
 import { DocumentRepository } from "../../domain/repositories/DocumentRepository";
+import { generatePageId, generateStepId } from "../../domain/helpers/TrainingModuleHelpers";
 
 export class TrainingModuleDefaultRepository implements TrainingModuleRepository {
     private storageClient: StorageClient;
@@ -332,12 +333,12 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
                     ...contents,
                     steps: contents.steps.map((step, stepIdx) => ({
                         ...step,
-                        id: `${model.id}-step-${stepIdx}`,
+                        id: generateStepId(model.id, stepIdx),
                         pages: step.pages
                             .filter(page => checkPagePermissions(page, "read"))
                             .map((page, pageIdx) => ({
                                 ...page,
-                                id: `${model.id}-page-${stepIdx}-${pageIdx}`,
+                                id: generatePageId(model.id, stepIdx, pageIdx),
                                 permissions: page.permissions ?? defaultPagePermissions,
                                 editable: checkPagePermissions(page, "write"),
                             })),
