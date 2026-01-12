@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
-import { ListItem, ListItemPage, ModuleListTableAction } from "./ModuleListTable";
+import { isListItemPage, ListItem, ListItemPage, ModuleListTableAction } from "./ModuleListTable";
 import { SharedUpdate } from "../permissions-dialog/PermissionsDialog";
+import i18n from "../../../utils/i18n";
 
 type UsePagePermissions = {
     rows: ListItem[];
@@ -17,7 +18,7 @@ export function usePagePermissions(props: UsePagePermissions) {
         () =>
             activeRow
                 ? {
-                      object: { name: "Page permissions", ...activeRow.permissions },
+                      object: { name: i18n.t("Page permissions"), ...activeRow.permissions },
                       onChange: async (sharedUpdate: SharedUpdate) => {
                           if (!onChange) return;
                           const permissions = {
@@ -47,7 +48,7 @@ export function usePagePermissions(props: UsePagePermissions) {
             const row = rows.find(({ id }) => id === ids[0]);
             if (!row || !row.value) return;
 
-            if (isPage(row)) setActiveRow(row);
+            if (isListItemPage(row)) setActiveRow(row);
         },
         [rows]
     );
@@ -56,8 +57,4 @@ export function usePagePermissions(props: UsePagePermissions) {
         pagePermissionsDialog,
         openPagePermissions,
     };
-}
-
-function isPage(row: ListItem): row is ListItemPage {
-    return row.rowType === "page";
 }

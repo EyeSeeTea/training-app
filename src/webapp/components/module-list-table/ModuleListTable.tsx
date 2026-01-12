@@ -494,9 +494,7 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
                 icon: <Icon>edit</Icon>,
                 onClick: editPage,
                 isActive: rows => {
-                    return (
-                        !!tableActions.editContents && _.every(rows, item => item.rowType === "page" && item.editable)
-                    );
+                    return !!tableActions.editContents && _.every(rows, item => isListItemPage(item) && item.editable);
                 },
             },
             {
@@ -505,7 +503,7 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
                 icon: <Icon>share</Icon>,
                 onClick: openPagePermissions,
                 isActive: rows => {
-                    return _.every(rows, item => item.rowType === "page" && item.editable);
+                    return _.every(rows, item => isListItemPage(item) && item.editable);
                 },
             },
             {
@@ -721,6 +719,10 @@ export interface ListItemPage {
     lastPosition: number;
     editable: boolean;
     permissions: SharedProperties;
+}
+
+export function isListItemPage(row: ListItem): row is ListItemPage {
+    return row.rowType === "page";
 }
 
 export const buildListModules = (modules: TrainingModule[]): ListItemModule[] => {
