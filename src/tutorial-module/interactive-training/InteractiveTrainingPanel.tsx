@@ -2,6 +2,7 @@ import styled from "styled-components";
 import React from "react";
 import { Box } from "@material-ui/core";
 import MinimizeIcon from "@material-ui/icons/Minimize";
+import SettingsIcon from "@material-ui/icons/Settings";
 
 import { MarkdownViewer } from "../../webapp/components/markdown-viewer/MarkdownViewer";
 import { Tooltip, TooltipText } from "../../webapp/components/tooltip/Tooltip";
@@ -11,16 +12,22 @@ type TrainingModalProps = {
     content: string;
     onMinimize: () => void;
     minimized?: boolean;
+    onSettings?: () => void;
 };
 
 export const InteractiveTrainingPanel: React.FC<TrainingModalProps> = props => {
-    const { content, onMinimize, minimized } = props;
+    const { content, onMinimize, minimized, onSettings } = props;
     return (
         <StyledPanel minimized={minimized}>
             <CollapseIconContainer>
-                <MinimizeButton text={i18n.t("Collapse panel")}>
+                {onSettings && (
+                    <HeaderButton text={i18n.t("Settings page")}>
+                        <SettingsIcon onClick={onSettings} />
+                    </HeaderButton>
+                )}
+                <HeaderButton text={i18n.t("Collapse panel")}>
                     <MinimizeIcon onClick={onMinimize} />
-                </MinimizeButton>
+                </HeaderButton>
             </CollapseIconContainer>
             <Content>{content && <MarkdownViewer source={content} />}</Content>
         </StyledPanel>
@@ -39,10 +46,10 @@ const CollapseIconContainer = styled.div`
     padding-top: 12px;
     padding-inline: 12px;
     color: white;
-    justify-content: end;
+    justify-content: space-between;
 `;
 
-const MinimizeButton = styled(Tooltip)`
+const HeaderButton = styled(Tooltip)`
     cursor: pointer;
 
     svg {

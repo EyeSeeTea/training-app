@@ -7,6 +7,10 @@ import { buildTranslate, TranslatableText } from "../../../domain/entities/Trans
 import { ContainerConfig, defaultContainerConfig } from "../../../domain/entities/Config";
 import { getCompositionRoot } from "../../../webapp/CompositionRoot";
 
+function generateSettingsUrl(baseUrl: string, appKey: string) {
+    return `${baseUrl}/api/apps/${appKey}/index.html#/settings`;
+}
+
 export function useModuleState() {
     const [isMinimized, setIsMinimized] = useState(true);
 
@@ -70,14 +74,23 @@ export function useTrainingContent(props: UseTrainingContentProps) {
     return { textContent, trigger };
 }
 
-type UseTrainingDataProps = { baseUrl: string };
+export type SettingsAccess = {
+    hasAccess: boolean;
+    settingsUrl: string;
+};
+
+type UseTrainingDataProps = { baseUrl: string; trainingAppKey: string };
 
 export function useTrainingData(props: UseTrainingDataProps) {
-    const { baseUrl } = props;
+    const { baseUrl, trainingAppKey } = props;
     const d2Api = useMemo(() => new D2Api({ baseUrl }), [baseUrl]);
     const compositionRoot = useMemo(() => getCompositionRoot(d2Api), [d2Api]);
     const [modules, setModules] = useState<TrainingModule[]>([]);
     const [containerConfig, setContainerConfig] = useState<ContainerConfig>(defaultContainerConfig);
+    const [settingsAccess, setSettingsAccess] = useState<SettingsAccess>({
+        hasAccess: false,
+        settingsUrl: "",
+    });
 
     const pages = useMemo(() => {
         if (modules.length === 0) return [];
@@ -98,14 +111,26 @@ export function useTrainingData(props: UseTrainingDataProps) {
 
         compositionRoot.usecases.config
             .get()
-            .then(config => setContainerConfig(config.containerConfig))
+            .then(config => {
+                setContainerConfig(config.containerConfig);
+
+                return compositionRoot.usecases.user.checkSettingsPermissions(config);
+            })
+            .then(hasAccess => {
+                if (hasAccess) {
+                    setSettingsAccess({
+                        hasAccess,
+                        settingsUrl: generateSettingsUrl(baseUrl, trainingAppKey),
+                    });
+                }
+            })
             .catch(error => {
                 console.error(`Error fetching container config:`, error);
                 setContainerConfig(defaultContainerConfig);
             });
     }, [compositionRoot]);
 
-    return { pages, containerConfig, d2Api };
+    return { pages, containerConfig, d2Api, settingsAccess };
 }
 
 function transformD2DocumentUrls(content: string, apiBaseUrl: string): string {

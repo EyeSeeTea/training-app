@@ -4,16 +4,24 @@ import styled from "styled-components";
 import { ContainerConfig, SideBarConfig } from "../../domain/entities/Config";
 import { InteractiveTrainingModal } from "./InteractiveTrainingModal";
 import { InteractiveTrainingPanel } from "./InteractiveTrainingPanel";
+import { SettingsAccess } from "./hooks/useInteractiveTraining";
 
 type TrainingContainerProps = {
     containerConfig: ContainerConfig;
     content: string;
     isMinimized: boolean;
     onMinimize: () => void;
+    settingsAccess: SettingsAccess;
 };
 
 export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
-    const { containerConfig, content, isMinimized, onMinimize, children } = props;
+    const { containerConfig, content, isMinimized, onMinimize, children, settingsAccess } = props;
+
+    const onSettings = React.useCallback(() => {
+        if (!settingsAccess.settingsUrl) return;
+
+        window.open(settingsAccess.settingsUrl, "_blank");
+    }, [settingsAccess]);
 
     switch (containerConfig.type) {
         case "sidebar":
@@ -25,14 +33,24 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
                     unit={containerConfig.unit}
                 >
                     <div>{children}</div>
-                    <InteractiveTrainingPanel minimized={isMinimized} content={content} onMinimize={onMinimize} />
+                    <InteractiveTrainingPanel
+                        minimized={isMinimized}
+                        content={content}
+                        onMinimize={onMinimize}
+                        onSettings={settingsAccess.hasAccess ? onSettings : undefined}
+                    />
                 </PaneledContainer>
             );
         case "dialog":
             return (
                 <>
                     {children}
-                    <InteractiveTrainingModal minimized={isMinimized} content={content} onMinimize={onMinimize} />
+                    <InteractiveTrainingModal
+                        minimized={isMinimized}
+                        content={content}
+                        onMinimize={onMinimize}
+                        onSettings={settingsAccess.hasAccess ? onSettings : undefined}
+                    />
                 </>
             );
     }

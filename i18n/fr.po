@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Traning App - UI Interface\n"
-"POT-Creation-Date: 2025-11-21T05:35:53.502Z\n"
+"POT-Creation-Date: 2026-01-28T03:56:06.492Z\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,6 +28,9 @@ msgstr "Le champ {{field}} n'est pas valide"
 
 msgid "Collapse panel"
 msgstr ""
+
+msgid "Settings page"
+msgstr "Paramètres"
 
 msgid "Well done!"
 msgstr "Bien joué!"
