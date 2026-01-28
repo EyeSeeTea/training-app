@@ -67,7 +67,7 @@ export function urlPatternToRegex(pattern: string): RegExp {
         .replace(/\*/g, "[^/]*")
         .replace(/<!GLOBSTAR!>/g, ".*");
 
-    return new RegExp("^(?:/#)?" + regexPattern + "$");
+    return new RegExp("^(?:/(?:index\\.html)?#)?" + regexPattern + "$");
 }
 
 export function matchesUrlPattern(currentPath: string, pattern: string): boolean {
