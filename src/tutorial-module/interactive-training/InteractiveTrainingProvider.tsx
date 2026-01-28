@@ -52,6 +52,17 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
     const contextValue = useMemo(() => ({ pages, trigger, events }), [pages, trigger, events]);
     const { trainingScopeRef } = useBindEvents(contextValue);
 
+    const position =
+        containerConfig.buttonPosition === "top-right"
+            ? {
+                  top: "48px",
+                  right: "0px",
+              }
+            : {
+                  bottom: "10px",
+                  right: "0px",
+              };
+
     return (
         <InteractiveTrainingContext.Provider value={contextValue}>
             <TrainingContainer
@@ -67,7 +78,9 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
             </TrainingContainer>
             {pages.length > 0 && (
                 <ActionButtonContainer hidden={!isMinimized}>
-                    <ActionButton onClick={showTraining} />
+                    <ActionButton onClick={showTraining} {...position}>
+                        <HelpButton>?</HelpButton>
+                    </ActionButton>
                 </ActionButtonContainer>
             )}
         </InteractiveTrainingContext.Provider>
@@ -76,4 +89,12 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
 
 const ActionButtonContainer = styled.div<{ hidden: boolean }>`
     visibility: ${({ hidden }) => (hidden ? "hidden" : "visible")};
+
+    .MuiFab-root {
+        padding: 0;
+    }
+`;
+
+const HelpButton = styled.div`
+    font-size: 20px;
 `;

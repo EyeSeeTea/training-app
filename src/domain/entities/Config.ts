@@ -22,13 +22,20 @@ export function getDefaultConfig({ isDefault }: { isDefault?: Maybe<boolean> } =
     };
 }
 
-export type SideBarConfig = {
+type BaseConfig = { buttonPosition: "top-right" | "bottom-right" };
+export type SideBarConfig = BaseConfig & {
     type: "sidebar";
     position: "left" | "right";
     width: number;
     unit: "px" | "%";
 };
-type DialogConfig = { type: "dialog" };
+type DialogConfig = BaseConfig & { type: "dialog" };
 export type ContainerConfig = SideBarConfig | DialogConfig;
 
-export const defaultContainerConfig: SideBarConfig = { type: "sidebar", position: "right", width: 30, unit: "%" };
+export const defaultContainerConfig: SideBarConfig = {
+    type: "sidebar",
+    position: "right",
+    width: 30,
+    unit: "%",
+    buttonPosition: "top-right",
+};

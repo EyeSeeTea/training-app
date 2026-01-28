@@ -6,11 +6,12 @@ import i18n from "../../../utils/i18n";
 import { wait } from "../../../utils/promises";
 import { DragContainer } from "../drag-container/DragContainer";
 
-export interface ActionButtonProps {
+export type ActionButtonProps = ButtonPosition & {
     onClick: () => void;
-}
+};
 
-export const ActionButton: React.FC<ActionButtonProps> = ({ onClick }) => {
+export const ActionButton: React.FC<ActionButtonProps> = props => {
+    const { onClick, children, ...position } = props;
     const [isDragging, setDragging] = useState<boolean>(false);
 
     const onDrag = useCallback(() => {
@@ -24,20 +25,37 @@ export const ActionButton: React.FC<ActionButtonProps> = ({ onClick }) => {
 
     return (
         <DragContainer onDrag={onDrag} onStop={onStop}>
-            <StyledFab variant="extended" size="large" color="primary" onClick={isDragging ? undefined : onClick}>
-                <EmojiObjectsIcon />
-                <p>{i18n.t("Tutorial")}</p>
+            <StyledFab
+                {...position}
+                variant="extended"
+                size="large"
+                color="primary"
+                onClick={isDragging ? undefined : onClick}
+            >
+                {children ? (
+                    children
+                ) : (
+                    <>
+                        <EmojiObjectsIcon />
+                        <p>{i18n.t("Tutorial")}</p>
+                    </>
+                )}
             </StyledFab>
         </DragContainer>
     );
 };
 
-const StyledFab = styled(Fab)`
+type ButtonPosition = { bottom?: string; right?: string; top?: string; left?: string };
+const StyledFab = styled(Fab)<ButtonPosition>`
     &.MuiFab-root {
         position: fixed;
         margin: 6px;
-        bottom: 20px;
-        right: 40px;
+        ${props => props.bottom && `bottom: ${props.bottom};`}
+        ${props => props.right && `right: ${props.right};`}
+        ${props => props.top && `top: ${props.top};`}
+        ${props => props.left && `left: ${props.left};`}
+        ${props => !props.bottom && !props.top && "bottom: 20px;"}
+        ${props => !props.right && !props.left && "right: 40px;"}
         display: inline-flex;
         cursor: pointer;
         pointer-events: auto;

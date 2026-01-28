@@ -85,11 +85,12 @@ export const ContainerConfigDialog: React.FC<ContainerConfigDialogProps> = props
 };
 
 function getDefaultSidebarProps(): SideBarProps {
-    const { position, width, unit } = defaultContainerConfig;
+    const { position, width, unit, buttonPosition } = defaultContainerConfig;
     return {
         position,
         width,
         unit,
+        buttonPosition,
     };
 }
 
