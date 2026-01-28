@@ -30,6 +30,7 @@ import { useImportExportTranslation } from "../../hooks/useImportExportTranslati
 import { StepPreview } from "../markdown-editor/StepPreview";
 import { PageEditorDialog, PageEditorProps } from "../page-editor/PageEditorDialog";
 import { PageBinding } from "../../../domain/entities/PageBinding";
+import { PageBindingPreview } from "./PageBindingPreview";
 
 export interface ModuleListTableProps {
     rows: ListItem[];
@@ -413,6 +414,9 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
                                     "There's a new version of this module, please reset to default values to update"
                                 )}
                             />
+                        ) : null}
+                        {item.rowType === "page" && item.bindings?.length ? (
+                            <PageBindingPreview bindings={item.bindings} />
                         ) : null}
                     </div>
                 ),
