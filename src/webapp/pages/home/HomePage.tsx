@@ -1,19 +1,19 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import CircularProgress from "material-ui/CircularProgress";
 import styled from "styled-components";
 
-import { LandingNode } from "../../../domain/entities/LandingPage";
 import i18n from "../../../utils/i18n";
 import { Modal, ModalContent, ModalTitle } from "../../components/modal";
 import { useAppContext } from "../../contexts/app-context";
 import { useAppConfigContext } from "../../contexts/AppConfigProvider";
 import { HomePageContent } from "../../components/home/HomePageContent";
+import { useTrainingNavigation } from "../../hooks/useTutorialPage";
 
 export const HomePage: React.FC = React.memo(() => {
     const { setAppState, landings, reload, isLoading } = useAppContext();
     const { hasSettingsAccess } = useAppConfigContext();
+    const { isRoot, currentPage, openPage, goBack, goHome } = useTrainingNavigation({ landings });
 
-    const [history, updateHistory] = useState<LandingNode[]>([]);
     const [isLoadingLong, setLoadingLong] = useState<boolean>(false);
 
     const openSettings = useCallback(() => {
@@ -32,20 +32,9 @@ export const HomePage: React.FC = React.memo(() => {
         setAppState(appState => ({ ...appState, exit: true }));
     }, [setAppState]);
 
-    const openPage = useCallback((page: LandingNode) => {
-        updateHistory(history => [page, ...history]);
-    }, []);
-
-    const goBack = useCallback(() => {
-        updateHistory(history => history.slice(1));
-    }, []);
-
-    const goHome = useCallback(() => {
-        updateHistory([]);
-    }, []);
-
     const loadModule = useCallback(
         (module: string, step: number) => {
+            console.log(module, step);
             if (step > 1) {
                 setAppState({ type: "TRAINING", state: "OPEN", module, step, content: 1 });
             } else {
@@ -54,12 +43,6 @@ export const HomePage: React.FC = React.memo(() => {
         },
         [setAppState]
     );
-
-    const currentPage = useMemo<LandingNode | undefined>(() => {
-        return history[0] ?? landings[0];
-    }, [history, landings]);
-
-    const isRoot = history.length === 0;
 
     useEffect(() => {
         reload();

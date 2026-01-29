@@ -7,6 +7,12 @@ import { Root } from "./Root";
 import { Section } from "./Section";
 import { SubSection } from "./SubSection";
 import { Category } from "./Category";
+import { TrainingModule } from "../../../domain/entities/TrainingModule";
+import { Config } from "../../../domain/entities/Config";
+import { TranslateMethod } from "../../../domain/entities/TranslatableText";
+import { useAppContext } from "../../contexts/app-context";
+import { useAppConfigContext } from "../../contexts/AppConfigProvider";
+import { LogoInfo } from "../../hooks/useAppConfig";
 
 export type HomePageProps = {
     currentPage: LandingNode;
@@ -16,6 +22,34 @@ export type HomePageProps = {
 };
 
 export const HomePageContent: React.FC<HomePageProps> = props => {
+    const { currentPage } = props;
+
+    const { modules, translate } = useAppContext();
+    const { logoInfo, appConfig } = useAppConfigContext();
+
+    return (
+        <HomePageContentComponent
+            {...props}
+            currentPage={currentPage}
+            modules={modules}
+            translate={translate}
+            logoInfo={logoInfo}
+            appConfig={appConfig}
+        />
+    );
+};
+
+export type HomePageContentComponentProps = {
+    currentPage: LandingNode;
+    isRoot: boolean;
+    openPage: (page: LandingNode) => void;
+    loadModule: (module: string, step: number) => void;
+    modules: TrainingModule[];
+    appConfig: Config;
+    translate: TranslateMethod;
+    logoInfo: LogoInfo;
+};
+export const HomePageContentComponent: React.FC<HomePageContentComponentProps> = props => {
     const { currentPage } = props;
 
     const contentMap = useMemo(

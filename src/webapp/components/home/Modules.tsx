@@ -3,18 +3,23 @@ import { Cardboard } from "../card-board/Cardboard";
 import { BigCard } from "../card-board/BigCard";
 
 import { LandingNode } from "../../../domain/entities/LandingPage";
-import { useAppContext } from "../../contexts/app-context";
-import { useAppConfigContext } from "../../contexts/AppConfigProvider";
 import { ModalParagraph } from "../modal";
 import i18n from "../../../utils/i18n";
+import { TrainingModule } from "../../../domain/entities/TrainingModule";
+import { TranslateMethod } from "../../../domain/entities/TranslatableText";
+import { Config } from "../../../domain/entities/Config";
 
-export const Modules: React.FC<{
+type ModulesProps = {
     isRoot: boolean;
     currentPage: LandingNode;
     loadModule: (module: string, step: number) => void;
-}> = ({ isRoot, currentPage, loadModule }) => {
-    const { modules, translate } = useAppContext();
-    const { appConfig } = useAppConfigContext();
+    modules: TrainingModule[];
+    translate: TranslateMethod;
+    appConfig: Config;
+};
+
+export const Modules: React.FC<ModulesProps> = props => {
+    const { currentPage, loadModule, isRoot, modules, translate, appConfig } = props;
 
     const pageModules = isRoot && appConfig.showAllModules ? modules.map(({ id }) => id) : currentPage?.modules ?? [];
 

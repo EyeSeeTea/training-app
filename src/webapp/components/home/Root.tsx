@@ -3,17 +3,13 @@ import { BigCard } from "../card-board/BigCard";
 import React from "react";
 import styled from "styled-components";
 
-import { useAppContext } from "../../contexts/app-context";
-import { useAppConfigContext } from "../../contexts/AppConfigProvider";
 import { ModalContent, ModalParagraph, ModalTitle } from "../modal";
-import { HomePageProps } from "./HomePageContent";
+import { HomePageContentComponentProps } from "./HomePageContent";
 import { Modules } from "./Modules";
 import i18n from "../../../utils/i18n";
 
-export const Root: React.FC<HomePageProps> = props => {
-    const { currentPage, loadModule, isRoot, openPage } = props;
-    const { translate } = useAppContext();
-    const { appConfig, logoInfo } = useAppConfigContext();
+export const Root: React.FC<HomePageContentComponentProps> = props => {
+    const { currentPage, openPage, translate, appConfig, logoInfo } = props;
     const { logoPath, logoText } = logoInfo;
 
     return (
@@ -50,7 +46,7 @@ export const Root: React.FC<HomePageProps> = props => {
                     })}
                 </Cardboard>
 
-                <Modules currentPage={currentPage} isRoot={isRoot} loadModule={loadModule} />
+                <Modules {...props} />
             </ModalContent>
         </React.Fragment>
     );
