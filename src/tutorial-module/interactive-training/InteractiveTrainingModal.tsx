@@ -2,22 +2,16 @@ import styled from "styled-components";
 import React from "react";
 
 import { Modal, ModalContent } from "../../webapp/components/modal";
-import { MarkdownViewer } from "../../webapp/components/markdown-viewer/MarkdownViewer";
 
-type InteractiveTrainingModalProps = {
-    content: string;
+export const InteractiveTrainingModal: React.FC<React.ComponentProps<typeof Modal>> = props => {
+    const { children, ...modalProps } = props;
+
+    return (
+        <StyledModal {...modalProps} centerChildren={true} allowDrag={true} resetPositionOnMinimize={false}>
+            <ModalContent>{children}</ModalContent>
+        </StyledModal>
+    );
 };
-
-export const InteractiveTrainingModal: React.FC<React.ComponentProps<typeof Modal> & InteractiveTrainingModalProps> =
-    props => {
-        const { content, ...modalProps } = props;
-
-        return (
-            <StyledModal {...modalProps} centerChildren={true} allowDrag={true} resetPositionOnMinimize={false}>
-                <ModalContent>{content && <MarkdownViewer source={content} />}</ModalContent>
-            </StyledModal>
-        );
-    };
 
 const StyledModal = styled(Modal)`
     position: fixed;

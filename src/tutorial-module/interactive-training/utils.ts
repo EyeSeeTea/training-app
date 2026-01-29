@@ -44,3 +44,29 @@ export function getSectionPageIds(currentUrl: string, pages: TrainingModulePage[
         .map(({ pageId }) => pageId)
         .value();
 }
+
+// export function transformRelativeLinks()
+
+export function generateSettingsUrl(baseUrl: string, appKey: string) {
+    return `${generateTrainingAppBaseUrl(baseUrl, appKey)}/index.html#/settings`;
+}
+
+export function generateTrainingAppBaseUrl(baseUrl: string, appKey: string) {
+    return `${baseUrl}/api/apps/${appKey}`;
+}
+
+export function transformD2DocumentUrls(content: string, apiBaseUrl: string): string {
+    console.log("Transforming document URLs with base:", apiBaseUrl);
+    return content.replace(/\.\.\/..\/(documents\/[^)\s"']+)/g, `${apiBaseUrl}/$1`);
+}
+
+export function updateIconDocumentUrls<T extends { icon: string; children?: T[] }>(
+    entities: T[],
+    apiBaseUrl: string
+): T[] {
+    return entities.map(entity => ({
+        ...entity,
+        icon: transformD2DocumentUrls(entity.icon, apiBaseUrl),
+        children: entity.children ? updateIconDocumentUrls(entity.children, apiBaseUrl) : undefined,
+    }));
+}

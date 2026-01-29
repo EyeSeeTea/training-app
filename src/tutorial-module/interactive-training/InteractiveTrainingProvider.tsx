@@ -7,7 +7,13 @@ import { Maybe } from "../../types/utils";
 import { useBindEvents } from "./hooks/useBindEvents";
 import "./InteractiveTrainingProvider.css";
 import { TrainingContainer } from "./TrainingContainer";
-import { useModuleState, useTrainingContent, useTrainingData } from "./hooks/useInteractiveTraining";
+import {
+    useModuleState,
+    useTrainingContent,
+    useTrainingResources,
+    useTutorialModuleState,
+} from "./hooks/useInteractiveTraining";
+import { TrainingLanding } from "./TrainingLanding";
 
 const trainingEventKinds = ["click", "focus", "section"];
 type TrainingEventKind = typeof trainingEventKinds[number];
@@ -39,13 +45,13 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
         children,
     } = props;
 
-    const { pages, containerConfig, d2Api, settingsAccess } = useTrainingData({
+    const { pages, containerConfig, d2Api, settingsAccess, landings, modules, ...trainingData } = useTrainingResources({
         baseUrl: baseUrl || "",
         trainingAppKey,
     });
     const { minimizeTraining, showTraining, isMinimized } = useModuleState();
-
-    const { textContent, trigger } = useTrainingContent({ pages, locale, d2Api });
+    const { textContent, trigger, translateMethod } = useTrainingContent({ pages, locale, d2Api });
+    const { onGoBack, onGoHome, ...moduleHandling } = useTutorialModuleState({ modules, landings, textContent });
 
     const containerClass = `training-scope ${highlightElementsWithBindings ? "highlight-training-elements" : ""}`;
 
@@ -71,6 +77,17 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
                 isMinimized={isMinimized}
                 onMinimize={minimizeTraining}
                 settingsAccess={settingsAccess}
+                goBack={onGoBack}
+                goHome={onGoHome}
+                defaultContent={
+                    <TrainingLanding
+                        {...trainingData}
+                        {...moduleHandling}
+                        landings={landings}
+                        modules={modules}
+                        translate={translateMethod}
+                    />
+                }
             >
                 <div ref={trainingScopeRef} className={containerClass}>
                     {children}

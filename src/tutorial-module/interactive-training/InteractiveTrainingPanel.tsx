@@ -4,32 +4,46 @@ import { Box } from "@material-ui/core";
 import MinimizeIcon from "@material-ui/icons/Minimize";
 import SettingsIcon from "@material-ui/icons/Settings";
 
-import { MarkdownViewer } from "../../webapp/components/markdown-viewer/MarkdownViewer";
 import { Tooltip, TooltipText } from "../../webapp/components/tooltip/Tooltip";
 import i18n from "../../utils/i18n";
+import BackIcon from "@material-ui/icons/ArrowBack";
+import HomeIcon from "@material-ui/icons/Home";
 
 type TrainingModalProps = {
-    content: string;
     onMinimize: () => void;
+    onBack?: () => void;
+    onHome?: () => void;
     minimized?: boolean;
     onSettings?: () => void;
 };
 
 export const InteractiveTrainingPanel: React.FC<TrainingModalProps> = props => {
-    const { content, onMinimize, minimized, onSettings } = props;
+    const { onMinimize, onBack, onHome, minimized, onSettings, children } = props;
     return (
         <StyledPanel minimized={minimized}>
             <CollapseIconContainer>
-                {onSettings && (
-                    <HeaderButton text={i18n.t("Settings page")}>
-                        <SettingsIcon onClick={onSettings} />
-                    </HeaderButton>
-                )}
+                <HeaderLeft>
+                    {onBack && (
+                        <HeaderButton text={i18n.t("Back")}>
+                            <BackIcon onClick={onBack} />
+                        </HeaderButton>
+                    )}
+                    {onSettings && (
+                        <HeaderButton text={i18n.t("Settings page")}>
+                            <SettingsIcon onClick={onSettings} />
+                        </HeaderButton>
+                    )}
+                    {onHome && (
+                        <HeaderButton text={i18n.t("Home")}>
+                            <HomeIcon onClick={onHome} />
+                        </HeaderButton>
+                    )}
+                </HeaderLeft>
                 <HeaderButton text={i18n.t("Collapse panel")}>
                     <MinimizeIcon onClick={onMinimize} />
                 </HeaderButton>
             </CollapseIconContainer>
-            <Content>{content && <MarkdownViewer source={content} />}</Content>
+            <Content>{children}</Content>
         </StyledPanel>
     );
 };
@@ -63,9 +77,16 @@ const HeaderButton = styled(Tooltip)`
 `;
 
 const Content = styled(Box)`
-    height: calc(100% - 40px);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #fff #6894b5;
     margin-top: 8px;
+`;
+
+const HeaderLeft = styled.div`
+    display: flex;
+    gap: 8px;
 `;

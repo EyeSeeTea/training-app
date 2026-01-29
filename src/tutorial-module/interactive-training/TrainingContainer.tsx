@@ -5,6 +5,7 @@ import { ContainerConfig, SideBarConfig } from "../../domain/entities/Config";
 import { InteractiveTrainingModal } from "./InteractiveTrainingModal";
 import { InteractiveTrainingPanel } from "./InteractiveTrainingPanel";
 import { SettingsAccess } from "./hooks/useInteractiveTraining";
+import { MarkdownViewer } from "../../webapp/components/markdown-viewer/MarkdownViewer";
 
 type TrainingContainerProps = {
     containerConfig: ContainerConfig;
@@ -12,10 +13,23 @@ type TrainingContainerProps = {
     isMinimized: boolean;
     onMinimize: () => void;
     settingsAccess: SettingsAccess;
+    defaultContent: React.ReactNode;
+    goBack?: () => void;
+    goHome?: () => void;
 };
 
 export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
-    const { containerConfig, content, isMinimized, onMinimize, children, settingsAccess } = props;
+    const {
+        containerConfig,
+        content,
+        isMinimized,
+        onMinimize,
+        children,
+        settingsAccess,
+        defaultContent,
+        goHome,
+        goBack,
+    } = props;
 
     const onSettings = React.useCallback(() => {
         if (!settingsAccess.settingsUrl) return;
@@ -35,10 +49,13 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
                     <div>{children}</div>
                     <InteractiveTrainingPanel
                         minimized={isMinimized}
-                        content={content}
                         onMinimize={onMinimize}
+                        onBack={goBack}
+                        onHome={goHome}
                         onSettings={settingsAccess.hasAccess ? onSettings : undefined}
-                    />
+                    >
+                        {content ? <MarkdownViewer source={content} /> : defaultContent}
+                    </InteractiveTrainingPanel>
                 </PaneledContainer>
             );
         case "dialog":
@@ -47,10 +64,13 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
                     {children}
                     <InteractiveTrainingModal
                         minimized={isMinimized}
-                        content={content}
                         onMinimize={onMinimize}
+                        onGoHome={goHome}
+                        onGoBack={goBack}
                         onSettings={settingsAccess.hasAccess ? onSettings : undefined}
-                    />
+                    >
+                        {content ? <MarkdownViewer source={content} /> : defaultContent}
+                    </InteractiveTrainingModal>
                 </>
             );
     }
@@ -74,10 +94,13 @@ const PaneledContainer = styled.div<{
         & > :last-child {
             flex: 0 0 ${({ width, unit }) => `${width}${unit}`};
             max-width: ${({ width, unit }) => `${width}${unit}`};
+            min-width: 450px;
             position: sticky;
             top: 0;
             align-self: flex-start;
             height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
     }
 `;

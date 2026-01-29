@@ -4,11 +4,61 @@ import _ from "lodash";
 import { D2Api } from "../../../types/d2-api";
 import { TrainingModule, TrainingModulePage } from "../../../domain/entities/TrainingModule";
 import { buildTranslate, TranslatableText } from "../../../domain/entities/TranslatableText";
-import { ContainerConfig, defaultContainerConfig } from "../../../domain/entities/Config";
+import { Config, ContainerConfig, defaultContainerConfig } from "../../../domain/entities/Config";
 import { getCompositionRoot } from "../../../webapp/CompositionRoot";
+import { LandingNode } from "../../../domain/entities/LandingPage";
+import {
+    generateSettingsUrl,
+    generateTrainingAppBaseUrl,
+    transformD2DocumentUrls,
+    updateIconDocumentUrls,
+} from "../utils";
+import { getLogoInfo, LogoInfo } from "../../../webapp/hooks/useAppConfig";
+import { useTrainingNavigation } from "../../../webapp/hooks/useTutorialPage";
 
-function generateSettingsUrl(baseUrl: string, appKey: string) {
-    return `${baseUrl}/api/apps/${appKey}/index.html#/settings`;
+type UseTutorialModuleStateProps = {
+    landings: LandingNode[];
+    modules: TrainingModule[];
+    textContent: string;
+};
+
+export function useTutorialModuleState(props: UseTutorialModuleStateProps) {
+    const { landings, modules, textContent } = props;
+    const { goBack, goHome, isRoot, ...navigations } = useTrainingNavigation({ landings });
+    const [module, setModule] = useState<TrainingModule>();
+
+    const handleBack = useCallback(() => {
+        setModule(undefined);
+        goBack();
+    }, [goBack]);
+
+    const handleHome = useCallback(() => {
+        setModule(undefined);
+        goHome();
+    }, [goHome]);
+
+    console.log("textContent", textContent, isRoot);
+    const showNavButtons = !textContent && !isRoot;
+
+    const onGoBack = useMemo(() => (showNavButtons ? handleBack : undefined), [handleBack, showNavButtons]);
+    const onGoHome = useMemo(() => (showNavButtons ? handleHome : undefined), [handleHome, showNavButtons]);
+
+    const loadModule = useCallback(
+        (moduleId: string) => {
+            const moduleSelected = modules.find(m => m.id === moduleId);
+            if (moduleSelected) setModule(moduleSelected);
+        },
+        [modules]
+    );
+
+    return {
+        loadedModule: module,
+        loadModule,
+        onGoBack,
+        onGoHome,
+        isRoot,
+        ...navigations,
+    };
 }
 
 export function useModuleState() {
@@ -71,7 +121,7 @@ export function useTrainingContent(props: UseTrainingContentProps) {
         [debouncedSetContents]
     );
 
-    return { textContent, trigger };
+    return { textContent, trigger, translateMethod };
 }
 
 export type SettingsAccess = {
@@ -81,12 +131,17 @@ export type SettingsAccess = {
 
 type UseTrainingDataProps = { baseUrl: string; trainingAppKey: string };
 
-export function useTrainingData(props: UseTrainingDataProps) {
+export function useTrainingResources(props: UseTrainingDataProps) {
     const { baseUrl, trainingAppKey } = props;
     const d2Api = useMemo(() => new D2Api({ baseUrl }), [baseUrl]);
     const compositionRoot = useMemo(() => getCompositionRoot(d2Api), [d2Api]);
+
     const [modules, setModules] = useState<TrainingModule[]>([]);
+    const [landings, setLandings] = useState<LandingNode[]>([]);
+
     const [containerConfig, setContainerConfig] = useState<ContainerConfig>(defaultContainerConfig);
+    const [appConfig, setAppConfig] = useState<Config>();
+    const [logoInfo, setLogoInfo] = useState<LogoInfo>();
     const [settingsAccess, setSettingsAccess] = useState<SettingsAccess>({
         hasAccess: false,
         settingsUrl: "",
@@ -103,7 +158,15 @@ export function useTrainingData(props: UseTrainingDataProps) {
     useEffect(() => {
         compositionRoot.usecases.modules
             .list()
-            .then(modules => setModules(modules ?? []))
+            .then(modules => setModules(updateIconDocumentUrls(modules, d2Api.apiPath)))
+            .catch(error => {
+                console.error(`Error fetching modules:`, error);
+                setModules([]);
+            });
+
+        compositionRoot.usecases.landings
+            .list()
+            .then(landings => setLandings(updateIconDocumentUrls(landings, d2Api.apiPath)))
             .catch(error => {
                 console.error(`Error fetching modules:`, error);
                 setModules([]);
@@ -112,7 +175,16 @@ export function useTrainingData(props: UseTrainingDataProps) {
         compositionRoot.usecases.config
             .get()
             .then(config => {
+                setAppConfig(config);
                 setContainerConfig(config.containerConfig);
+
+                const logo = getLogoInfo(appConfig?.logo);
+                if (!appConfig?.logo) {
+                    setLogoInfo({
+                        ...logo,
+                        logoPath: `${generateTrainingAppBaseUrl(baseUrl, trainingAppKey)}/${logo.logoPath}`,
+                    });
+                } else setLogoInfo(logo);
 
                 return compositionRoot.usecases.user.checkSettingsPermissions(config);
             })
@@ -130,9 +202,5 @@ export function useTrainingData(props: UseTrainingDataProps) {
             });
     }, [compositionRoot]);
 
-    return { pages, containerConfig, d2Api, settingsAccess };
-}
-
-function transformD2DocumentUrls(content: string, apiBaseUrl: string): string {
-    return content.replace(/\.\.\/..\/(documents\/[^)\s"']+)/g, `${apiBaseUrl}/$1`);
+    return { pages, containerConfig, d2Api, settingsAccess, modules, landings, appConfig, logoInfo };
 }
