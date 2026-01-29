@@ -4,6 +4,8 @@ import { Maybe } from "../../types/utils";
 
 export type ModuleStepType = "welcome" | "contents" | "steps" | "final" | "summary";
 
+export type UpdateModuleStep = ReturnType<typeof useUpdateModuleStep>;
+
 export function useUpdateModuleStep(props: { module: Maybe<TrainingModule> }) {
     const { module } = props;
     const [moduleStep, setModuleStep] = React.useState<ModuleStepType>("welcome");

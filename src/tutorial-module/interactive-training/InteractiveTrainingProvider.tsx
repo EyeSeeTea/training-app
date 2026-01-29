@@ -50,7 +50,7 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
         trainingAppKey,
     });
     const { minimizeTraining, showTraining, isMinimized } = useModuleState();
-    const { textContent, trigger, translateMethod } = useTrainingContent({ pages, locale, d2Api });
+    const { textContent, trigger, translate } = useTrainingContent({ pages, locale, d2Api });
     const { onGoBack, onGoHome, ...moduleHandling } = useTutorialModuleState({ modules, landings, textContent });
 
     const containerClass = `training-scope ${highlightElementsWithBindings ? "highlight-training-elements" : ""}`;
@@ -85,7 +85,8 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
                         {...moduleHandling}
                         landings={landings}
                         modules={modules}
-                        translate={translateMethod}
+                        translate={translate}
+                        onHome={onGoHome}
                     />
                 }
             >

@@ -13,7 +13,7 @@ const ModalContentBase: React.FC<ModalContentProps> = ({ className, children }) 
     }, [children]);
 
     return (
-        <div className={className} ref={ref} data-component="modalContent">
+        <div className={className} ref={ref} data-component="modal-content">
             {children}
         </div>
     );

@@ -45,8 +45,6 @@ export function getSectionPageIds(currentUrl: string, pages: TrainingModulePage[
         .value();
 }
 
-// export function transformRelativeLinks()
-
 export function generateSettingsUrl(baseUrl: string, appKey: string) {
     return `${generateTrainingAppBaseUrl(baseUrl, appKey)}/index.html#/settings`;
 }
@@ -56,7 +54,6 @@ export function generateTrainingAppBaseUrl(baseUrl: string, appKey: string) {
 }
 
 export function transformD2DocumentUrls(content: string, apiBaseUrl: string): string {
-    console.log("Transforming document URLs with base:", apiBaseUrl);
     return content.replace(/\.\.\/..\/(documents\/[^)\s"']+)/g, `${apiBaseUrl}/$1`);
 }
 

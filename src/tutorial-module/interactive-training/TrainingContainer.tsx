@@ -54,7 +54,7 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
                         onHome={goHome}
                         onSettings={settingsAccess.hasAccess ? onSettings : undefined}
                     >
-                        {content ? <MarkdownViewer source={content} /> : defaultContent}
+                        <TrainingContainerContent content={content} defaultConent={defaultContent} />
                     </InteractiveTrainingPanel>
                 </PaneledContainer>
             );
@@ -69,12 +69,28 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
                         onGoBack={goBack}
                         onSettings={settingsAccess.hasAccess ? onSettings : undefined}
                     >
-                        {content ? <MarkdownViewer source={content} /> : defaultContent}
+                        <TrainingContainerContent content={content} defaultConent={defaultContent} />
                     </InteractiveTrainingModal>
                 </>
             );
     }
 };
+
+const TrainingContainerContent: React.FC<{ content: string; defaultConent: React.ReactNode }> = props => {
+    const { content, defaultConent } = props;
+
+    const hasContent = Boolean(content);
+    return (
+        <>
+            {hasContent && <MarkdownViewer source={content} />}
+            <ToggleContainer isVisible={!hasContent}>{defaultConent}</ToggleContainer>
+        </>
+    );
+};
+
+export const ToggleContainer = styled.div<{ isVisible: boolean }>`
+    display: ${p => (p.isVisible ? "block" : "none")};
+`;
 
 const PaneledContainer = styled.div<{
     isRight: boolean;

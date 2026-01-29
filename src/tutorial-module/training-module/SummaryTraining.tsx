@@ -58,13 +58,19 @@ export function SummaryTraining(props: SummaryProps) {
     );
 }
 
-const SummaryStep = React.memo(
-    (props: { module: TrainingModule; position: number; onStep: (position: number) => void; title: string }) => {
-        const { module, onStep, position, title } = props;
-        const half = module.contents.steps.length / 2;
-        const column = position < half ? "left" : "right";
-        const row = position % half;
-        const last = position + 1 === Math.round(half) || position === module.contents.steps.length - 1;
+export const SummaryStep = React.memo(
+    (props: {
+        module: TrainingModule;
+        position: number;
+        onStep: (position: number) => void;
+        title: string;
+        partition?: number;
+    }) => {
+        const { module, onStep, position, title, partition = 2 } = props;
+        const parts = module.contents.steps.length / partition;
+        const column = position < parts ? "left" : "right";
+        const row = position % parts;
+        const last = position + 1 === Math.round(parts) || position === module.contents.steps.length - 1;
 
         return (
             <Step column={column} row={row} last={last}>

@@ -28,19 +28,21 @@ export function useTutorialModuleState(props: UseTutorialModuleStateProps) {
     const [module, setModule] = useState<TrainingModule>();
 
     const handleBack = useCallback(() => {
-        setModule(undefined);
-        goBack();
-    }, [goBack]);
+        if (module) {
+            setModule(undefined);
+        } else {
+            goBack();
+        }
+    }, [goBack, module]);
 
     const handleHome = useCallback(() => {
         setModule(undefined);
         goHome();
     }, [goHome]);
 
-    console.log("textContent", textContent, isRoot);
     const showNavButtons = !textContent && !isRoot;
 
-    const onGoBack = useMemo(() => (showNavButtons ? handleBack : undefined), [handleBack, showNavButtons]);
+    const onGoBack = useMemo(() => (showNavButtons && !module ? handleBack : undefined), [handleBack, showNavButtons]);
     const onGoHome = useMemo(() => (showNavButtons ? handleHome : undefined), [handleHome, showNavButtons]);
 
     const loadModule = useCallback(
@@ -52,12 +54,13 @@ export function useTutorialModuleState(props: UseTutorialModuleStateProps) {
     );
 
     return {
+        ...navigations,
         loadedModule: module,
         loadModule,
         onGoBack,
         onGoHome,
         isRoot,
-        ...navigations,
+        onBack: handleBack,
     };
 }
 
@@ -88,10 +91,17 @@ export function useTrainingContent(props: UseTrainingContentProps) {
     const pageMap = useMemo(() => _.keyBy(pages, p => p.id), [pages]);
     const translateMethod = useMemo(() => buildTranslate(locale), [locale]);
 
+    const translate = useCallback(
+        (text: TranslatableText) => {
+            const translatedText = translateMethod(text);
+            return transformD2DocumentUrls(translatedText, d2Api.apiPath);
+        },
+        [translateMethod]
+    );
+
     const textContent = useMemo(() => {
-        const translatedContent = contents.reduce((acc, content) => `${acc}\n\n${translateMethod(content)}`, "");
-        return transformD2DocumentUrls(translatedContent, d2Api.apiPath);
-    }, [contents, translateMethod, d2Api.apiPath]);
+        return contents.reduce((acc, content) => `${acc}\n\n${translate(content)}`, "");
+    }, [contents, translate, d2Api.apiPath]);
 
     const setContentsImmediate = useCallback(
         (targetIds: string[]) => {
@@ -121,7 +131,7 @@ export function useTrainingContent(props: UseTrainingContentProps) {
         [debouncedSetContents]
     );
 
-    return { textContent, trigger, translateMethod };
+    return { textContent, trigger, translate };
 }
 
 export type SettingsAccess = {
