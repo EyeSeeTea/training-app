@@ -4,7 +4,6 @@ import { ModalContent, ModalTitle } from "../modal";
 import {
     GroupContainer,
     Header,
-    HomePageContent,
     HomePageContentComponent,
     HomePageContentComponentProps,
     IconContainer,
