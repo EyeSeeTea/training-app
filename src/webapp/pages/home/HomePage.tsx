@@ -34,7 +34,6 @@ export const HomePage: React.FC = React.memo(() => {
 
     const loadModule = useCallback(
         (module: string, step: number) => {
-            console.log(module, step);
             if (step > 1) {
                 setAppState({ type: "TRAINING", state: "OPEN", module, step, content: 1 });
             } else {
