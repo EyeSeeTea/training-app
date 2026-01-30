@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Traning App - UI Interface\n"
-"POT-Creation-Date: 2026-01-29T05:10:20.254Z\n"
+"POT-Creation-Date: 2026-01-29T09:58:09.784Z\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -38,23 +38,20 @@ msgstr "Accueil"
 msgid "Collapse panel"
 msgstr ""
 
-msgid "Well done!"
-msgstr "Bien joué!"
+msgid "Exit Tutorial"
+msgstr "Sortir du tutoriel"
 
-msgid "You've completed the {{name}} tutorial!"
-msgstr "Vous avez fini le tutoriel {{nom}}!"
-
-msgid "Back to tutorial"
-msgstr "Retour au tutoriel"
-
-msgid "Finish"
-msgstr "Sortir"
+msgid "Start Tutorial"
+msgstr "Démarrer le tutoriel"
 
 msgid "What did you learn in this tutorial?"
 msgstr "Qu'avez-vous appris dans ce tutoriel?"
 
 msgid "What will this tutorial cover?"
 msgstr "Que couvrira ce tutoriel?"
+
+msgid "Back to tutorial"
+msgstr "Retour au tutoriel"
 
 msgid "Previous"
 msgstr "Précédent"
@@ -65,11 +62,14 @@ msgstr "Prenez un autre tutoriel"
 msgid "Start"
 msgstr "Début"
 
-msgid "Exit Tutorial"
-msgstr "Sortir du tutoriel"
+msgid "Well done!"
+msgstr "Bien joué!"
 
-msgid "Start Tutorial"
-msgstr "Démarrer le tutoriel"
+msgid "You've completed the {{name}} tutorial!"
+msgstr "Vous avez fini le tutoriel {{nom}}!"
+
+msgid "Finish"
+msgstr "Sortir"
 
 msgid "Tutorial"
 msgstr "Tutoriels"

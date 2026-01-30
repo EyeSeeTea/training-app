@@ -20,7 +20,7 @@ export function useBindEvents(props: InteractiveTrainingContextState) {
 
     const trainingScopeRef = useRef<HTMLDivElement>(null);
     const [lastTriggeredPath, setLastTriggeredPath] = useState("");
-    const location = useCurrentLocation();
+    const location = useCurrentLocation({ hashOnly: true });
     const sectionPageIds = useMemo(() => getSectionPageIds(location, pages), [location, pages]);
 
     // use ref to avoid reregistering event listeners

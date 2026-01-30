@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2026-01-29T05:10:20.254Z\n"
-"PO-Revision-Date: 2026-01-29T05:10:20.254Z\n"
+"POT-Creation-Date: 2026-01-29T09:58:09.784Z\n"
+"PO-Revision-Date: 2026-01-29T09:58:09.784Z\n"
 
 msgid "Welcome to training on DHIS2"
 msgstr ""
@@ -38,22 +38,19 @@ msgstr ""
 msgid "Collapse panel"
 msgstr ""
 
-msgid "Well done!"
+msgid "Exit Tutorial"
 msgstr ""
 
-msgid "You've completed the {{name}} tutorial!"
-msgstr ""
-
-msgid "Back to tutorial"
-msgstr ""
-
-msgid "Finish"
+msgid "Start Tutorial"
 msgstr ""
 
 msgid "What did you learn in this tutorial?"
 msgstr ""
 
 msgid "What will this tutorial cover?"
+msgstr ""
+
+msgid "Back to tutorial"
 msgstr ""
 
 msgid "Previous"
@@ -65,10 +62,13 @@ msgstr ""
 msgid "Start"
 msgstr ""
 
-msgid "Exit Tutorial"
+msgid "Well done!"
 msgstr ""
 
-msgid "Start Tutorial"
+msgid "You've completed the {{name}} tutorial!"
+msgstr ""
+
+msgid "Finish"
 msgstr ""
 
 msgid "Tutorial"

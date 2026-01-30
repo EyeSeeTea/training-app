@@ -60,7 +60,7 @@ export function getDefaultBinding(type: BindingType): PageBinding {
     }
 }
 
-export function urlPatternToRegex(pattern: string): RegExp {
+function urlPatternToRegex(pattern: string): RegExp {
     const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
     const regexPattern = escaped
         .replace(/\*\*/g, "<!GLOBSTAR!>")

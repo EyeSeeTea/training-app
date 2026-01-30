@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
-export function useCurrentLocation() {
-    const [url, setUrl] = useState(getLocation());
+type LocationOptions = {
+    hashOnly?: boolean;
+};
+
+export function useCurrentLocation(options?: LocationOptions) {
+    const [url, setUrl] = useState(getLocation(options));
     const observerRef = useRef<ReturnType<typeof createLocationObserver>>();
 
     useEffect(() => {
@@ -10,7 +14,7 @@ export function useCurrentLocation() {
         }
 
         const handleChange = () => {
-            setUrl(getLocation());
+            setUrl(getLocation(options));
         };
 
         return observerRef.current.subscribe(handleChange);
@@ -19,7 +23,11 @@ export function useCurrentLocation() {
     return url;
 }
 
-function getLocation() {
+function getLocation(options?: LocationOptions) {
+    if (options?.hashOnly) {
+        const hash = window.location.hash.split("?")[0];
+        return hash || "#/";
+    }
     return window.location.pathname + window.location.hash.split("?")[0];
 }
 
