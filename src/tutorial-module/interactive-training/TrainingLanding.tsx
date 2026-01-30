@@ -289,10 +289,13 @@ const PageContainer = styled.div`
 
     [data-component="modal-content"] {
         max-height: unset;
+        max-width: unset;
     }
 
     [data-component="cardboard"] {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 175px));
+        margin-right: 0;
 
         & > div {
             max-width: 200px;
