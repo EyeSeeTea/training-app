@@ -10,6 +10,7 @@ import { MarkdownViewer } from "../../webapp/components/markdown-viewer/Markdown
 type TrainingContainerProps = {
     containerConfig: ContainerConfig;
     content: string;
+    triggerKey: string;
     isMinimized: boolean;
     onMinimize: () => void;
     settingsAccess: SettingsAccess;
@@ -22,6 +23,7 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
     const {
         containerConfig,
         content,
+        triggerKey,
         isMinimized,
         onMinimize,
         children,
@@ -53,8 +55,9 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
                         onBack={goBack}
                         onHome={goHome}
                         onSettings={settingsAccess.hasAccess ? onSettings : undefined}
+                        triggerKey={triggerKey}
                     >
-                        <TrainingContainerContent content={content} defaultConent={defaultContent} />
+                        <TrainingContainerContent content={content} defaultContent={defaultContent} />
                     </InteractiveTrainingPanel>
                 </PaneledContainer>
             );
@@ -68,22 +71,23 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
                         onGoHome={goHome}
                         onGoBack={goBack}
                         onSettings={settingsAccess.hasAccess ? onSettings : undefined}
+                        triggerKey={triggerKey}
                     >
-                        <TrainingContainerContent content={content} defaultConent={defaultContent} />
+                        <TrainingContainerContent content={content} defaultContent={defaultContent} />
                     </InteractiveTrainingModal>
                 </>
             );
     }
 };
 
-const TrainingContainerContent: React.FC<{ content: string; defaultConent: React.ReactNode }> = props => {
-    const { content, defaultConent } = props;
+const TrainingContainerContent: React.FC<{ content: string; defaultContent: React.ReactNode }> = props => {
+    const { content, defaultContent } = props;
 
     const hasContent = Boolean(content);
     return (
         <>
             {hasContent && <MarkdownViewer source={content} />}
-            <ToggleContainer isVisible={!hasContent}>{defaultConent}</ToggleContainer>
+            <ToggleContainer isVisible={!hasContent}>{defaultContent}</ToggleContainer>
         </>
     );
 };

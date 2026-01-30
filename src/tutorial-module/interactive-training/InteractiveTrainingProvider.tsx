@@ -14,6 +14,7 @@ import {
     useTutorialModuleState,
 } from "./hooks/useInteractiveTraining";
 import { TrainingLanding } from "./TrainingLanding";
+import { useScrollableContainerKey } from "./hooks/useScrollableContainerKey";
 
 const trainingEventKinds = ["click", "focus", "section"];
 type TrainingEventKind = typeof trainingEventKinds[number];
@@ -49,9 +50,19 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
         baseUrl: baseUrl || "",
         trainingAppKey,
     });
+
     const { minimizeTraining, showTraining, isMinimized } = useModuleState();
-    const { textContent, trigger, translate } = useTrainingContent({ pages, locale, d2Api });
-    const { onGoBack, onGoHome, ...moduleHandling } = useTutorialModuleState({ modules, landings, textContent });
+    const { textContent, trigger, translate, targetIds } = useTrainingContent({ pages, locale, d2Api });
+    const { onGoBack, onGoHome, currentPage, ...moduleHandling } = useTutorialModuleState({
+        modules,
+        landings,
+        textContent,
+    });
+    const { triggerKey, appendToTriggerKey } = useScrollableContainerKey({
+        targetIds,
+        currentPage,
+        loadedModule: moduleHandling.loadedModule,
+    });
 
     const containerClass = `training-scope ${highlightElementsWithBindings ? "highlight-training-elements" : ""}`;
 
@@ -74,6 +85,7 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
             <TrainingContainer
                 containerConfig={containerConfig}
                 content={textContent}
+                triggerKey={triggerKey}
                 isMinimized={isMinimized}
                 onMinimize={minimizeTraining}
                 settingsAccess={settingsAccess}
@@ -83,10 +95,12 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
                     <TrainingLanding
                         {...trainingData}
                         {...moduleHandling}
+                        currentPage={currentPage}
                         landings={landings}
                         modules={modules}
                         translate={translate}
                         onHome={onGoHome}
+                        appendToTriggerKey={appendToTriggerKey}
                     />
                 }
             >

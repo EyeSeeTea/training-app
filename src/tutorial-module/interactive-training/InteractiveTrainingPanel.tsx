@@ -8,6 +8,7 @@ import { Tooltip, TooltipText } from "../../webapp/components/tooltip/Tooltip";
 import i18n from "../../utils/i18n";
 import BackIcon from "@material-ui/icons/ArrowBack";
 import HomeIcon from "@material-ui/icons/Home";
+import { ScrollableContainer } from "./ScrollableContainer";
 
 type TrainingModalProps = {
     onMinimize: () => void;
@@ -15,10 +16,12 @@ type TrainingModalProps = {
     onHome?: () => void;
     minimized?: boolean;
     onSettings?: () => void;
+    triggerKey: string;
 };
 
 export const InteractiveTrainingPanel: React.FC<TrainingModalProps> = props => {
-    const { onMinimize, onBack, onHome, minimized, onSettings, children } = props;
+    const { onMinimize, onBack, onHome, minimized, onSettings, children, triggerKey } = props;
+
     return (
         <StyledPanel minimized={minimized}>
             <CollapseIconContainer>
@@ -43,7 +46,7 @@ export const InteractiveTrainingPanel: React.FC<TrainingModalProps> = props => {
                     <MinimizeIcon onClick={onMinimize} />
                 </HeaderButton>
             </CollapseIconContainer>
-            <Content>{children}</Content>
+            <Content triggerKey={triggerKey}>{children}</Content>
         </StyledPanel>
     );
 };
@@ -76,7 +79,7 @@ const HeaderButton = styled(Tooltip)`
     }
 `;
 
-const Content = styled(Box)`
+const Content = styled(ScrollableContainer)`
     display: flex;
     flex-direction: column;
     flex: 1;

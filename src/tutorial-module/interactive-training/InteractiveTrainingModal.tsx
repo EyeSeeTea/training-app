@@ -2,14 +2,19 @@ import styled from "styled-components";
 import React from "react";
 
 import { Modal, ModalContent } from "../../webapp/components/modal";
+import { ScrollableContainer } from "./ScrollableContainer";
 
-export const InteractiveTrainingModal: React.FC<React.ComponentProps<typeof Modal>> = props => {
-    const { children, ...modalProps } = props;
+type InteractiveTrainingModalProps = React.ComponentProps<typeof Modal> & { triggerKey: string };
+
+export const InteractiveTrainingModal: React.FC<InteractiveTrainingModalProps> = props => {
+    const { children, triggerKey, ...modalProps } = props;
 
     return (
-        <StyledModal {...modalProps} centerChildren={true} allowDrag={true} resetPositionOnMinimize={false}>
-            <ModalContent>{children}</ModalContent>
-        </StyledModal>
+        <ScrollableContainer triggerKey={triggerKey} targetContainerSelector={"[data-component='modal-content']"}>
+            <StyledModal {...modalProps} centerChildren={true} allowDrag={true} resetPositionOnMinimize={false}>
+                <ModalContent>{children}</ModalContent>
+            </StyledModal>
+        </ScrollableContainer>
     );
 };
 

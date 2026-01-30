@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import styled from "styled-components";
 
 import { TrainingModule } from "../../domain/entities/TrainingModule";
@@ -32,6 +32,7 @@ type TrainingLandingProps = {
     loadedModule: Maybe<TrainingModule>;
     onHome?: () => void;
     onBack?: () => void;
+    appendToTriggerKey: (key: string) => void;
 };
 export const TrainingLanding: React.FC<TrainingLandingProps> = props => {
     const {
@@ -77,15 +78,21 @@ type TrainingModuleProps = {
     translate: TranslateMethod;
     onHome?: () => void;
     onBack?: () => void;
+    appendToTriggerKey: (key: string) => void;
 };
 const TutorialModule: React.FC<TrainingModuleProps> = props => {
-    const { module } = props;
+    const { module, appendToTriggerKey } = props;
     const moduleNavigation = useUpdateModuleStep({
         module,
     });
     const moduleStep = moduleNavigation.moduleStep;
 
     const stepProps = useMemo(() => ({ ...props, ...moduleNavigation }), [props, moduleNavigation]);
+
+    useEffect(() => {
+        const { step, content } = moduleNavigation.tutorialProgress;
+        appendToTriggerKey(`${moduleStep}-${step}-${content}`);
+    }, [moduleStep, moduleNavigation.tutorialProgress]);
 
     return (
         <>
@@ -124,7 +131,7 @@ const WelcomeStep: React.FC<StepProps> = props => {
 };
 
 const TrainingSummaryStep: React.FC<StepProps> = props => {
-    const { module, translate, setModuleStep, setTutorialProgress, moduleStep, onBack } = props;
+    const { module, translate, setModuleStep, setTutorialProgress, moduleStep } = props;
 
     const completed = moduleStep === "summary";
 

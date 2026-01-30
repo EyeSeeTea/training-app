@@ -24,7 +24,7 @@ type UseTutorialModuleStateProps = {
 
 export function useTutorialModuleState(props: UseTutorialModuleStateProps) {
     const { landings, modules, textContent } = props;
-    const { goBack, goHome, isRoot, ...navigations } = useTrainingNavigation({ landings });
+    const { goBack, goHome, isRoot, currentPage, ...navigations } = useTrainingNavigation({ landings });
     const [module, setModule] = useState<TrainingModule>();
 
     const handleBack = useCallback(() => {
@@ -55,6 +55,7 @@ export function useTutorialModuleState(props: UseTutorialModuleStateProps) {
 
     return {
         ...navigations,
+        currentPage,
         loadedModule: module,
         loadModule,
         onGoBack,
@@ -87,6 +88,7 @@ type UseTrainingContentProps = {
 export function useTrainingContent(props: UseTrainingContentProps) {
     const { pages, locale, d2Api } = props;
     const [contents, setContents] = useState<TranslatableText[]>([]);
+    const [targetIds, setTargetIds] = useState<string[]>([]);
 
     const pageMap = useMemo(() => _.keyBy(pages, p => p.id), [pages]);
     const translateMethod = useMemo(() => buildTranslate(locale), [locale]);
@@ -110,6 +112,7 @@ export function useTrainingContent(props: UseTrainingContentProps) {
                 .compact()
                 .value();
             setContents(targetPages);
+            setTargetIds(targetIds);
         },
         [pageMap]
     );
@@ -131,7 +134,7 @@ export function useTrainingContent(props: UseTrainingContentProps) {
         [debouncedSetContents]
     );
 
-    return { textContent, trigger, translate };
+    return { textContent, trigger, translate, targetIds };
 }
 
 export type SettingsAccess = {
