@@ -41,26 +41,6 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
 
     switch (containerConfig.type) {
         case "sidebar":
-            // return (
-            //     <PaneledContainer
-            //         className={isMinimized ? "" : "show-panel"}
-            //         isRight={containerConfig.position === "right"}
-            //         width={containerConfig.width}
-            //         unit={containerConfig.unit}
-            //     >
-            //         <div>{children}</div>
-            //         <InteractiveTrainingPanel
-            //             minimized={isMinimized}
-            //             onMinimize={onMinimize}
-            //             onBack={goBack}
-            //             onHome={goHome}
-            //             onSettings={settingsAccess.hasAccess ? onSettings : undefined}
-            //             triggerKey={triggerKey}
-            //         >
-            //             <TrainingContainerContent content={content} defaultContent={defaultContent} />
-            //         </InteractiveTrainingPanel>
-            //     </PaneledContainer>
-            // );
             return (
                 <InteractiveTrainingDrawer
                     {...containerProps}

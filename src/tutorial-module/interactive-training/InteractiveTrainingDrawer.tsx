@@ -124,7 +124,8 @@ const HeaderButton = styled(Tooltip)`
     }
 
     ${TooltipText} {
-        top: 5px;
+        z-index: 9999;
+        left: ${({ placement }) => (placement === "right" ? "150%" : "unset")};
     }
 `;
 
@@ -163,10 +164,12 @@ const openedStyles = ({ width, unit }: { width: number; unit: SideBarConfig["uni
 const closedStyles = css`
     transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
     width: ${DRAWER_COLLAPSED_WIDTH}px;
+    overflow: visible;
     & .MuiDrawer-paper {
         transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
         width: ${DRAWER_COLLAPSED_WIDTH}px;
         background-color: #276696;
         border-left: 2px solid #2b5b77;
+        overflow: visible;
     }
 `;
