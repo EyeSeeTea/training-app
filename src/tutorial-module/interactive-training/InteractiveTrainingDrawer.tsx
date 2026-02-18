@@ -4,16 +4,14 @@ import { Box, Drawer } from "@material-ui/core";
 import BackIcon from "@material-ui/icons/ArrowBack";
 import SettingsIcon from "@material-ui/icons/Settings";
 import HomeIcon from "@material-ui/icons/Home";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import MinimizeIcon from "@material-ui/icons/Minimize";
-import AddIcon from "@material-ui/icons/Add";
 
 import { SideBarConfig } from "../../domain/entities/Config";
 import { Tooltip, TooltipText } from "../../webapp/components/tooltip/Tooltip";
 import i18n from "../../utils/i18n";
 import { ScrollableContainer } from "./ScrollableContainer";
 import { ActionButton } from "../../webapp/components/action-button/ActionButton";
+import { DrawerToggleButton } from "./DrawerToggleIcon";
+import { useDrawerCollapseMode } from "./hooks/useDrawerCollapseMode";
 
 const DRAWER_COLLAPSED_WIDTH = 40;
 
@@ -44,32 +42,34 @@ export const InteractiveTrainingDrawer: React.FC<SideDrawerProps> = props => {
     } = props;
 
     const isRight = containerConfig.position === "right";
-    const isHideMode = containerConfig.collapseMode === "hide";
-    const sidePanelButtonText = isMinimized ? i18n.t("Expand panel") : i18n.t("Collapse panel");
-    const sidePanelButtonTooltipPlacement = isHideMode
-        ? "left"
-        : isRight
-        ? isMinimized
-            ? "left"
-            : "right"
-        : isMinimized
-        ? "right"
-        : "left";
-    const headerOptionsTooltipPlacement = isHideMode ? "right" : isRight ? "left" : "right";
 
-    const ChevronIcon = getChevronIcon(isRight, isMinimized);
-    const onChevronClick = isMinimized ? showTraining : onMinimize;
+    const {
+        isHideMode,
+        toggleIcon,
+        onToggleClick,
+        toggleTooltip,
+        toggleTooltipPlacement,
+        headerOptionsTooltipPlacement,
+        drawerIsRight,
+        drawerVariant,
+        showMini,
+    } = useDrawerCollapseMode(containerConfig.collapseMode, isRight, isMinimized, onMinimize, showTraining);
+
+    const buttonPosition =
+        containerConfig.buttonPosition === "top-right"
+            ? { top: "48px", right: "0px" }
+            : { bottom: "10px", right: "0px" };
 
     const drawer = (
         <StyledDrawer
-            variant={isHideMode ? "persistent" : "permanent"}
+            variant={drawerVariant}
             anchor={containerConfig.position}
             open={!isMinimized}
             width={containerConfig.width}
             unit={containerConfig.unit}
-            showMini={!isHideMode}
+            showMini={showMini}
         >
-            <DrawerHeader isRight={isHideMode ? false : isRight}>
+            <DrawerHeader isRight={drawerIsRight}>
                 {!isMinimized && (
                     <HeaderOptions>
                         {onBack && (
@@ -90,42 +90,27 @@ export const InteractiveTrainingDrawer: React.FC<SideDrawerProps> = props => {
                     </HeaderOptions>
                 )}
 
-                <HeaderButton text={sidePanelButtonText} placement={sidePanelButtonTooltipPlacement}>
-                    {isHideMode ? (
-                        isMinimized ? (
-                            <AddIcon onClick={showTraining} />
-                        ) : (
-                            <MinimizeIcon onClick={onMinimize} />
-                        )
-                    ) : (
-                        <ChevronIcon onClick={onChevronClick} />
-                    )}
-                </HeaderButton>
+                <DrawerToggleButton
+                    Icon={toggleIcon}
+                    onClick={onToggleClick}
+                    tooltip={toggleTooltip}
+                    tooltipPlacement={toggleTooltipPlacement}
+                />
             </DrawerHeader>
 
             {!isMinimized && <Content triggerKey={triggerKey}>{drawerContent}</Content>}
         </StyledDrawer>
     );
 
-    const position =
-        containerConfig.buttonPosition === "top-right"
-            ? {
-                  top: "48px",
-                  right: "0px",
-              }
-            : {
-                  bottom: "10px",
-                  right: "0px",
-              };
-
     return (
         <Box display="flex">
             {!isRight && drawer}
             <Box flexGrow={1}>{children}</Box>
             {isRight && drawer}
+            {/* Hide mode only: floating action button when collapsed */}
             {isHideMode && isMinimized && (
-                <ActionButtonContainer hidden={false}>
-                    <ActionButton onClick={showTraining} {...position}>
+                <ActionButtonContainer>
+                    <ActionButton onClick={showTraining} {...buttonPosition}>
                         <HelpButton>?</HelpButton>
                     </ActionButton>
                 </ActionButtonContainer>
@@ -133,12 +118,6 @@ export const InteractiveTrainingDrawer: React.FC<SideDrawerProps> = props => {
         </Box>
     );
 };
-
-function getChevronIcon(isRight: boolean, isMinimized: boolean) {
-    const expandRight = isRight && isMinimized;
-    const collapseLeft = !isRight && !isMinimized;
-    return expandRight || collapseLeft ? ChevronLeftIcon : ChevronRightIcon;
-}
 
 const Content = styled(ScrollableContainer)`
     display: flex;
@@ -155,7 +134,7 @@ const HeaderOptions = styled.div`
     gap: 8px;
 `;
 
-const HeaderButton = styled(Tooltip)`
+export const HeaderButton = styled(Tooltip)`
     cursor: pointer;
 
     svg {
@@ -223,9 +202,7 @@ const closedStyles = css`
     }
 `;
 
-const ActionButtonContainer = styled.div<{ hidden: boolean }>`
-    visibility: ${({ hidden }) => (hidden ? "hidden" : "visible")};
-
+const ActionButtonContainer = styled.div`
     .MuiFab-root {
         padding: 0;
     }
