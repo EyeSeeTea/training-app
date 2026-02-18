@@ -18,6 +18,7 @@ type TrainingContainerProps = {
     defaultContent: React.ReactNode;
     goBack?: () => void;
     goHome?: () => void;
+    isLoading?: boolean;
 };
 
 export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
@@ -30,6 +31,7 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
         defaultContent,
         goHome,
         goBack,
+        isLoading = true,
         ...containerProps
     } = props;
 
@@ -38,6 +40,8 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
 
         window.open(settingsAccess.settingsUrl, "_blank");
     }, [settingsAccess]);
+
+    if (isLoading) return <></>;
 
     switch (containerConfig.type) {
         case "sidebar":

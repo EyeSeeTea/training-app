@@ -46,10 +46,11 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
         children,
     } = props;
 
-    const { pages, containerConfig, d2Api, settingsAccess, landings, modules, ...trainingData } = useTrainingResources({
-        baseUrl: baseUrl || "",
-        trainingAppKey,
-    });
+    const { pages, containerConfig, d2Api, settingsAccess, landings, modules, isLoading, ...trainingData } =
+        useTrainingResources({
+            baseUrl: baseUrl || "",
+            trainingAppKey,
+        });
 
     const { minimizeTraining, showTraining, isMinimized } = useModuleState();
     const { textContent, trigger, translate, targetIds } = useTrainingContent({ pages, locale, d2Api });
@@ -72,6 +73,7 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
     return (
         <InteractiveTrainingContext.Provider value={contextValue}>
             <TrainingContainer
+                isLoading={isLoading}
                 containerConfig={containerConfig}
                 content={textContent}
                 triggerKey={triggerKey}

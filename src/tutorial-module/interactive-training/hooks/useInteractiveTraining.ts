@@ -149,6 +149,7 @@ export function useTrainingResources(props: UseTrainingDataProps) {
     const d2Api = useMemo(() => new D2Api({ baseUrl }), [baseUrl]);
     const compositionRoot = useMemo(() => getCompositionRoot(d2Api), [d2Api]);
 
+    const [isLoading, setIsLoading] = useState(true);
     const [modules, setModules] = useState<TrainingModule[]>([]);
     const [landings, setLandings] = useState<LandingNode[]>([]);
 
@@ -169,7 +170,9 @@ export function useTrainingResources(props: UseTrainingDataProps) {
     }, [modules]);
 
     useEffect(() => {
-        compositionRoot.usecases.modules
+        setIsLoading(true);
+
+        const modulesPromise = compositionRoot.usecases.modules
             .list()
             .then(modules => setModules(updateIconDocumentUrls(modules, d2Api.apiPath)))
             .catch(error => {
@@ -177,15 +180,15 @@ export function useTrainingResources(props: UseTrainingDataProps) {
                 setModules([]);
             });
 
-        compositionRoot.usecases.landings
+        const landingsPromise = compositionRoot.usecases.landings
             .list()
             .then(landings => setLandings(updateIconDocumentUrls(landings, d2Api.apiPath)))
             .catch(error => {
-                console.error(`Error fetching modules:`, error);
-                setModules([]);
+                console.error(`Error fetching landings:`, error);
+                setLandings([]);
             });
 
-        compositionRoot.usecases.config
+        const configPromise = compositionRoot.usecases.config
             .get()
             .then(config => {
                 setAppConfig(config);
@@ -213,7 +216,9 @@ export function useTrainingResources(props: UseTrainingDataProps) {
                 console.error(`Error fetching container config:`, error);
                 setContainerConfig(defaultContainerConfig);
             });
+
+        Promise.all([modulesPromise, landingsPromise, configPromise]).finally(() => setIsLoading(false));
     }, [compositionRoot]);
 
-    return { pages, containerConfig, d2Api, settingsAccess, modules, landings, appConfig, logoInfo };
+    return { pages, containerConfig, d2Api, settingsAccess, modules, landings, appConfig, logoInfo, isLoading };
 }
