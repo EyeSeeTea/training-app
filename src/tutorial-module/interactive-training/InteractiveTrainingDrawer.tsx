@@ -150,10 +150,12 @@ const StyledDrawer = styled(Drawer)<{ open?: boolean; width: number; unit: SideB
 
 const openedStyles = ({ width, unit }: { width: number; unit: SideBarConfig["unit"] }) => css`
     width: ${width}${unit};
+    min-width: 450px;
     transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
     overflow-x: hidden;
     & .MuiDrawer-paper {
         width: ${width}${unit};
+        min-width: 450px;
         transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
         overflow-x: hidden;
         background-color: #276696;
