@@ -14,7 +14,7 @@ import { ScrollableContainer } from "./ScrollableContainer";
 
 const DRAWER_COLLAPSED_WIDTH = 40;
 
-type TrainingModalProps = {
+type SideDrawerProps = {
     isMinimized: boolean;
     onMinimize: () => void;
     showTraining: () => void;
@@ -26,7 +26,7 @@ type TrainingModalProps = {
     drawerContent: React.ReactNode;
 };
 
-export const InteractiveTrainingDrawer: React.FC<TrainingModalProps> = props => {
+export const InteractiveTrainingDrawer: React.FC<SideDrawerProps> = props => {
     const {
         isMinimized,
         onMinimize,
@@ -43,6 +43,10 @@ export const InteractiveTrainingDrawer: React.FC<TrainingModalProps> = props => 
     const isRight = containerConfig.position === "right";
     const sidePanelButtonText = isMinimized ? i18n.t("Expand panel") : i18n.t("Collapse panel");
     const sidePanelButtonTooltipPlacement = isRight === isMinimized ? "left" : "right";
+    const headerOptionsTooltipPlacement = isRight ? "left" : "right";
+
+    const ChevronIcon = getChevronIcon(isRight, isMinimized);
+    const onChevronClick = isMinimized ? showTraining : onMinimize;
 
     const drawer = (
         <StyledDrawer
@@ -56,17 +60,17 @@ export const InteractiveTrainingDrawer: React.FC<TrainingModalProps> = props => 
                 {!isMinimized && (
                     <HeaderOptions>
                         {onBack && (
-                            <HeaderButton text={i18n.t("Back")}>
+                            <HeaderButton text={i18n.t("Back")} placement={headerOptionsTooltipPlacement}>
                                 <BackIcon onClick={onBack} />
                             </HeaderButton>
                         )}
                         {onSettings && (
-                            <HeaderButton text={i18n.t("Settings page")}>
+                            <HeaderButton text={i18n.t("Settings page")} placement={headerOptionsTooltipPlacement}>
                                 <SettingsIcon onClick={onSettings} />
                             </HeaderButton>
                         )}
                         {onHome && (
-                            <HeaderButton text={i18n.t("Home")}>
+                            <HeaderButton text={i18n.t("Home")} placement={headerOptionsTooltipPlacement}>
                                 <HomeIcon onClick={onHome} />
                             </HeaderButton>
                         )}
@@ -74,19 +78,10 @@ export const InteractiveTrainingDrawer: React.FC<TrainingModalProps> = props => 
                 )}
 
                 <HeaderButton text={sidePanelButtonText} placement={sidePanelButtonTooltipPlacement}>
-                    {isMinimized ? (
-                        isRight ? (
-                            <ChevronLeftIcon onClick={showTraining} />
-                        ) : (
-                            <ChevronRightIcon onClick={showTraining} />
-                        )
-                    ) : isRight ? (
-                        <ChevronRightIcon onClick={onMinimize} />
-                    ) : (
-                        <ChevronLeftIcon onClick={onMinimize} />
-                    )}
+                    <ChevronIcon onClick={onChevronClick} />
                 </HeaderButton>
             </DrawerHeader>
+
             {!isMinimized && <Content triggerKey={triggerKey}>{drawerContent}</Content>}
         </StyledDrawer>
     );
@@ -99,6 +94,12 @@ export const InteractiveTrainingDrawer: React.FC<TrainingModalProps> = props => 
         </Box>
     );
 };
+
+function getChevronIcon(isRight: boolean, isMinimized: boolean) {
+    const expandRight = isRight && isMinimized;
+    const collapseLeft = !isRight && !isMinimized;
+    return expandRight || collapseLeft ? ChevronLeftIcon : ChevronRightIcon;
+}
 
 const Content = styled(ScrollableContainer)`
     display: flex;
@@ -139,7 +140,7 @@ const DrawerHeader = styled.div<{ isRight?: boolean }>`
     flex-direction: ${({ isRight }) => (isRight ? "row-reverse" : "row")};
 `;
 
-const StyledDrawer = styled(Drawer)<{ open?: boolean; width: number; unit: SideBarConfig["unit"] }>`
+const StyledDrawer = styled(Drawer)<{ open: boolean; width: number; unit: SideBarConfig["unit"] }>`
     width: ${({ width, unit }) => `${width}${unit}`};
     flex-shrink: 0;
     box-sizing: border-box;
@@ -148,18 +149,23 @@ const StyledDrawer = styled(Drawer)<{ open?: boolean; width: number; unit: SideB
     ${({ open, width, unit }) => (open ? openedStyles({ width, unit }) : closedStyles)}
 `;
 
+const drawerPaperStyles = css`
+    background-color: #276696;
+    border-left: 2px solid #2b5b77;
+`;
+
 const openedStyles = ({ width, unit }: { width: number; unit: SideBarConfig["unit"] }) => css`
     width: ${width}${unit};
     min-width: 450px;
     transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
     overflow-x: hidden;
+
     & .MuiDrawer-paper {
         width: ${width}${unit};
         min-width: 450px;
         transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
         overflow-x: hidden;
-        background-color: #276696;
-        border-left: 2px solid #2b5b77;
+        ${drawerPaperStyles}
     }
 `;
 
@@ -167,11 +173,11 @@ const closedStyles = css`
     transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
     width: ${DRAWER_COLLAPSED_WIDTH}px;
     overflow: visible;
+
     & .MuiDrawer-paper {
         transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
         width: ${DRAWER_COLLAPSED_WIDTH}px;
-        background-color: #276696;
-        border-left: 2px solid #2b5b77;
         overflow: visible;
+        ${drawerPaperStyles}
     }
 `;
