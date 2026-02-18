@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2026-01-29T09:58:09.784Z\n"
-"PO-Revision-Date: 2026-01-29T09:58:09.784Z\n"
+"POT-Creation-Date: 2026-02-18T06:35:17.347Z\n"
+"PO-Revision-Date: 2026-02-18T06:35:17.347Z\n"
 
 msgid "Welcome to training on DHIS2"
 msgstr ""
@@ -26,6 +26,12 @@ msgstr ""
 msgid "Field {{field}} is not valid"
 msgstr ""
 
+msgid "Expand panel"
+msgstr ""
+
+msgid "Collapse panel"
+msgstr ""
+
 msgid "Back"
 msgstr ""
 
@@ -33,9 +39,6 @@ msgid "Settings page"
 msgstr ""
 
 msgid "Home"
-msgstr ""
-
-msgid "Collapse panel"
 msgstr ""
 
 msgid "Exit Tutorial"

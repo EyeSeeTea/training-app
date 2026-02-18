@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Traning App - UI Interface\n"
-"POT-Creation-Date: 2026-01-29T09:58:09.784Z\n"
+"POT-Creation-Date: 2026-02-18T06:35:17.347Z\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,6 +26,13 @@ msgstr "Toutes les étapes doivent avoir au moins une page"
 msgid "Field {{field}} is not valid"
 msgstr "Le champ {{field}} n'est pas valide"
 
+#, fuzzy
+msgid "Expand panel"
+msgstr "Agrandir la fenêtre"
+
+msgid "Collapse panel"
+msgstr ""
+
 msgid "Back"
 msgstr "Arrière"
 
@@ -34,9 +41,6 @@ msgstr "Paramètres"
 
 msgid "Home"
 msgstr "Accueil"
-
-msgid "Collapse panel"
-msgstr ""
 
 msgid "Exit Tutorial"
 msgstr "Sortir du tutoriel"

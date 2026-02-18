@@ -3,9 +3,9 @@ import styled from "styled-components";
 
 import { ContainerConfig, SideBarConfig } from "../../domain/entities/Config";
 import { InteractiveTrainingModal } from "./InteractiveTrainingModal";
-import { InteractiveTrainingPanel } from "./InteractiveTrainingPanel";
 import { SettingsAccess } from "./hooks/useInteractiveTraining";
 import { MarkdownViewer } from "../../webapp/components/markdown-viewer/MarkdownViewer";
+import { InteractiveTrainingDrawer } from "./InteractiveTrainingDrawer";
 
 type TrainingContainerProps = {
     containerConfig: ContainerConfig;
@@ -13,6 +13,7 @@ type TrainingContainerProps = {
     triggerKey: string;
     isMinimized: boolean;
     onMinimize: () => void;
+    showTraining: () => void;
     settingsAccess: SettingsAccess;
     defaultContent: React.ReactNode;
     goBack?: () => void;
@@ -23,14 +24,13 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
     const {
         containerConfig,
         content,
-        triggerKey,
         isMinimized,
-        onMinimize,
         children,
         settingsAccess,
         defaultContent,
         goHome,
         goBack,
+        ...containerProps
     } = props;
 
     const onSettings = React.useCallback(() => {
@@ -41,37 +41,50 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
 
     switch (containerConfig.type) {
         case "sidebar":
+            // return (
+            //     <PaneledContainer
+            //         className={isMinimized ? "" : "show-panel"}
+            //         isRight={containerConfig.position === "right"}
+            //         width={containerConfig.width}
+            //         unit={containerConfig.unit}
+            //     >
+            //         <div>{children}</div>
+            //         <InteractiveTrainingPanel
+            //             minimized={isMinimized}
+            //             onMinimize={onMinimize}
+            //             onBack={goBack}
+            //             onHome={goHome}
+            //             onSettings={settingsAccess.hasAccess ? onSettings : undefined}
+            //             triggerKey={triggerKey}
+            //         >
+            //             <TrainingContainerContent content={content} defaultContent={defaultContent} />
+            //         </InteractiveTrainingPanel>
+            //     </PaneledContainer>
+            // );
             return (
-                <PaneledContainer
-                    className={isMinimized ? "" : "show-panel"}
-                    isRight={containerConfig.position === "right"}
-                    width={containerConfig.width}
-                    unit={containerConfig.unit}
+                <InteractiveTrainingDrawer
+                    {...containerProps}
+                    isMinimized={isMinimized}
+                    onHome={goHome}
+                    onBack={goBack}
+                    onSettings={settingsAccess.hasAccess ? onSettings : undefined}
+                    containerConfig={containerConfig}
+                    drawerContent={<TrainingContainerContent content={content} defaultContent={defaultContent} />}
                 >
-                    <div>{children}</div>
-                    <InteractiveTrainingPanel
-                        minimized={isMinimized}
-                        onMinimize={onMinimize}
-                        onBack={goBack}
-                        onHome={goHome}
-                        onSettings={settingsAccess.hasAccess ? onSettings : undefined}
-                        triggerKey={triggerKey}
-                    >
-                        <TrainingContainerContent content={content} defaultContent={defaultContent} />
-                    </InteractiveTrainingPanel>
-                </PaneledContainer>
+                    {children}
+                </InteractiveTrainingDrawer>
             );
         case "dialog":
             return (
                 <>
                     {children}
                     <InteractiveTrainingModal
+                        {...containerProps}
                         minimized={isMinimized}
-                        onMinimize={onMinimize}
                         onGoHome={goHome}
                         onGoBack={goBack}
                         onSettings={settingsAccess.hasAccess ? onSettings : undefined}
-                        triggerKey={triggerKey}
+                        containerConfig={containerConfig}
                     >
                         <TrainingContainerContent content={content} defaultContent={defaultContent} />
                     </InteractiveTrainingModal>

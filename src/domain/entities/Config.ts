@@ -29,7 +29,7 @@ export type SideBarConfig = BaseConfig & {
     width: number;
     unit: "px" | "%";
 };
-type DialogConfig = BaseConfig & { type: "dialog" };
+export type DialogConfig = BaseConfig & { type: "dialog" };
 export type ContainerConfig = SideBarConfig | DialogConfig;
 
 export const defaultContainerConfig: SideBarConfig = {
