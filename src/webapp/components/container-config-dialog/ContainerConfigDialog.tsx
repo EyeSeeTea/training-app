@@ -77,6 +77,15 @@ export const ContainerConfigDialog: React.FC<ContainerConfigDialogProps> = props
                                 hideEmpty
                             />
                         </Box>
+                        <StyledDropdown
+                            label={i18n.t("Collapse Mode")}
+                            onChange={value => {
+                                if (value) handleSidebarChange("collapseMode", value);
+                            }}
+                            value={sideBarConfig.collapseMode || defaultSidebarProps.collapseMode}
+                            items={getCollapseModeOptions()}
+                            hideEmpty
+                        />
                     </>
                 )}
             </Container>
@@ -85,13 +94,8 @@ export const ContainerConfigDialog: React.FC<ContainerConfigDialogProps> = props
 };
 
 function getDefaultSidebarProps(): SideBarProps {
-    const { position, width, unit, buttonPosition } = defaultContainerConfig;
-    return {
-        position,
-        width,
-        unit,
-        buttonPosition,
-    };
+    const { type: _, ...sideBarProps } = defaultContainerConfig;
+    return sideBarProps;
 }
 
 function getTypeOptions(): DropdownItem<ContainerConfig["type"]>[] {
@@ -111,6 +115,13 @@ function getUnitOptions(): DropdownItem<SideBarConfig["unit"]>[] {
     return [
         { value: "px", text: "px" },
         { value: "%", text: "%" },
+    ];
+}
+
+function getCollapseModeOptions(): DropdownItem<SideBarConfig["collapseMode"]>[] {
+    return [
+        { value: "mini", text: "Mini" },
+        { value: "hide", text: "Hide" },
     ];
 }
 

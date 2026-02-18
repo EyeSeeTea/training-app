@@ -28,6 +28,7 @@ export type SideBarConfig = BaseConfig & {
     position: "left" | "right";
     width: number;
     unit: "px" | "%";
+    collapseMode: "mini" | "hide";
 };
 export type DialogConfig = BaseConfig & { type: "dialog" };
 export type ContainerConfig = SideBarConfig | DialogConfig;
@@ -38,4 +39,5 @@ export const defaultContainerConfig: SideBarConfig = {
     width: 30,
     unit: "%",
     buttonPosition: "top-right",
+    collapseMode: "mini",
 };
