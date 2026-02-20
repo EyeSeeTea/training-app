@@ -7,6 +7,7 @@ import { useAppContext } from "../../contexts/app-context";
 import { useAppConfigContext } from "../../contexts/AppConfigProvider";
 import { ModalParagraph } from "../modal";
 import i18n from "../../../utils/i18n";
+import { removeEmptyStepsFromModules } from "../../../domain/entities/TrainingModule";
 
 export const Modules: React.FC<{
     isRoot: boolean;
@@ -16,7 +17,11 @@ export const Modules: React.FC<{
     const { modules, translate } = useAppContext();
     const { appConfig } = useAppConfigContext();
 
-    const pageModules = isRoot && appConfig.showAllModules ? modules.map(({ id }) => id) : currentPage?.modules ?? [];
+    const allPageModules =
+        isRoot && appConfig.showAllModules
+            ? modules
+            : modules.filter(module => currentPage.modules.includes(module.id));
+    const pageModules = removeEmptyStepsFromModules(allPageModules);
 
     return (
         <React.Fragment>
@@ -27,9 +32,8 @@ export const Modules: React.FC<{
             ) : null}
 
             <Cardboard rowSize={3} key={`group-${currentPage.id}`}>
-                {pageModules.map(moduleId => {
-                    const module = modules.find(({ id }) => id === moduleId);
-                    if (!module || !module.compatible) return null;
+                {pageModules.map(module => {
+                    if (!module.compatible) return null;
 
                     const percentage =
                         module && module.contents.steps.length > 0
@@ -44,7 +48,7 @@ export const Modules: React.FC<{
 
                     return (
                         <BigCard
-                            key={`card-${moduleId}`}
+                            key={`card-${module.id}`}
                             label={name}
                             progress={module.progress.completed ? 100 : percentage}
                             onClick={handleClick}
