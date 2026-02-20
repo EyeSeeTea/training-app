@@ -1,7 +1,7 @@
 import _ from "lodash";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { LandingNode } from "../../domain/entities/LandingPage";
-import { TrainingModule } from "../../domain/entities/TrainingModule";
+import { removeEmptyPages, TrainingModule } from "../../domain/entities/TrainingModule";
 import { buildTranslate, TranslateMethod } from "../../domain/entities/TranslatableText";
 import { CompositionRoot } from "../CompositionRoot";
 import { AppState } from "../entities/AppState";
@@ -93,14 +93,14 @@ export function useAppContext(): UseAppContextResult {
     const [module, setCurrentModule] = useState<TrainingModule>();
 
     useEffect(() => {
-        setCurrentModule(
+        const currentModule =
             appState.type === "TRAINING" ||
-                appState.type === "TRAINING_DIALOG" ||
-                appState.type === "EDIT_MODULE" ||
-                appState.type === "CLONE_MODULE"
+            appState.type === "TRAINING_DIALOG" ||
+            appState.type === "EDIT_MODULE" ||
+            appState.type === "CLONE_MODULE"
                 ? modules.find(({ id }) => id === appState.module)
-                : undefined
-        );
+                : undefined;
+        setCurrentModule(currentModule ? removeEmptyPages(currentModule) : undefined);
     }, [appState, modules]);
 
     return {

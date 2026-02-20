@@ -7,6 +7,12 @@ import { TableProps } from "@eyeseetea/d2-ui-components/sharing/Table";
 
 export type SharedUpdate = Partial<Pick<SharedProperties, "userAccesses" | "userGroupAccesses" | "publicAccess">>;
 export type PermissionsObject = Required<SharedUpdate> & { name: string };
+type SharingShowOptions = {
+    dataSharing: boolean;
+    publicSharing: boolean;
+    externalSharing: boolean;
+    permissionPicker: boolean;
+};
 
 export type PermissionsDialogProps = {
     object: PermissionsObject;
@@ -14,12 +20,7 @@ export type PermissionsDialogProps = {
     allowPublicAccess?: boolean;
     allowExternalAccess?: boolean;
     onClose: () => void;
-    showOptions?: {
-        publicSharing?: boolean;
-        externalSharing?: boolean;
-        dataSharing?: boolean;
-        permissionPicker?: boolean;
-    };
+    showOptions?: Partial<SharingShowOptions>;
 };
 
 export type PermissionHandlerProps = Omit<PermissionsDialogProps, "onClose">;
@@ -45,6 +46,7 @@ export const PermissionsDialog: React.FC<PermissionsDialogProps> = ({
         object: {
             id: "",
             displayName: object.name,
+            publicAccess: object.publicAccess,
             userAccesses: mapSharingRules(object.userAccesses),
             userGroupAccesses: mapSharingRules(object.userGroupAccesses),
             publicAccess: object.publicAccess,
@@ -62,6 +64,11 @@ export const PermissionsDialog: React.FC<PermissionsDialogProps> = ({
         [onChange]
     );
 
+    const showOptionsProp = {
+        ...defaultShowOptions,
+        ...showOptions,
+    };
+
     return (
         <ConfirmationDialog isOpen={true} fullWidth={true} onCancel={onClose} cancelText={i18n.t("Close")}>
             <Sharing
@@ -74,7 +81,7 @@ export const PermissionsDialog: React.FC<PermissionsDialogProps> = ({
     );
 };
 
-const defaultShowOptions: TableProps["showOptions"] = {
+const defaultShowOptions: SharingShowOptions = {
     dataSharing: false,
     publicSharing: false,
     externalSharing: false,
