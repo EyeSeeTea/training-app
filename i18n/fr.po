@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Traning App - UI Interface\n"
-"POT-Creation-Date: 2026-01-12T02:42:56.804Z\n"
+"POT-Creation-Date: 2026-02-22T06:14:27.632Z\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -407,9 +407,6 @@ msgstr ""
 msgid "Edit page"
 msgstr "Modifier la page"
 
-msgid "Sharing settings"
-msgstr "Paramètres de partage"
-
 msgid "Delete module"
 msgstr "Supprimer le module"
 
@@ -439,6 +436,10 @@ msgstr ""
 "valeurs par défaut pour mettre à jour"
 
 msgid "Unable to update module contents"
+msgstr "Impossible de mettre à jour le contenu du module"
+
+#, fuzzy
+msgid "Unable to update page permissions"
 msgstr "Impossible de mettre à jour le contenu du module"
 
 msgid "Unable to move item"
@@ -674,7 +675,9 @@ msgid "Add Landing Page"
 msgstr "Ajouter une page d'atterrissage"
 
 msgid "Accessible to {{usersCount}} users and {{userGroupsCount}} user groups"
-msgstr "Accessible à {{usersCount}} utilisateurs et à {{userGroupsCount}} groupes d'utilisateurs"
+msgstr ""
+"Accessible à {{usersCount}} utilisateurs et à {{userGroupsCount}} groupes "
+"d'utilisateurs"
 
 msgid "Accessible to {{usersCount}} users"
 msgstr "Accessible à {{usersCount}} utilisateurs"

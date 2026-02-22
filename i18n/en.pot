@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2026-01-12T02:42:56.804Z\n"
-"PO-Revision-Date: 2026-01-12T02:42:56.804Z\n"
+"POT-Creation-Date: 2026-02-22T06:14:27.632Z\n"
+"PO-Revision-Date: 2026-02-22T06:14:27.632Z\n"
 
 msgid "Welcome to training on DHIS2"
 msgstr ""
@@ -403,9 +403,6 @@ msgstr ""
 msgid "Edit page"
 msgstr ""
 
-msgid "Sharing settings"
-msgstr ""
-
 msgid "Delete module"
 msgstr ""
 
@@ -419,9 +416,6 @@ msgid "Export module"
 msgstr ""
 
 msgid "Import modules"
-msgstr ""
-
-msgid "Page permissions"
 msgstr ""
 
 msgid "App is not installed in this instance"
@@ -438,6 +432,9 @@ msgstr ""
 msgid "Unable to update module contents"
 msgstr ""
 
+msgid "Unable to update page permissions"
+msgstr ""
+
 msgid "Unable to move item"
 msgstr ""
 
@@ -451,6 +448,9 @@ msgid "Unable to remove step"
 msgstr ""
 
 msgid "Unable to remove page"
+msgstr ""
+
+msgid "Page permissions"
 msgstr ""
 
 msgid "Help"
