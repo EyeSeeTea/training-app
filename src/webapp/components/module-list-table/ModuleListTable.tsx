@@ -26,7 +26,7 @@ export interface ModuleListTableProps {
 }
 
 export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
-    const { rows, onActionButtonClick, refreshRows = async () => {}, isLoading } = props;
+    const { rows, onActionButtonClick, refreshRows = async () => {}, isLoading, tableActions } = props;
     const { usecases } = useAppContext();
     const { importTranslation } = useImportExportTranslation();
 
@@ -55,6 +55,7 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
         rows,
         openImportDialog,
         translationImportRef,
+        tableActions,
     });
 
     const handleFileUpload = useCallback(
