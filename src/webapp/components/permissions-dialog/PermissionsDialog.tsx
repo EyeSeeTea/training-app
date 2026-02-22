@@ -3,7 +3,6 @@ import React, { useCallback } from "react";
 import { SharedProperties, SharingSetting } from "../../../domain/entities/Ref";
 import i18n from "../../../utils/i18n";
 import { useAppContext } from "../../contexts/app-context";
-import { TableProps } from "@eyeseetea/d2-ui-components/sharing/Table";
 
 export type SharedUpdate = Partial<Pick<SharedProperties, "userAccesses" | "userGroupAccesses" | "publicAccess">>;
 export type PermissionsObject = Required<SharedUpdate> & { name: string };
@@ -36,11 +35,6 @@ export const PermissionsDialog: React.FC<PermissionsDialogProps> = ({
     const { usecases } = useAppContext();
     const search = (query: string) => usecases.instance.searchUsers(query);
 
-    const showOptionsProp = {
-        ...defaultShowOptions,
-        ...showOptions,
-    };
-
     const metaObject = {
         meta: { allowPublicAccess, allowExternalAccess },
         object: {
@@ -49,7 +43,6 @@ export const PermissionsDialog: React.FC<PermissionsDialogProps> = ({
             publicAccess: object.publicAccess,
             userAccesses: mapSharingRules(object.userAccesses),
             userGroupAccesses: mapSharingRules(object.userGroupAccesses),
-            publicAccess: object.publicAccess,
         },
     };
 

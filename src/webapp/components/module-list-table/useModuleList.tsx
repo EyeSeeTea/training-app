@@ -16,7 +16,7 @@ import styled from "styled-components";
 
 import i18n from "../../../utils/i18n";
 import { AlertIcon } from "../alert-icon/AlertIcon";
-import { ListItem, ModuleListTableAction } from "./ModuleListTable";
+import { isListItemPage, ListItem, ModuleListTableAction } from "./ModuleListTable";
 import { useModuleTableAction } from "./useModuleTableAction";
 import { InputDialogProps } from "../input-dialog/InputDialog";
 import { MarkdownEditorDialogProps } from "../markdown-editor/MarkdownEditorDialog";
@@ -25,6 +25,7 @@ import { ModalBody } from "../modal";
 import { useImportExportTranslation } from "../../hooks/useImportExportTranslation";
 import { useAppContext } from "../../contexts/app-context";
 import { ImportTranslationRef } from "../import-translation-dialog/ImportTranslationDialog";
+import { usePagePermissions } from "./usePagePermissions";
 
 type UseModuleListProps = {
     rows: ListItem[];
@@ -57,6 +58,12 @@ export function useModuleList(props: UseModuleListProps) {
         }),
         [moduleTableActions, tableActionsProp]
     );
+
+    const { pagePermissionsDialog, openPagePermissions } = usePagePermissions({
+        rows: buildChildrenRows(rows),
+        onChange: tableActions.editPagePermissions,
+        refreshRows,
+    });
 
     const deleteModules = useCallback(
         async (ids: string[]) => {
@@ -418,6 +425,15 @@ export function useModuleList(props: UseModuleListProps) {
                 },
             },
             {
+                name: "edit-page-sharing-settings",
+                text: i18n.t("Sharing settings"),
+                icon: <Icon>share</Icon>,
+                onClick: openPagePermissions,
+                isActive: rows => {
+                    return _.every(rows, item => isListItemPage(item) && item.editable);
+                },
+            },
+            {
                 name: "edit-step",
                 text: i18n.t("Edit step"),
                 icon: <Icon>edit</Icon>,
@@ -546,6 +562,7 @@ export function useModuleList(props: UseModuleListProps) {
             resetModules,
             exportModule,
             exportTranslations,
+            openPagePermissions,
         ]
     );
 
@@ -580,6 +597,7 @@ export function useModuleList(props: UseModuleListProps) {
         inputDialogProps,
         confirmDialogProps: dialogProps,
         markdownDialogProps,
+        pagePermissionsDialog,
     };
 }
 

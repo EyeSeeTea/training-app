@@ -7,6 +7,7 @@ import {
     removePage,
     removeStep,
     updateOrder,
+    updatePagePermissions,
     updateTranslation,
 } from "../../../domain/helpers/TrainingModuleHelpers";
 import i18n from "../../../utils/i18n";
@@ -39,6 +40,13 @@ export function useModuleTableAction(): ModuleListTableAction {
                 id,
                 module => updateTranslation(module, text.key, value),
                 i18n.t("Unable to update module contents")
+            );
+        },
+        editPagePermissions: async ({ id, page: { id: pageId, permissions } }) => {
+            await withModule(
+                id,
+                module => updatePagePermissions(module, { id: pageId, permissions }),
+                i18n.t("Unable to update page permissions")
             );
         },
         deleteModules: ({ ids }) => usecases.modules.delete(ids),

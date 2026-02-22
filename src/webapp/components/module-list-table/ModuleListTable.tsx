@@ -14,7 +14,6 @@ import { InputDialog } from "../input-dialog/InputDialog";
 import { MarkdownEditorDialog } from "../markdown-editor/MarkdownEditorDialog";
 import { useImportExportTranslation } from "../../hooks/useImportExportTranslation";
 import { SharedProperties } from "../../../domain/entities/Ref";
-import { usePagePermissions } from "./usePagePermissions";
 import { PermissionsDialog } from "../permissions-dialog/PermissionsDialog";
 import { useModuleList } from "./useModuleList";
 
@@ -34,12 +33,6 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
     const loading = useLoading();
     const snackbar = useSnackbar();
 
-    const { pagePermissionsDialog, openPagePermissions } = usePagePermissions({
-        rows: buildChildrenRows(rows),
-        onChange: tableActions.editPagePermissions,
-        refreshRows,
-    });
-
     const moduleImportRef = useRef<DropzoneRef>(null);
     const translationImportRef = useRef<ImportTranslationRef>(null);
 
@@ -56,6 +49,7 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
         inputDialogProps,
         confirmDialogProps: dialogProps,
         markdownDialogProps,
+        pagePermissionsDialog,
     } = useModuleList({
         refreshRows,
         rows,
