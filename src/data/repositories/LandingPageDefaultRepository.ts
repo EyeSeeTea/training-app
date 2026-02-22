@@ -13,6 +13,7 @@ import { D2Api } from "../../types/d2-api";
 import { DocumentRepository } from "../../domain/repositories/DocumentRepository";
 import { Either } from "../../domain/entities/Either";
 import { fromPurify } from "../utils/either";
+import { SharedProperties } from "../../domain/entities/Ref";
 
 export class LandingPageDefaultRepository implements LandingPageRepository {
     private storageClient: StorageClient;
@@ -138,7 +139,7 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
     }
 }
 
-const defaultPermissions = {
+const defaultPermissions: SharedProperties = {
     publicAccess: "r-------",
     userAccesses: [],
     userGroupAccesses: [],
@@ -147,7 +148,7 @@ const defaultPermissions = {
 export const defaultRoot: PersistedLandingPage = {
     id: generateUid(),
     parent: "none",
-    type: "root" as const,
+    type: "root",
     icon: "",
     order: undefined,
     name: {
