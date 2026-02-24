@@ -7,6 +7,7 @@ import { CompositionRoot } from "../CompositionRoot";
 import { AppState } from "../entities/AppState";
 import { AppRoute } from "../router/AppRoute";
 import { cacheImages } from "../utils/image-cache";
+import { User } from "../../data/entities/User";
 
 const AppContext = React.createContext<AppContextState | null>(null);
 
@@ -15,6 +16,7 @@ export const AppContextProvider: React.FC<AppContextProviderProps> = ({
     routes,
     compositionRoot,
     locale,
+    currentUser,
 }) => {
     const [appState, setAppState] = useState<AppState>({ type: "UNKNOWN" });
     const [modules, setModules] = useState<TrainingModule[]>([]);
@@ -62,6 +64,7 @@ export const AppContextProvider: React.FC<AppContextProviderProps> = ({
                 reload,
                 isLoading,
                 isAdmin,
+                currentUser,
             }}
         >
             {children}
@@ -73,8 +76,19 @@ export function useAppContext(): UseAppContextResult {
     const context = useContext(AppContext);
     if (!context) throw new Error("Context not initialized");
 
-    const { compositionRoot, routes, appState, setAppState, modules, landings, translate, reload, isLoading, isAdmin } =
-        context;
+    const {
+        compositionRoot,
+        routes,
+        appState,
+        setAppState,
+        modules,
+        landings,
+        translate,
+        reload,
+        isLoading,
+        isAdmin,
+        currentUser,
+    } = context;
     const { usecases } = compositionRoot;
     const [module, setCurrentModule] = useState<TrainingModule>();
 
@@ -101,6 +115,7 @@ export function useAppContext(): UseAppContextResult {
         reload,
         isLoading,
         isAdmin,
+        currentUser,
     };
 }
 
@@ -111,6 +126,7 @@ export interface AppContextProviderProps {
     routes: AppRoute[];
     compositionRoot: CompositionRoot;
     locale: string;
+    currentUser: User;
 }
 
 export interface AppContextState {
@@ -124,9 +140,10 @@ export interface AppContextState {
     reload: ReloadMethod;
     isLoading: boolean;
     isAdmin: boolean;
+    currentUser: User;
 }
 
-interface UseAppContextResult {
+export interface UseAppContextResult {
     appState: AppState;
     setAppState: (appState: AppState | AppStateUpdateMethod) => void;
     routes: AppRoute[];
@@ -138,4 +155,5 @@ interface UseAppContextResult {
     reload: ReloadMethod;
     isLoading: boolean;
     isAdmin: boolean;
+    currentUser: User;
 }

@@ -13,14 +13,16 @@ type SharingShowOptions = {
     permissionPicker: boolean;
 };
 
-export interface PermissionsDialogProps {
+export type PermissionsDialogProps = {
     object: PermissionsObject;
     onChange: (sharedUpdate: SharedUpdate) => Promise<void>;
     allowPublicAccess?: boolean;
     allowExternalAccess?: boolean;
     onClose: () => void;
     showOptions?: Partial<SharingShowOptions>;
-}
+};
+
+export type PermissionHandlerProps = Omit<PermissionsDialogProps, "onClose">;
 
 export const PermissionsDialog: React.FC<PermissionsDialogProps> = ({
     object,

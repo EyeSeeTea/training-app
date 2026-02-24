@@ -4,30 +4,29 @@ import React from "react";
 import styled from "styled-components";
 
 import { useAppContext } from "../../contexts/app-context";
-import { useAppConfigContext } from "../../contexts/AppConfigProvider";
 import { ModalContent, ModalParagraph, ModalTitle } from "../modal";
-import { HomePageProps } from "./HomePageContent";
+import { HomePageProps, MarkdownContents } from "./HomePageContent";
 import { Modules } from "./Modules";
 import i18n from "../../../utils/i18n";
 
 export const Root: React.FC<HomePageProps> = props => {
     const { currentPage, loadModule, isRoot, openPage } = props;
     const { translate } = useAppContext();
-    const { appConfig, logoInfo } = useAppConfigContext();
-    const { logoPath, logoText } = logoInfo;
 
     return (
         <React.Fragment>
-            <LogoContainer>
-                <img src={logoPath} alt={logoText} />
-            </LogoContainer>
-            <ModalTitle bold={true} big={true}>
-                {translate(appConfig.customText.rootTitle)}
-            </ModalTitle>
+            {currentPage.icon && (
+                <LogoContainer>
+                    <img src={currentPage.icon} alt={`Page icon`} />
+                </LogoContainer>
+            )}
 
+            <ModalTitle bold={true} big={true}>
+                {translate(currentPage.title ?? currentPage.name)}
+            </ModalTitle>
             <ModalContent>
                 <ModalParagraph size={28} align={"left"}>
-                    {translate(appConfig.customText.rootSubtitle)}
+                    {currentPage.content ? <MarkdownContents source={translate(currentPage.content)} /> : null}
                 </ModalParagraph>
 
                 <Cardboard rowSize={3} key={`group-${currentPage.id}`}>
