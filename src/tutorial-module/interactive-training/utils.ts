@@ -8,6 +8,7 @@ import {
     isSectionBinding,
     matchesUrlPattern,
 } from "../../domain/entities/PageBinding";
+import { D2Api } from "../../types/d2-api";
 
 export type EventPageIdsByTrainingId = Record<string, Record<string, string[]>>;
 
@@ -53,17 +54,20 @@ export function generateTrainingAppBaseUrl(baseUrl: string, appKey: string) {
     return `${baseUrl}/api/apps/${appKey}`;
 }
 
-export function transformD2DocumentUrls(content: string, apiBaseUrl: string): string {
-    return content.replace(/\.\.\/..\/(documents\/[^)\s"']+)/g, `${apiBaseUrl}/$1`);
+export function transformD2Urls(content: string, d2Api: D2Api, appKey: string): string {
+    return content
+        .replace(/\.\.\/..\/(documents\/[^)\s"']+)/g, `${d2Api.apiPath}/$1`)
+        .replace(/(img\/[^)\s"']+)/g, `${generateTrainingAppBaseUrl(d2Api.baseUrl, appKey)}/$1`);
 }
 
 export function updateIconDocumentUrls<T extends { icon: string; children?: T[] }>(
     entities: T[],
-    apiBaseUrl: string
+    d2Api: D2Api,
+    appKey: string
 ): T[] {
     return entities.map(entity => ({
         ...entity,
-        icon: transformD2DocumentUrls(entity.icon, apiBaseUrl),
-        children: entity.children ? updateIconDocumentUrls(entity.children, apiBaseUrl) : undefined,
+        icon: transformD2Urls(entity.icon, d2Api, appKey),
+        children: entity.children ? updateIconDocumentUrls(entity.children, d2Api, appKey) : undefined,
     }));
 }

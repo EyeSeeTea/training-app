@@ -7,12 +7,7 @@ import { buildTranslate, TranslatableText } from "../../../domain/entities/Trans
 import { Config, ContainerConfig, defaultContainerConfig } from "../../../domain/entities/Config";
 import { getCompositionRoot } from "../../../webapp/CompositionRoot";
 import { LandingNode } from "../../../domain/entities/LandingPage";
-import {
-    generateSettingsUrl,
-    generateTrainingAppBaseUrl,
-    transformD2DocumentUrls,
-    updateIconDocumentUrls,
-} from "../utils";
+import { generateSettingsUrl, transformD2Urls, updateIconDocumentUrls } from "../utils";
 import { getLogoInfo, LogoInfo } from "../../../webapp/hooks/useAppConfig";
 import { useTrainingNavigation } from "../../../webapp/hooks/useTutorialPage";
 import { User } from "../../../data/entities/User";
@@ -85,10 +80,11 @@ type UseTrainingContentProps = {
     pages: TrainingModulePage[];
     locale: string;
     d2Api: D2Api;
+    trainingAppKey: string;
 };
 
 export function useTrainingContent(props: UseTrainingContentProps) {
-    const { pages, locale, d2Api } = props;
+    const { pages, locale, d2Api, trainingAppKey } = props;
     const [contents, setContents] = useState<TranslatableText[]>([]);
     const [targetIds, setTargetIds] = useState<string[]>([]);
 
@@ -98,7 +94,7 @@ export function useTrainingContent(props: UseTrainingContentProps) {
     const translate = useCallback(
         (text: TranslatableText) => {
             const translatedText = translateMethod(text);
-            return transformD2DocumentUrls(translatedText, d2Api.apiPath);
+            return transformD2Urls(translatedText, d2Api, trainingAppKey);
         },
         [translateMethod]
     );
@@ -183,7 +179,7 @@ export function useTrainingResources(props: UseTrainingDataProps) {
 
         const modulesPromise = compositionRoot.usecases.modules
             .list()
-            .then(modules => setModules(updateIconDocumentUrls(modules, d2Api.apiPath)))
+            .then(modules => setModules(updateIconDocumentUrls(modules, d2Api, trainingAppKey)))
             .catch(error => {
                 console.error(`Error fetching modules:`, error);
                 setModules([]);
@@ -191,7 +187,7 @@ export function useTrainingResources(props: UseTrainingDataProps) {
 
         const landingsPromise = compositionRoot.usecases.landings
             .list()
-            .then(landings => setLandings(updateIconDocumentUrls(landings, d2Api.apiPath)))
+            .then(landings => setLandings(updateIconDocumentUrls(landings, d2Api, trainingAppKey)))
             .catch(error => {
                 console.error(`Error fetching landings:`, error);
                 setLandings([]);
@@ -207,7 +203,7 @@ export function useTrainingResources(props: UseTrainingDataProps) {
                 if (!appConfig?.logo) {
                     setLogoInfo({
                         ...logo,
-                        logoPath: `${generateTrainingAppBaseUrl(baseUrl, trainingAppKey)}/${logo.logoPath}`,
+                        logoPath: transformD2Urls(logo.logoPath, d2Api, trainingAppKey),
                     });
                 } else setLogoInfo(logo);
 

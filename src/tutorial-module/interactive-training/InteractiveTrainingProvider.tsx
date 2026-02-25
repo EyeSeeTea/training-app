@@ -62,7 +62,7 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
     });
 
     const { minimizeTraining, showTraining, isMinimized } = useModuleState();
-    const { textContent, trigger, translate, targetIds } = useTrainingContent({ pages, locale, d2Api });
+    const { textContent, trigger, translate, targetIds } = useTrainingContent({ pages, locale, d2Api, trainingAppKey });
     const { onGoBack, onGoHome, currentPage, ...moduleHandling } = useTutorialModuleState({
         modules,
         landings,
