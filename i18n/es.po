@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Traning App - UI Interface\n"
-"POT-Creation-Date: 2026-02-18T12:36:45.447Z\n"
+"POT-Creation-Date: 2026-02-25T08:26:03.071Z\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -110,12 +110,6 @@ msgstr ""
 
 msgid "Right"
 msgstr ""
-
-msgid "Export JSON translations"
-msgstr "Exportar traducciones JSON"
-
-msgid "Import JSON translations"
-msgstr "Importar traducciones JSON"
 
 msgid "Close"
 msgstr "Cerrar"
@@ -307,9 +301,6 @@ msgid ""
 "update the app."
 msgstr ""
 
-msgid "Home"
-msgstr "Inicio"
-
 msgid "Settings"
 msgstr "Ajustes"
 
@@ -481,6 +472,10 @@ msgstr ""
 
 msgid "Unable to update module contents"
 msgstr "No se puede actualizar el contenido del módulo"
+
+#, fuzzy
+msgid "Unable to update page"
+msgstr "No se puede añadir la página"
 
 #, fuzzy
 msgid "Unable to update page permissions"
@@ -752,12 +747,6 @@ msgstr "No hay documentos no utilizados que limpiar"
 
 msgid "There are {{total}} documents available to clean"
 msgstr "Hay {{total}} documentos disponibles para limpiar"
-
-msgid "Configure container for interactive training"
-msgstr ""
-
-msgid "Update container type, dimensions, and position"
-msgstr ""
 
 msgid "General Settings"
 msgstr "Configuración general"

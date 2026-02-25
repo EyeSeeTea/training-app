@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Traning App - UI Interface\n"
-"POT-Creation-Date: 2026-02-18T12:36:45.447Z\n"
+"POT-Creation-Date: 2026-02-25T08:26:03.071Z\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -110,12 +110,6 @@ msgstr ""
 
 msgid "Right"
 msgstr ""
-
-msgid "Export JSON translations"
-msgstr "Exportation des traductions en JSON"
-
-msgid "Import JSON translations"
-msgstr "Importer des traductions JSON"
 
 msgid "Close"
 msgstr "Fermer"
@@ -306,9 +300,6 @@ msgid ""
 "update the app."
 msgstr ""
 
-msgid "Home"
-msgstr "Accueil"
-
 msgid "Settings"
 msgstr "Paramètres"
 
@@ -465,6 +456,48 @@ msgstr "Module d'exportation"
 msgid "Import modules"
 msgstr "Modules d'importation"
 
+msgid "App is not installed in this instance"
+msgstr "L'application n'est pas installée dans ce cas"
+
+msgid "Module does not support this DHIS2 version"
+msgstr "Le module ne supporte pas cette version du DHIS2"
+
+msgid ""
+"There's a new version of this module, please reset to default values to "
+"update"
+msgstr ""
+"Il y a une nouvelle version de ce module, s'il vous plaît réinitialiser aux "
+"valeurs par défaut pour mettre à jour"
+
+msgid "Unable to update module contents"
+msgstr "Impossible de mettre à jour le contenu du module"
+
+#, fuzzy
+msgid "Unable to update page"
+msgstr "Impossible d'ajouter une page"
+
+#, fuzzy
+msgid "Unable to update page permissions"
+msgstr "Impossible de mettre à jour le contenu du module"
+
+msgid "Unable to move item"
+msgstr "Impossible de déplacer l'objet"
+
+msgid "Unable to add step"
+msgstr "Impossible d'ajouter une étape"
+
+msgid "Unable to add page"
+msgstr "Impossible d'ajouter une page"
+
+msgid "Unable to remove step"
+msgstr "Impossible de supprimer l'étape"
+
+msgid "Unable to remove page"
+msgstr "Impossible de supprimer la page"
+
+msgid "Page permissions"
+msgstr ""
+
 msgid "Binding"
 msgstr ""
 
@@ -508,44 +541,6 @@ msgid "Add new page"
 msgstr "Ajouter une nouvelle page"
 
 msgid "Interactive training bindings"
-msgstr ""
-
-msgid "App is not installed in this instance"
-msgstr "L'application n'est pas installée dans ce cas"
-
-msgid "Module does not support this DHIS2 version"
-msgstr "Le module ne supporte pas cette version du DHIS2"
-
-msgid ""
-"There's a new version of this module, please reset to default values to "
-"update"
-msgstr ""
-"Il y a une nouvelle version de ce module, s'il vous plaît réinitialiser aux "
-"valeurs par défaut pour mettre à jour"
-
-msgid "Unable to update module contents"
-msgstr "Impossible de mettre à jour le contenu du module"
-
-#, fuzzy
-msgid "Unable to update page permissions"
-msgstr "Impossible de mettre à jour le contenu du module"
-
-msgid "Unable to move item"
-msgstr "Impossible de déplacer l'objet"
-
-msgid "Unable to add step"
-msgstr "Impossible d'ajouter une étape"
-
-msgid "Unable to add page"
-msgstr "Impossible d'ajouter une page"
-
-msgid "Unable to remove step"
-msgstr "Impossible de supprimer l'étape"
-
-msgid "Unable to remove page"
-msgstr "Impossible de supprimer la page"
-
-msgid "Page permissions"
 msgstr ""
 
 msgid "Help"
@@ -752,12 +747,6 @@ msgstr "Il n'y a pas de documents inutilisés à nettoyer"
 
 msgid "There are {{total}} documents available to clean"
 msgstr "Il y a {{total}} documents disponibles à nettoyer"
-
-msgid "Configure container for interactive training"
-msgstr ""
-
-msgid "Update container type, dimensions, and position"
-msgstr ""
 
 msgid "General Settings"
 msgstr "Paramètres généraux"
