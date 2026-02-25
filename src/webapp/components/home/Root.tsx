@@ -4,13 +4,12 @@ import React from "react";
 import styled from "styled-components";
 
 import { ModalContent, ModalParagraph, ModalTitle } from "../modal";
-import { HomePageContentComponentProps } from "./HomePageContent";
+import { HomePageContentComponentProps, MarkdownContents } from "./HomePageContent";
 import { Modules } from "./Modules";
 import i18n from "../../../utils/i18n";
 
 export const Root: React.FC<HomePageContentComponentProps> = props => {
-    const { currentPage, openPage, translate, appConfig, logoInfo } = props;
-    const { logoPath, logoText } = logoInfo;
+    const { currentPage, openPage, translate } = props;
 
     return (
         <React.Fragment>
