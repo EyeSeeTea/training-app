@@ -11,13 +11,12 @@ import { useAppContext } from "../../contexts/app-context";
 import { Dropzone, DropzoneRef } from "../dropzone/Dropzone";
 import { ImportTranslationDialog, ImportTranslationRef } from "../import-translation-dialog/ImportTranslationDialog";
 import { InputDialog } from "../input-dialog/InputDialog";
-import { MarkdownEditorDialog } from "../markdown-editor/MarkdownEditorDialog";
 import { useImportExportTranslation } from "../../hooks/useImportExportTranslation";
 import { PageBinding } from "../../../domain/entities/PageBinding";
-import { PageBindingPreview } from "./PageBindingPreview";
 import { SharedProperties } from "../../../domain/entities/Ref";
 import { PermissionsDialog } from "../permissions-dialog/PermissionsDialog";
 import { useModuleList } from "./useModuleList";
+import { PageEditorDialog } from "../page-editor/PageEditorDialog";
 
 export interface ModuleListTableProps {
     rows: ListItem[];
@@ -50,7 +49,7 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
         selection,
         inputDialogProps,
         confirmDialogProps: dialogProps,
-        markdownDialogProps,
+        pageEditorDialog,
         pagePermissionsDialog,
     } = useModuleList({
         refreshRows,
@@ -93,7 +92,7 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
         <PageWrapper>
             {dialogProps && <ConfirmationDialog isOpen={true} maxWidth={"xl"} {...dialogProps} />}
             {inputDialogProps && <InputDialog isOpen={true} fullWidth={true} maxWidth={"md"} {...inputDialogProps} />}
-            {markdownDialogProps && <MarkdownEditorDialog {...markdownDialogProps} />}
+            {pageEditorDialog && <PageEditorDialog {...pageEditorDialog} />}
             {pagePermissionsDialog && <PermissionsDialog {...pagePermissionsDialog} />}
 
             <ImportTranslationDialog type="module" ref={translationImportRef} onSave={handleTranslationUpload} />

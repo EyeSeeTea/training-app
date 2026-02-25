@@ -298,6 +298,7 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
                         key: page.key,
                         referenceValue: page.referenceValue,
                         translations: page.translations,
+                        bindings: page.bindings,
                     })),
                 })),
             },
