@@ -4,7 +4,7 @@ import { CustomText } from "../entities/CustomText";
 import { Config } from "../entities/Config";
 import { Permission } from "../entities/Permission";
 
-export type PartialConfig = Pick<Partial<Config>, "showAllModules" | "logo"> & {
+export type PartialConfig = Pick<Partial<Config>, "showAllModules" | "logo" | "containerConfig"> & {
     settingsPermissions?: Partial<Permission>;
     customText?: Partial<CustomText>;
 };
@@ -26,6 +26,7 @@ export class SaveConfigUseCase implements UseCase {
                 rootTitle: update.customText?.rootTitle ?? config.customText.rootTitle,
                 rootSubtitle: update.customText?.rootSubtitle ?? config.customText.rootSubtitle,
             },
+            containerConfig: update.containerConfig ?? config.containerConfig,
         };
 
         return await this.configRepository.save(updatedConfig);
