@@ -8,19 +8,15 @@ import { useAppContext } from "../../contexts/app-context";
 import { useAppConfigContext } from "../../contexts/AppConfigProvider";
 import { HomePageContent } from "../../components/home/HomePageContent";
 import { useTrainingNavigation } from "../../hooks/useTutorialPage";
-import { MainLandingPage } from "../../components/home/MainLandingPage";
-import { Maybe } from "../../../types/utils";
 
 export const HomePage: React.FC = React.memo(() => {
     const { setAppState, landings, reload, isLoading, currentUser } = useAppContext();
     const { hasSettingsAccess } = useAppConfigContext();
-    const { isRoot, currentPage, openPage, goBack, goHome } = useTrainingNavigation({ landings });
+    const { isRoot, currentPage, openPage, goBack, goHome, userLandings, isMainLandingVisible } = useTrainingNavigation(
+        { landings, currentUser }
+    );
 
     const [isLoadingLong, setLoadingLong] = useState<boolean>(false);
-
-    const userLandings = useMemo(() => {
-        return getUserRootLandings(landings, currentUser);
-    }, [currentUser, landings]);
 
     const openSettings = useCallback(() => {
         setAppState({ type: "SETTINGS" });
@@ -48,16 +44,6 @@ export const HomePage: React.FC = React.memo(() => {
         },
         [setAppState]
     );
-
-    const currentPage = useMemo<Maybe<LandingNode>>(() => {
-        if (history[0]) return history[0];
-        return userLandings.length > 1 ? undefined : userLandings[0];
-    }, [history, userLandings]);
-
-    // show empty main landing if no user landings
-    // similar to how it looks like upon initial install
-    const isMainLandingVisible = userLandings.length > 1 || userLandings.length === 0;
-    const isRoot = history.length === 0;
 
     useEffect(() => {
         reload();
@@ -90,17 +76,15 @@ export const HomePage: React.FC = React.memo(() => {
                     </React.Fragment>
                 )}
 
-                {!isLoading && currentPage && (
+                {!isLoading && (
                     <HomePageContent
                         isRoot={isRoot}
                         loadModule={loadModule}
                         currentPage={currentPage}
                         openPage={openPage}
+                        isMainLandingVisible={isMainLandingVisible}
+                        userLandings={userLandings}
                     />
-                )}
-
-                {!isLoading && !currentPage && isMainLandingVisible && (
-                    <MainLandingPage openPage={openPage} landingNodes={userLandings} />
                 )}
             </ContentWrapper>
         </StyledModal>

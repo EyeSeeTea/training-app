@@ -15,16 +15,18 @@ import {
 } from "../utils";
 import { getLogoInfo, LogoInfo } from "../../../webapp/hooks/useAppConfig";
 import { useTrainingNavigation } from "../../../webapp/hooks/useTutorialPage";
+import { User } from "../../../data/entities/User";
 
 type UseTutorialModuleStateProps = {
     landings: LandingNode[];
     modules: TrainingModule[];
     textContent: string;
+    currentUser: User;
 };
 
 export function useTutorialModuleState(props: UseTutorialModuleStateProps) {
-    const { landings, modules, textContent } = props;
-    const { goBack, goHome, isRoot, currentPage, ...navigations } = useTrainingNavigation({ landings });
+    const { landings, modules, textContent, currentUser } = props;
+    const { goBack, goHome, isRoot, currentPage, ...navigations } = useTrainingNavigation({ landings, currentUser });
     const [module, setModule] = useState<TrainingModule>();
 
     const handleBack = useCallback(() => {
@@ -152,6 +154,13 @@ export function useTrainingResources(props: UseTrainingDataProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [modules, setModules] = useState<TrainingModule[]>([]);
     const [landings, setLandings] = useState<LandingNode[]>([]);
+    const [currentUser, setCurrentUser] = useState<User>({
+        id: "",
+        name: "",
+        username: "",
+        userGroups: [],
+        userRoles: [],
+    });
 
     const [containerConfig, setContainerConfig] = useState<ContainerConfig>(defaultContainerConfig);
     const [appConfig, setAppConfig] = useState<Config>();
@@ -217,8 +226,28 @@ export function useTrainingResources(props: UseTrainingDataProps) {
                 setContainerConfig(defaultContainerConfig);
             });
 
-        Promise.all([modulesPromise, landingsPromise, configPromise]).finally(() => setIsLoading(false));
+        const currentUserPromise = compositionRoot.usecases.user
+            .getCurrent()
+            .then(setCurrentUser)
+            .catch(error => {
+                console.error(`Error fetching current user:`, error);
+            });
+
+        Promise.all([modulesPromise, landingsPromise, configPromise, currentUserPromise]).finally(() =>
+            setIsLoading(false)
+        );
     }, [compositionRoot]);
 
-    return { pages, containerConfig, d2Api, settingsAccess, modules, landings, appConfig, logoInfo, isLoading };
+    return {
+        pages,
+        containerConfig,
+        d2Api,
+        settingsAccess,
+        modules,
+        landings,
+        appConfig,
+        logoInfo,
+        isLoading,
+        currentUser,
+    };
 }

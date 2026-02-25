@@ -33,6 +33,8 @@ type TrainingLandingProps = {
     onHome?: () => void;
     onBack?: () => void;
     appendToTriggerKey: (key: string) => void;
+    userLandings: LandingNode[];
+    isMainLandingVisible?: boolean;
 };
 export const TrainingLanding: React.FC<TrainingLandingProps> = props => {
     const {
@@ -45,6 +47,8 @@ export const TrainingLanding: React.FC<TrainingLandingProps> = props => {
         logoInfo,
         loadModule,
         loadedModule,
+        userLandings,
+        isMainLandingVisible,
         ...otherProps
     } = props;
 
@@ -61,6 +65,8 @@ export const TrainingLanding: React.FC<TrainingLandingProps> = props => {
                         appConfig={appConfig}
                         translate={translate}
                         logoInfo={logoInfo}
+                        userLandings={userLandings}
+                        isMainLandingVisible={isMainLandingVisible}
                     />
                 </PageContainer>
             )}
