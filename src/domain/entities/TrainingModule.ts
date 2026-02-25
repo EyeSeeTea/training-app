@@ -1,5 +1,5 @@
 import { Maybe, PartialBy } from "../../types/utils";
-import { BaseMetadata } from "./Ref";
+import { BaseMetadata, SharedProperties } from "./Ref";
 import { TranslatableText } from "./TranslatableText";
 import { PageBinding } from "./PageBinding";
 import { ModelValidation } from "./Validation";
@@ -8,6 +8,8 @@ export type TrainingModuleType = "app" | "core" | "widget";
 
 export type TrainingModulePage = TranslatableText & {
     id: string;
+    editable: boolean;
+    permissions: SharedProperties;
     bindings: PageBinding[];
 };
 
@@ -116,3 +118,23 @@ export const defaultTrainingModule: PartialTrainingModule = {
         steps: [],
     },
 };
+
+export const defaultPagePermissions: SharedProperties = {
+    publicAccess: "r-------",
+    userAccesses: [],
+    userGroupAccesses: [],
+};
+
+export function removeEmptyPages(module: TrainingModule): TrainingModule {
+    return {
+        ...module,
+        contents: {
+            ...module.contents,
+            steps: module.contents.steps.filter(({ pages }) => pages.length > 0),
+        },
+    };
+}
+
+export function removeEmptyStepsFromModules(modules: TrainingModule[]): TrainingModule[] {
+    return modules.map(module => removeEmptyPages(module)).filter(({ contents }) => contents.steps.length > 0);
+}

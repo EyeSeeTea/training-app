@@ -14,16 +14,18 @@ export const Root: React.FC<HomePageContentComponentProps> = props => {
 
     return (
         <React.Fragment>
-            <LogoContainer>
-                <img src={logoPath} alt={logoText} />
-            </LogoContainer>
-            <ModalTitle bold={true} big={true}>
-                {translate(appConfig.customText.rootTitle)}
-            </ModalTitle>
+            {currentPage.icon && (
+                <LogoContainer>
+                    <img src={currentPage.icon} alt={`Page icon`} />
+                </LogoContainer>
+            )}
 
+            <ModalTitle bold={true} big={true}>
+                {translate(currentPage.title ?? currentPage.name)}
+            </ModalTitle>
             <ModalContent>
                 <ModalParagraph size={28} align={"left"}>
-                    {translate(appConfig.customText.rootSubtitle)}
+                    {currentPage.content ? <MarkdownContents source={translate(currentPage.content)} /> : null}
                 </ModalParagraph>
 
                 <Cardboard rowSize={3} key={`group-${currentPage.id}`}>

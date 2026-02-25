@@ -8,13 +8,19 @@ import { useAppContext } from "../../contexts/app-context";
 import { useAppConfigContext } from "../../contexts/AppConfigProvider";
 import { HomePageContent } from "../../components/home/HomePageContent";
 import { useTrainingNavigation } from "../../hooks/useTutorialPage";
+import { MainLandingPage } from "../../components/home/MainLandingPage";
+import { Maybe } from "../../../types/utils";
 
 export const HomePage: React.FC = React.memo(() => {
-    const { setAppState, landings, reload, isLoading } = useAppContext();
+    const { setAppState, landings, reload, isLoading, currentUser } = useAppContext();
     const { hasSettingsAccess } = useAppConfigContext();
     const { isRoot, currentPage, openPage, goBack, goHome } = useTrainingNavigation({ landings });
 
     const [isLoadingLong, setLoadingLong] = useState<boolean>(false);
+
+    const userLandings = useMemo(() => {
+        return getUserRootLandings(landings, currentUser);
+    }, [currentUser, landings]);
 
     const openSettings = useCallback(() => {
         setAppState({ type: "SETTINGS" });
@@ -43,6 +49,16 @@ export const HomePage: React.FC = React.memo(() => {
         [setAppState]
     );
 
+    const currentPage = useMemo<Maybe<LandingNode>>(() => {
+        if (history[0]) return history[0];
+        return userLandings.length > 1 ? undefined : userLandings[0];
+    }, [history, userLandings]);
+
+    // show empty main landing if no user landings
+    // similar to how it looks like upon initial install
+    const isMainLandingVisible = userLandings.length > 1 || userLandings.length === 0;
+    const isRoot = history.length === 0;
+
     useEffect(() => {
         reload();
     }, [reload]);
@@ -65,21 +81,27 @@ export const HomePage: React.FC = React.memo(() => {
             allowDrag={true}
         >
             <ContentWrapper>
-                {isLoading ? (
+                {isLoading && (
                     <React.Fragment>
                         <Progress color={"white"} size={65} />
                         {isLoadingLong ? (
                             <p>{i18n.t("First load can take a couple of minutes, please wait...")}</p>
                         ) : null}
                     </React.Fragment>
-                ) : currentPage ? (
+                )}
+
+                {!isLoading && currentPage && (
                     <HomePageContent
                         isRoot={isRoot}
                         loadModule={loadModule}
                         currentPage={currentPage}
                         openPage={openPage}
                     />
-                ) : null}
+                )}
+
+                {!isLoading && !currentPage && isMainLandingVisible && (
+                    <MainLandingPage openPage={openPage} landingNodes={userLandings} />
+                )}
             </ContentWrapper>
         </StyledModal>
     );

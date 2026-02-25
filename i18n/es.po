@@ -120,17 +120,24 @@ msgstr "Importar traducciones JSON"
 msgid "Close"
 msgstr "Cerrar"
 
-msgid "Home page logo"
-msgstr "Logotipo de la página de inicio"
-
-msgid "Customize landing page text"
-msgstr "Personalizar el texto de la página de destino"
+msgid "Logo"
+msgstr ""
 
 msgid "Welcome message"
 msgstr "Mensaje de bienvenida"
 
 msgid "Module selection"
 msgstr "Selección de módulo"
+
+msgid "Export JSON translations"
+msgstr "Exportar traducciones JSON"
+
+msgid "Import JSON translations"
+msgstr "Importar traducciones JSON"
+
+#, fuzzy
+msgid "Customize main landing page"
+msgstr "Personalizar la página principal"
 
 msgid "Exporting translations"
 msgstr "Exportación de traducciones"
@@ -205,6 +212,9 @@ msgstr "Sí"
 msgid "No"
 msgstr "No"
 
+msgid "Access to landing page"
+msgstr "Acceso a la página de destino"
+
 msgid "Add section"
 msgstr "Añadir sección "
 
@@ -216,6 +226,9 @@ msgstr "Añadir categoría"
 
 msgid "Edit"
 msgstr "Editar"
+
+msgid "Sharing settings"
+msgstr "Configuración para compartir"
 
 msgid "Delete"
 msgstr "Borrar"
@@ -255,6 +268,47 @@ msgstr "Guardar"
 
 msgid "Uploading file..."
 msgstr "Subiendo archivo..."
+
+msgid "There are pending migrations"
+msgstr ""
+
+msgid "Migrations finished successfully, you may now continue to the app"
+msgstr ""
+
+msgid ""
+"There has been an error. You can either retry or contact your administrator "
+"if you think there has been an un recoverable error"
+msgstr ""
+
+msgid "Migrate instance"
+msgstr ""
+
+msgid "Migrating..."
+msgstr ""
+
+msgid "Continue to the App"
+msgstr "Continuar con la aplicación"
+
+msgid ""
+"The app needs to run pending migrations (from version {{instanceVersion}} to "
+"version {{appVersion}}) in order to continue. This may take a long time, "
+"make sure the process is not interrupted."
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "Continue to the app anyway"
+msgstr ""
+
+msgid ""
+"The database version ({{instanceVersion}}) is greater than the app version "
+"({{appVersion}}), cannot continue. Please contact the administrator to "
+"update the app."
+msgstr ""
+
+msgid "Home"
+msgstr "Inicio"
 
 msgid "Settings"
 msgstr "Ajustes"
@@ -379,19 +433,6 @@ msgstr "Restablecer la aplicación a la configuración de fábrica"
 msgid "Exporting module(s)"
 msgstr "Exportando módulo(s)"
 
-msgid "App is not installed in this instance"
-msgstr "La aplicación no está instalada en esta instancia"
-
-msgid "Module does not support this DHIS2 version"
-msgstr "El módulo no es compatible con esta versión de DHIS2"
-
-msgid ""
-"There's a new version of this module, please reset to default values to "
-"update"
-msgstr ""
-"Hay una nueva versión de este módulo, por favor restablezca los valores por "
-"defecto para actualizar"
-
 msgid "Add module"
 msgstr "Añadir modulo"
 
@@ -424,6 +465,44 @@ msgstr "Exportar módulo"
 
 msgid "Import modules"
 msgstr "Importar módulos"
+
+msgid "App is not installed in this instance"
+msgstr "La aplicación no está instalada en esta instancia"
+
+msgid "Module does not support this DHIS2 version"
+msgstr "El módulo no es compatible con esta versión de DHIS2"
+
+msgid ""
+"There's a new version of this module, please reset to default values to "
+"update"
+msgstr ""
+"Hay una nueva versión de este módulo, por favor restablezca los valores por "
+"defecto para actualizar"
+
+msgid "Unable to update module contents"
+msgstr "No se puede actualizar el contenido del módulo"
+
+#, fuzzy
+msgid "Unable to update page permissions"
+msgstr "No se puede actualizar el contenido del módulo"
+
+msgid "Unable to move item"
+msgstr "No se puede mover el artículo"
+
+msgid "Unable to add step"
+msgstr "No se puede añadir el paso"
+
+msgid "Unable to add page"
+msgstr "No se puede añadir la página"
+
+msgid "Unable to remove step"
+msgstr "No se puede eliminar el paso"
+
+msgid "Unable to remove page"
+msgstr "No se puede eliminar la página"
+
+msgid "Page permissions"
+msgstr ""
 
 msgid "Binding"
 msgstr ""
@@ -632,18 +711,11 @@ msgstr ""
 msgid "First load can take a couple of minutes, please wait..."
 msgstr "La primera carga puede tardar un par de minutos, por favor espere..."
 
-msgid "Accessible to {{users}} users and {{userGroups}} user groups"
-msgstr ""
-"Accesible para los usuarios {{users}} y los grupos de usuarios {{userGroups}}"
+msgid "Module"
+msgstr "Módulo"
 
-msgid "Accessible to {{users}} users"
-msgstr "Accesible para los usuarios de {{users}}"
-
-msgid "Accessible to {{userGroups}} user groups"
-msgstr "Accesible a los grupos de usuarios {{userGroups}}"
-
-msgid "Only accessible to system administrators"
-msgstr "Sólo accesible para los administradores del sistema"
+msgid "Landing Page"
+msgstr "Página de destino"
 
 msgid "Clean-up unused documents"
 msgstr "Limpiar los documentos no utilizados"
@@ -657,27 +729,6 @@ msgstr "Documentos obsoletos borrados"
 msgid "Proceed"
 msgstr "Proceder"
 
-msgid "Unable to update module contents"
-msgstr "No se puede actualizar el contenido del módulo"
-
-msgid "Unable to move item"
-msgstr "No se puede mover el artículo"
-
-msgid "Unable to add step"
-msgstr "No se puede añadir el paso"
-
-msgid "Unable to add page"
-msgstr "No se puede añadir la página"
-
-msgid "Unable to remove step"
-msgstr "No se puede eliminar el paso"
-
-msgid "Unable to remove page"
-msgstr "No se puede eliminar la página"
-
-msgid "General Settings"
-msgstr "Configuración general"
-
 msgid "Access to Settings"
 msgstr "Acceso a la configuración"
 
@@ -690,8 +741,8 @@ msgstr "Una lista con todos los módulos existentes es visible"
 msgid "The list with all the existing  modules is hidden"
 msgstr "La lista con todos los módulos existentes está oculta"
 
-msgid "Customize the landing page"
-msgstr "Personalizar la página de portada"
+msgid "Customize landing page selection"
+msgstr "Personalizar la selección de la página de destino"
 
 msgid "Update the logo or content"
 msgstr "Actualizar el logotipo o el contenido"
@@ -708,5 +759,25 @@ msgstr ""
 msgid "Update container type, dimensions, and position"
 msgstr ""
 
+msgid "General Settings"
+msgstr "Configuración general"
+
 msgid "Training modules"
 msgstr "Módulos de formación"
+
+msgid "Add Landing Page"
+msgstr "Agregar página de destino"
+
+msgid "Accessible to {{usersCount}} users and {{userGroupsCount}} user groups"
+msgstr ""
+"Accesible para {{usersCount}} usuarios y {{userGroupsCount}} grupos de "
+"usuarios"
+
+msgid "Accessible to {{usersCount}} users"
+msgstr "Accesible para {{usersCount}} usuarios"
+
+msgid "Accessible to {{userGroupsCount}} user groups"
+msgstr "Accesible a {{userGroupsCount}} grupos de usuarios"
+
+msgid "Only accessible to system administrators"
+msgstr "Sólo accesible para los administradores del sistema"

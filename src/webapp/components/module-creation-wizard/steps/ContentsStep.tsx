@@ -5,19 +5,16 @@ import {
     removePage,
     removeStep,
     updateOrder,
+    updatePagePermissions,
     updatePageBindings,
     updateTranslation,
 } from "../../../../domain/helpers/TrainingModuleHelpers";
 import i18n from "../../../../utils/i18n";
-import { ComponentParameter } from "../../../../types/utils";
-import { useAppContext } from "../../../contexts/app-context";
 import { InputDialog, InputDialogProps } from "../../input-dialog/InputDialog";
-import { buildListSteps, ModuleListTable } from "../../module-list-table/ModuleListTable";
+import { buildListSteps, ModuleListTable, ModuleListTableAction } from "../../module-list-table/ModuleListTable";
 import { ModuleCreationWizardStepProps } from "./index";
 
 export const ContentsStep: React.FC<ModuleCreationWizardStepProps> = ({ module, onChange }) => {
-    const { usecases } = useAppContext();
-
     const [dialogProps, updateDialog] = useState<InputDialogProps | null>(null);
 
     const openAddStep = useCallback(() => {
@@ -34,10 +31,14 @@ export const ContentsStep: React.FC<ModuleCreationWizardStepProps> = ({ module, 
         });
     }, [onChange]);
 
-    const tableActions: ComponentParameter<typeof ModuleListTable, "tableActions"> = useMemo(
+    const tableActions: ModuleListTableAction = useMemo(
         () => ({
-            uploadFile: ({ data, name }) => usecases.document.uploadFile(data, name),
             editContents: async ({ text, value }) => onChange(module => updateTranslation(module, text.key, value)),
+            editPagePermissions: async ({ page }) =>
+                onChange(module => {
+                    const { id, permissions } = page;
+                    return updatePagePermissions(module, { id, permissions });
+                }),
             editPage: async ({ text, page }) =>
                 onChange(module => {
                     const { id, value, bindings } = page;
@@ -53,7 +54,7 @@ export const ContentsStep: React.FC<ModuleCreationWizardStepProps> = ({ module, 
             deleteStep: async ({ step }) => onChange(module => removeStep(module, step)),
             deletePage: async ({ step, page }) => onChange(module => removePage(module, step, page)),
         }),
-        [onChange, usecases]
+        [onChange]
     );
 
     return (

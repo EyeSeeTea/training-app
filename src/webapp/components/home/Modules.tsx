@@ -5,6 +5,7 @@ import { BigCard } from "../card-board/BigCard";
 import { LandingNode } from "../../../domain/entities/LandingPage";
 import { ModalParagraph } from "../modal";
 import i18n from "../../../utils/i18n";
+import { removeEmptyStepsFromModules } from "../../../domain/entities/TrainingModule";
 import { TrainingModule } from "../../../domain/entities/TrainingModule";
 import { TranslateMethod } from "../../../domain/entities/TranslatableText";
 import { Config } from "../../../domain/entities/Config";
@@ -21,7 +22,11 @@ type ModulesProps = {
 export const Modules: React.FC<ModulesProps> = props => {
     const { currentPage, loadModule, isRoot, modules, translate, appConfig } = props;
 
-    const pageModules = isRoot && appConfig.showAllModules ? modules.map(({ id }) => id) : currentPage?.modules ?? [];
+    const allPageModules =
+        isRoot && appConfig.showAllModules
+            ? modules
+            : modules.filter(module => currentPage.modules.includes(module.id));
+    const pageModules = removeEmptyStepsFromModules(allPageModules);
 
     return (
         <React.Fragment>
@@ -32,9 +37,8 @@ export const Modules: React.FC<ModulesProps> = props => {
             ) : null}
 
             <Cardboard rowSize={3} key={`group-${currentPage.id}`}>
-                {pageModules.map(moduleId => {
-                    const module = modules.find(({ id }) => id === moduleId);
-                    if (!module || !module.compatible) return null;
+                {pageModules.map(module => {
+                    if (!module.compatible) return null;
 
                     const percentage =
                         module && module.contents.steps.length > 0
@@ -49,7 +53,7 @@ export const Modules: React.FC<ModulesProps> = props => {
 
                     return (
                         <BigCard
-                            key={`card-${moduleId}`}
+                            key={`card-${module.id}`}
                             label={name}
                             progress={module.progress.completed ? 100 : percentage}
                             onClick={handleClick}
