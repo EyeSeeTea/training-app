@@ -199,13 +199,11 @@ export function useTrainingResources(props: UseTrainingDataProps) {
                 setAppConfig(config);
                 setContainerConfig(config.containerConfig);
 
-                const logo = getLogoInfo(appConfig?.logo);
-                if (!appConfig?.logo) {
-                    setLogoInfo({
-                        ...logo,
-                        logoPath: transformD2Urls(logo.logoPath, d2Api, trainingAppKey),
-                    });
-                } else setLogoInfo(logo);
+                const logo = getLogoInfo(config.logo);
+                setLogoInfo({
+                    ...logo,
+                    logoPath: transformD2Urls(logo.logoPath, d2Api, trainingAppKey),
+                });
 
                 return compositionRoot.usecases.user.checkSettingsPermissions(config);
             })
