@@ -13,17 +13,20 @@ export function useScrollableContainerKey(props: UseScrollableContainerKeyProps)
     const { targetIds, currentPage, loadedModule } = props;
 
     const [triggerKey, setTriggerKey] = useState("");
+    const [appendedKey, setAppendedKey] = useState("");
 
     useEffect(() => {
         setTriggerKey(`${targetIds.join("-")}-${currentPage?.id}-${loadedModule?.id}`);
     }, [targetIds, currentPage, loadedModule]);
 
     const appendToTriggerKey = useCallback((key: string) => {
-        setTriggerKey(prevKey => `${prevKey}-${key}`);
+        setAppendedKey(key);
     }, []);
 
+    const triggerKeyWithAppend = `${triggerKey}-${appendedKey}`;
+
     return {
-        triggerKey,
+        triggerKey: triggerKeyWithAppend,
         appendToTriggerKey,
     };
 }
