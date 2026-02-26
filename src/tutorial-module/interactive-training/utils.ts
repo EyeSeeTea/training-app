@@ -17,7 +17,7 @@ export function getEventPageIdsByTrainingIdMap(
     validEventSet: Set<EventType>
 ): EventPageIdsByTrainingId {
     return _(pages)
-        .flatMap(({ bindings = [], id }) => bindings.filter(isEventBinding).map(binding => ({ binding, pageId: id })))
+        .flatMap(({ bindings, id }) => bindings.filter(isEventBinding).map(binding => ({ binding, pageId: id })))
         .filter(({ binding }) => binding.eventType === "all" || validEventSet.has(binding.eventType))
         .flatMap(({ binding, pageId }) =>
             getEventBindingIdentifiers(binding).map(pageIdentifier => ({
@@ -38,9 +38,7 @@ export function getEventPageIdsByTrainingIdMap(
 
 export function getSectionPageIds(currentUrl: string, pages: TrainingModulePage[]): string[] {
     return _(pages)
-        .flatMap(({ bindings = [], id }) =>
-            bindings.filter(isSectionBinding).map(binding => ({ ...binding, pageId: id }))
-        )
+        .flatMap(({ bindings, id }) => bindings.filter(isSectionBinding).map(binding => ({ ...binding, pageId: id })))
         .filter(({ urlPattern }) => matchesUrlPattern(currentUrl, urlPattern))
         .map(({ pageId }) => pageId)
         .value();

@@ -23,7 +23,7 @@ export const ScrollableContainer: React.FC<ScrollableContainerProps> = props => 
         const scroller = root.querySelector<HTMLElement>(targetContainerSelector);
         if (!scroller) return;
         scroller.scrollTop = 0;
-    }, [triggerKey]);
+    }, [triggerKey, targetContainerSelector]);
 
     return (
         <div ref={ref} className={className} style={{ overflow: "auto" }}>

@@ -96,7 +96,7 @@ export function useTrainingContent(props: UseTrainingContentProps) {
             const translatedText = translateMethod(text);
             return transformD2Urls(translatedText, d2Api, trainingAppKey);
         },
-        [translateMethod]
+        [translateMethod, trainingAppKey, d2Api]
     );
 
     const textContent = useMemo(() => {
@@ -170,7 +170,7 @@ export function useTrainingResources(props: UseTrainingDataProps) {
         if (modules.length === 0) return [];
         return _(modules)
             .flatMap(module => module.contents.steps)
-            .flatMap(step => step.pages.filter(({ bindings = [] }) => bindings.length > 0))
+            .flatMap(step => step.pages.filter(({ bindings }) => bindings.length > 0))
             .value();
     }, [modules]);
 

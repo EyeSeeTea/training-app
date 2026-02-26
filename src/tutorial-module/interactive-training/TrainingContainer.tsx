@@ -92,32 +92,3 @@ const TrainingContainerContent: React.FC<{ content: string; defaultContent: Reac
 export const ToggleContainer = styled.div<{ isVisible: boolean }>`
     display: ${p => (p.isVisible ? "block" : "none")};
 `;
-
-const PaneledContainer = styled.div<{
-    isRight: boolean;
-    width: number;
-    unit: SideBarConfig["unit"];
-}>`
-    &.show-panel {
-        display: flex;
-        flex-direction: ${({ isRight }) => (isRight ? "row" : "row-reverse")};
-        width: 100%;
-
-        & > :first-child {
-            flex: 1 1 auto;
-            min-width: 0;
-        }
-
-        & > :last-child {
-            flex: 0 0 ${({ width, unit }) => `${width}${unit}`};
-            max-width: ${({ width, unit }) => `${width}${unit}`};
-            min-width: 450px;
-            position: sticky;
-            top: 0;
-            align-self: flex-start;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-    }
-`;

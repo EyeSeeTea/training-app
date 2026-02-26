@@ -130,8 +130,6 @@ function setupEventListeners(props: SetupEventListenersProps) {
         }
     };
 
-    console.debug("Registering event listeners on root:", root);
-    console.debug("Event types:", Array.from(eventSet));
     const clickHandler = handleEvent(EVENT_TYPE.click);
     const focusHandler = handleEvent(EVENT_TYPE.focus);
 

@@ -1,8 +1,6 @@
 import React, { createContext, PropsWithChildren, useMemo } from "react";
-import styled from "styled-components";
 
 import { TrainingModulePage } from "../../domain/entities/TrainingModule";
-import { ActionButton } from "../../webapp/components/action-button/ActionButton";
 import { Maybe } from "../../types/utils";
 import { useBindEvents } from "./hooks/useBindEvents";
 import "./InteractiveTrainingProvider.css";
@@ -16,7 +14,7 @@ import {
 import { TrainingLanding } from "./TrainingLanding";
 import { useScrollableContainerKey } from "./hooks/useScrollableContainerKey";
 
-const trainingEventKinds = ["click", "focus", "section"];
+const trainingEventKinds = ["click", "focus", "section"] as const;
 type TrainingEventKind = typeof trainingEventKinds[number];
 
 export type InteractiveTrainingContextState = {
@@ -40,7 +38,7 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
     const {
         baseUrl,
         locale = "en",
-        events = trainingEventKinds,
+        events = [...trainingEventKinds],
         highlightElementsWithBindings,
         trainingAppKey = defaultAppKey,
         children,
