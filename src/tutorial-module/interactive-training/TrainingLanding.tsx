@@ -54,7 +54,7 @@ export const TrainingLanding: React.FC<TrainingLandingProps> = props => {
 
     return (
         <SnackbarProvider>
-            {!loadedModule && currentPage && appConfig && logoInfo && (
+            {!loadedModule && appConfig && logoInfo && (
                 <PageContainer>
                     <HomePageContentComponent
                         currentPage={currentPage}
