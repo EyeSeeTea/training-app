@@ -9,8 +9,11 @@ import i18n from "../../../utils/i18n";
 import { TranslateMethod } from "../../../domain/entities/TranslatableText";
 import { Config } from "../../../domain/entities/Config";
 import { LogoInfo } from "../../hooks/useAppConfig";
+import { Modules } from "./Modules";
+import { HomePageContentComponentProps } from "./HomePageContent";
+import { MaybeBy } from "../../../types/utils";
 
-type TrainingAreaProps = {
+type TrainingAreaProps = MaybeBy<HomePageContentComponentProps, "currentPage"> & {
     landingNodes: LandingNode[];
     openPage: (page: LandingNode) => void;
     translate: TranslateMethod;
@@ -52,6 +55,7 @@ export const MainLandingPage: React.FC<TrainingAreaProps> = (props: TrainingArea
                         />
                     ))}
                 </Cardboard>
+                <Modules {...props} />
             </ModalContent>
         </React.Fragment>
     );

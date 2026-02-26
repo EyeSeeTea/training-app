@@ -9,10 +9,11 @@ import { removeEmptyStepsFromModules } from "../../../domain/entities/TrainingMo
 import { TrainingModule } from "../../../domain/entities/TrainingModule";
 import { TranslateMethod } from "../../../domain/entities/TranslatableText";
 import { Config } from "../../../domain/entities/Config";
+import { Maybe } from "../../../types/utils";
 
 type ModulesProps = {
     isRoot: boolean;
-    currentPage: LandingNode;
+    currentPage: Maybe<LandingNode>;
     loadModule: (module: string, step: number) => void;
     modules: TrainingModule[];
     translate: TranslateMethod;
@@ -25,7 +26,9 @@ export const Modules: React.FC<ModulesProps> = props => {
     const allPageModules =
         isRoot && appConfig.showAllModules
             ? modules
-            : modules.filter(module => currentPage.modules.includes(module.id));
+            : currentPage
+            ? modules.filter(module => currentPage.modules.includes(module.id))
+            : [];
     const pageModules = removeEmptyStepsFromModules(allPageModules);
 
     return (
@@ -36,7 +39,7 @@ export const Modules: React.FC<ModulesProps> = props => {
                 </ModalParagraph>
             ) : null}
 
-            <Cardboard rowSize={3} key={`group-${currentPage.id}`}>
+            <Cardboard rowSize={3} key={`group-${currentPage?.id ?? "root"}`}>
                 {pageModules.map(module => {
                     if (!module.compatible) return null;
 
