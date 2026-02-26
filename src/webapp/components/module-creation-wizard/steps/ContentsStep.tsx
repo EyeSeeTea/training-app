@@ -6,6 +6,7 @@ import {
     removeStep,
     updateOrder,
     updatePagePermissions,
+    updatePageBindings,
     updateTranslation,
 } from "../../../../domain/helpers/TrainingModuleHelpers";
 import i18n from "../../../../utils/i18n";
@@ -38,11 +39,17 @@ export const ContentsStep: React.FC<ModuleCreationWizardStepProps> = ({ module, 
                     const { id, permissions } = page;
                     return updatePagePermissions(module, { id, permissions });
                 }),
+            editPage: async ({ text, page }) =>
+                onChange(module => {
+                    const { id, value, bindings } = page;
+                    const updatedModule = bindings ? updatePageBindings(module, { id, bindings }) : module;
+                    return updateTranslation(updatedModule, text.key, value);
+                }),
             swap: async ({ type, from, to }) => {
                 if (type === "module") return;
                 onChange(module => updateOrder(module, from, to));
             },
-            addPage: async ({ step, value }) => onChange(module => addPage(module, step, value)),
+            addPage: async ({ step, page }) => onChange(module => addPage(module, step, page)),
             addStep: async ({ title }) => onChange(module => addStep(module, title)),
             deleteStep: async ({ step }) => onChange(module => removeStep(module, step)),
             deletePage: async ({ step, page }) => onChange(module => removePage(module, step, page)),

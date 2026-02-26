@@ -7,6 +7,7 @@ import {
     removePage,
     removeStep,
     updateOrder,
+    updatePageBindings,
     updatePagePermissions,
     updateTranslation,
 } from "../../../domain/helpers/TrainingModuleHelpers";
@@ -42,6 +43,16 @@ export function useModuleTableAction(): ModuleListTableAction {
                 i18n.t("Unable to update module contents")
             );
         },
+        editPage: async ({ id, text, page: { id: pageId, value, bindings } }) => {
+            await withModule(
+                id,
+                module => {
+                    const updatedModule = bindings ? updatePageBindings(module, { id: pageId, bindings }) : module;
+                    return updateTranslation(updatedModule, text.key, value);
+                },
+                i18n.t("Unable to update page")
+            );
+        },
         editPagePermissions: async ({ id, page: { id: pageId, permissions } }) => {
             await withModule(
                 id,
@@ -64,8 +75,8 @@ export function useModuleTableAction(): ModuleListTableAction {
         addStep: async ({ id, title }) => {
             await withModule(id, module => addStep(module, title), i18n.t("Unable to add step"));
         },
-        addPage: async ({ id, step, value }) => {
-            await withModule(id, module => addPage(module, step, value), i18n.t("Unable to add page"));
+        addPage: async ({ id, step, page }) => {
+            await withModule(id, module => addPage(module, step, page), i18n.t("Unable to add page"));
         },
         deleteStep: async ({ id, step }) => {
             await withModule(id, module => removeStep(module, step), i18n.t("Unable to remove step"));

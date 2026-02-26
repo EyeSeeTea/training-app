@@ -16,6 +16,8 @@ import {
     PermissionsDialog,
     SharedUpdate,
 } from "../../components/permissions-dialog/PermissionsDialog";
+import { useContainerDialog } from "./useContainerDialog";
+import { ContainerConfigDialog } from "../../components/container-config-dialog/ContainerConfigDialog";
 
 type SettingsConfigProps = {
     modules: TrainingModule[];
@@ -28,6 +30,11 @@ export const SettingsConfig: React.FC<SettingsConfigProps> = props => {
     const { appConfig, save, hasLoaded } = useAppConfigContext();
     const snackbar = useSnackbar();
     const loading = useLoading();
+
+    const { onOpen: onOpenContainerConfig, containerConfigDialogProps } = useContainerDialog({
+        containerConfig: appConfig.containerConfig,
+        save: save,
+    });
 
     const [danglingDocuments, setDanglingDocuments] = useState<NamedRef[]>([]);
     const [dialogProps, updateDialog] = useState<ConfirmationDialogProps | null>(null);
@@ -99,6 +106,7 @@ export const SettingsConfig: React.FC<SettingsConfigProps> = props => {
             {showPermissionDialog && <PermissionsDialog onClose={closePermissionsDialog} {...permissionsDialogProps} />}
             {dialogProps && <ConfirmationDialog isOpen={true} maxWidth={"lg"} fullWidth={true} {...dialogProps} />}
             {showCustomSettings && <CustomizeSettingsDialog onClose={closeCustomSettingsDialog} />}
+            {containerConfigDialogProps && <ContainerConfigDialog {...containerConfigDialogProps} />}
 
             <Group row={true}>
                 <ListItem button onClick={openSettingsPermission}>
@@ -154,6 +162,16 @@ export const SettingsConfig: React.FC<SettingsConfigProps> = props => {
                         />
                     </ListItem>
                 )}
+
+                <ListItem button onClick={onOpenContainerConfig}>
+                    <ListItemIcon>
+                        <Icon>web_asset</Icon>
+                    </ListItemIcon>
+                    <ListItemText
+                        primary={i18n.t("Configure container for interactive training")}
+                        secondary={i18n.t("Update container type, dimensions, and position")}
+                    />
+                </ListItem>
             </Group>
         </>
     );

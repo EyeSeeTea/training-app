@@ -19,13 +19,15 @@ import { AlertIcon } from "../alert-icon/AlertIcon";
 import { isListItemPage, ListItem, ModuleListTableAction } from "./ModuleListTable";
 import { useModuleTableAction } from "./useModuleTableAction";
 import { InputDialogProps } from "../input-dialog/InputDialog";
-import { MarkdownEditorDialogProps } from "../markdown-editor/MarkdownEditorDialog";
 import { MarkdownViewer } from "../markdown-viewer/MarkdownViewer";
 import { ModalBody } from "../modal";
 import { useImportExportTranslation } from "../../hooks/useImportExportTranslation";
 import { useAppContext } from "../../contexts/app-context";
 import { ImportTranslationRef } from "../import-translation-dialog/ImportTranslationDialog";
 import { usePagePermissions } from "./usePagePermissions";
+import { PageEditorProps } from "../page-editor/PageEditorDialog";
+import { Maybe } from "../../../types/utils";
+import { PageBindingPreview } from "./PageBindingPreview";
 
 type UseModuleListProps = {
     rows: ListItem[];
@@ -45,9 +47,9 @@ export function useModuleList(props: UseModuleListProps) {
     const snackbar = useSnackbar();
 
     const [selection, setSelection] = useState<TableSelection[]>([]);
-    const [inputDialogProps, updateInputDialog] = useState<InputDialogProps | null>(null);
-    const [dialogProps, updateDialog] = useState<ConfirmationDialogProps | null>(null);
-    const [markdownDialogProps, updateMarkdownDialog] = useState<MarkdownEditorDialogProps | null>(null);
+    const [inputDialogProps, updateInputDialog] = useState<Maybe<InputDialogProps>>();
+    const [dialogProps, updateDialog] = useState<Maybe<ConfirmationDialogProps>>();
+    const [pageEditorDialog, setPageEditorDialog] = useState<Maybe<PageEditorProps>>();
 
     const moduleTableActions = useModuleTableAction();
 
@@ -71,10 +73,10 @@ export function useModuleList(props: UseModuleListProps) {
                 title: i18n.t("Are you sure you want to delete the selected modules?"),
                 description: i18n.t("This action cannot be reversed"),
                 onCancel: () => {
-                    updateDialog(null);
+                    updateDialog(undefined);
                 },
                 onSave: async () => {
-                    updateDialog(null);
+                    updateDialog(undefined);
                     if (!tableActions.deleteModules) return;
 
                     loading.show(true, i18n.t("Deleting modules"));
@@ -101,10 +103,10 @@ export function useModuleList(props: UseModuleListProps) {
                 title: i18n.t("Are you sure you want to delete the selected step and its pages?"),
                 description: i18n.t("This action cannot be reversed"),
                 onCancel: () => {
-                    updateDialog(null);
+                    updateDialog(undefined);
                 },
                 onSave: async () => {
-                    updateDialog(null);
+                    updateDialog(undefined);
                     if (!tableActions.deleteStep || !row.moduleId) return;
                     await tableActions.deleteStep({ id: row.moduleId, step: row.id });
                     await refreshRows();
@@ -125,10 +127,10 @@ export function useModuleList(props: UseModuleListProps) {
                 title: i18n.t("Are you sure you want to delete the selected page?"),
                 description: i18n.t("This action cannot be reversed"),
                 onCancel: () => {
-                    updateDialog(null);
+                    updateDialog(undefined);
                 },
                 onSave: async () => {
-                    updateDialog(null);
+                    updateDialog(undefined);
                     if (!tableActions.deletePage || !row.moduleId || !row.stepId) return;
                     await tableActions.deletePage({ id: row.moduleId, step: row.stepId, page: row.id });
                     await refreshRows();
@@ -153,9 +155,9 @@ export function useModuleList(props: UseModuleListProps) {
             updateInputDialog({
                 title: i18n.t("Add new step"),
                 inputLabel: i18n.t("Title *"),
-                onCancel: () => updateInputDialog(null),
+                onCancel: () => updateInputDialog(undefined),
                 onSave: async title => {
-                    updateInputDialog(null);
+                    updateInputDialog(undefined);
                     if (!tableActions.addStep) return;
 
                     await tableActions.addStep({ id: row.id, title });
@@ -173,18 +175,20 @@ export function useModuleList(props: UseModuleListProps) {
 
             const { uploadFile } = tableActions;
 
-            updateMarkdownDialog({
-                title: i18n.t("Add new page"),
-                markdownPreview: markdown => <StepPreview value={markdown} />,
+            setPageEditorDialog({
                 onUpload: uploadFile
                     ? (data: ArrayBuffer, file: File) => uploadFile({ data, name: file.name })
                     : undefined,
-                onCancel: () => updateMarkdownDialog(null),
-                onSave: async value => {
-                    updateMarkdownDialog(null);
+                onCancel: () => setPageEditorDialog(undefined),
+                onSave: async ({ referenceValue, bindings }) => {
+                    setPageEditorDialog(undefined);
                     if (!row.moduleId || !tableActions.addPage) return;
 
-                    await tableActions.addPage({ id: row.moduleId, step: row.id, value });
+                    await tableActions.addPage({
+                        id: row.moduleId,
+                        step: row.id,
+                        page: { value: referenceValue, bindings },
+                    });
                     await refreshRows();
                 },
             });
@@ -253,9 +257,9 @@ export function useModuleList(props: UseModuleListProps) {
                 title: i18n.t("Edit step"),
                 inputLabel: i18n.t("Title *"),
                 initialValue: row.title.referenceValue,
-                onCancel: () => updateInputDialog(null),
+                onCancel: () => updateInputDialog(undefined),
                 onSave: async value => {
-                    updateInputDialog(null);
+                    updateInputDialog(undefined);
                     if (!tableActions.editContents || !row.title || !row.moduleId) return;
 
                     await tableActions.editContents({ id: row.moduleId, text: row.title, value });
@@ -273,19 +277,26 @@ export function useModuleList(props: UseModuleListProps) {
 
             const { uploadFile } = tableActions;
 
-            updateMarkdownDialog({
-                title: i18n.t("Edit contents of {{name}}", row),
-                initialValue: row.value.referenceValue,
-                markdownPreview: markdown => <StepPreview value={markdown} />,
+            setPageEditorDialog({
+                page: {
+                    id: row.id,
+                    name: row.name,
+                    referenceValue: row.value.referenceValue,
+                    bindings: row.bindings || [],
+                },
                 onUpload: uploadFile
                     ? (data: ArrayBuffer, file: File) => uploadFile({ data, name: file.name })
                     : undefined,
-                onCancel: () => updateMarkdownDialog(null),
-                onSave: async value => {
-                    updateMarkdownDialog(null);
-                    if (!tableActions.editContents || !row.value || !row.moduleId) return;
+                onCancel: () => setPageEditorDialog(undefined),
+                onSave: async ({ referenceValue, bindings }) => {
+                    setPageEditorDialog(undefined);
+                    if (!tableActions.editPage || !row.value || !row.moduleId) return;
 
-                    await tableActions.editContents({ id: row.moduleId, text: row.value, value });
+                    await tableActions.editPage({
+                        id: row.moduleId,
+                        text: row.value,
+                        page: { id: row.id, value: referenceValue, bindings },
+                    });
                     await refreshRows();
                 },
             });
@@ -317,9 +328,9 @@ export function useModuleList(props: UseModuleListProps) {
             updateDialog({
                 title: i18n.t("Are you sure you want to reset selected modules to its default value?"),
                 description: i18n.t("This action cannot be reversed."),
-                onCancel: () => updateDialog(null),
+                onCancel: () => updateDialog(undefined),
                 onSave: async () => {
-                    updateDialog(null);
+                    updateDialog(undefined);
                     if (!tableActions.resetModules) return;
 
                     loading.show(true, i18n.t("Resetting modules to default value"));
@@ -419,9 +430,7 @@ export function useModuleList(props: UseModuleListProps) {
                 icon: <Icon>edit</Icon>,
                 onClick: editPage,
                 isActive: rows => {
-                    return (
-                        !!tableActions.editContents && _.every(rows, item => item.rowType === "page" && item.editable)
-                    );
+                    return !!tableActions.editPage && _.every(rows, item => item.rowType === "page" && item.editable);
                 },
             },
             {
@@ -596,7 +605,7 @@ export function useModuleList(props: UseModuleListProps) {
         selection,
         inputDialogProps,
         confirmDialogProps: dialogProps,
-        markdownDialogProps,
+        pageEditorDialog,
         pagePermissionsDialog,
     };
 }
@@ -641,6 +650,9 @@ function buildTableColumns(): TableColumn<ListItem>[] {
                                 "There's a new version of this module, please reset to default values to update"
                             )}
                         />
+                    ) : null}
+                    {item.rowType === "page" && item.bindings?.length ? (
+                        <PageBindingPreview bindings={item.bindings} />
                     ) : null}
                 </div>
             ),

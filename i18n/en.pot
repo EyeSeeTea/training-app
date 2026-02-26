@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2026-02-22T06:14:27.632Z\n"
-"PO-Revision-Date: 2026-02-22T06:14:27.632Z\n"
+"POT-Creation-Date: 2026-02-26T02:59:24.589Z\n"
+"PO-Revision-Date: 2026-02-26T02:59:24.589Z\n"
 
 msgid "Welcome to training on DHIS2"
 msgstr ""
@@ -26,22 +26,28 @@ msgstr ""
 msgid "Field {{field}} is not valid"
 msgstr ""
 
-msgid "Well done!"
+msgid "Back"
 msgstr ""
 
-msgid "You've completed the {{name}} tutorial!"
+msgid "Settings page"
 msgstr ""
 
-msgid "Back to tutorial"
+msgid "Home"
 msgstr ""
 
-msgid "Finish"
+msgid "Exit Tutorial"
+msgstr ""
+
+msgid "Start Tutorial"
 msgstr ""
 
 msgid "What did you learn in this tutorial?"
 msgstr ""
 
 msgid "What will this tutorial cover?"
+msgstr ""
+
+msgid "Back to tutorial"
 msgstr ""
 
 msgid "Previous"
@@ -53,16 +59,55 @@ msgstr ""
 msgid "Start"
 msgstr ""
 
-msgid "Exit Tutorial"
+msgid "Well done!"
 msgstr ""
 
-msgid "Start Tutorial"
+msgid "You've completed the {{name}} tutorial!"
+msgstr ""
+
+msgid "Finish"
+msgstr ""
+
+msgid "Expand panel"
+msgstr ""
+
+msgid "Collapse panel"
 msgstr ""
 
 msgid "Tutorial"
 msgstr ""
 
 msgid "done"
+msgstr ""
+
+msgid "Container Configuration"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Position"
+msgstr ""
+
+msgid "Width"
+msgstr ""
+
+msgid "Unit"
+msgstr ""
+
+msgid "Collapse Mode"
+msgstr ""
+
+msgid "Dialog"
+msgstr ""
+
+msgid "Side bar"
+msgstr ""
+
+msgid "Left"
+msgstr ""
+
+msgid "Right"
 msgstr ""
 
 msgid "Close"
@@ -253,16 +298,10 @@ msgid ""
 "update the app."
 msgstr ""
 
-msgid "Home"
-msgstr ""
-
 msgid "Settings"
 msgstr ""
 
 msgid "About"
-msgstr ""
-
-msgid "Back"
 msgstr ""
 
 msgid "Move window"
@@ -355,13 +394,7 @@ msgstr ""
 msgid "Delete page"
 msgstr ""
 
-msgid "Add new page"
-msgstr ""
-
 msgid "Edit step"
-msgstr ""
-
-msgid "Edit contents of {{name}}"
 msgstr ""
 
 msgid "Installing application"
@@ -432,6 +465,9 @@ msgstr ""
 msgid "Unable to update module contents"
 msgstr ""
 
+msgid "Unable to update page"
+msgstr ""
+
 msgid "Unable to update page permissions"
 msgstr ""
 
@@ -451,6 +487,51 @@ msgid "Unable to remove page"
 msgstr ""
 
 msgid "Page permissions"
+msgstr ""
+
+msgid "Binding"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Config"
+msgstr ""
+
+msgid "Add binding"
+msgstr ""
+
+msgid "Binding type"
+msgstr ""
+
+msgid "Training identifiers"
+msgstr ""
+
+msgid "Event type"
+msgstr ""
+
+msgid "URL Pattern"
+msgstr ""
+
+msgid "Event"
+msgstr ""
+
+msgid "Click"
+msgstr ""
+
+msgid "Focus"
+msgstr ""
+
+msgid "All"
+msgstr ""
+
+msgid "Edit contents of {{name}}"
+msgstr ""
+
+msgid "Add new page"
+msgstr ""
+
+msgid "Interactive training bindings"
 msgstr ""
 
 msgid "Help"
@@ -620,6 +701,12 @@ msgid "There are no unused documents to clean"
 msgstr ""
 
 msgid "There are {{total}} documents available to clean"
+msgstr ""
+
+msgid "Configure container for interactive training"
+msgstr ""
+
+msgid "Update container type, dimensions, and position"
 msgstr ""
 
 msgid "General Settings"

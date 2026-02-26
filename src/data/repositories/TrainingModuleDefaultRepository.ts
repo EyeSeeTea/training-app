@@ -26,6 +26,7 @@ import { getMajorVersion } from "../utils/d2-api";
 import { D2Api } from "../../types/d2-api";
 import { DocumentRepository } from "../../domain/repositories/DocumentRepository";
 import { generatePageId, generateStepId } from "../../domain/helpers/TrainingModuleHelpers";
+import { isEventBinding, PageBinding } from "../../domain/entities/PageBinding";
 
 export class TrainingModuleDefaultRepository implements TrainingModuleRepository {
     private storageClient: StorageClient;
@@ -298,6 +299,7 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
                         key: page.key,
                         referenceValue: page.referenceValue,
                         translations: page.translations,
+                        bindings: this.cleanUpPageBindings(page.bindings),
                     })),
                 })),
             },
@@ -315,6 +317,31 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
             created: options?.recreate ? date : model.created,
             dirty: !options?.recreate,
         });
+    }
+
+    private cleanUpPageBindings(
+        bindings: PersistedTrainingModule["contents"]["steps"][number]["pages"][number]["bindings"]
+    ) {
+        return (
+            bindings?.map<PageBinding>(binding => {
+                const base = { id: binding.id, description: binding.description };
+
+                if (isEventBinding(binding)) {
+                    return {
+                        ...base,
+                        type: "event",
+                        trainingIdentifiers: binding.trainingIdentifiers,
+                        eventType: binding.eventType,
+                    };
+                } else {
+                    return {
+                        ...base,
+                        type: "section",
+                        urlPattern: binding.urlPattern,
+                    };
+                }
+            }) ?? []
+        );
     }
 
     private async buildDomainModels(
@@ -355,6 +382,7 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
                                 ...page,
                                 id: generatePageId(model.id, stepIdx, pageIdx),
                                 permissions: page.permissions ?? defaultPagePermissions,
+                                bindings: page.bindings ?? [],
                                 editable: checkPagePermissions(page, "write"),
                             })),
                     })),

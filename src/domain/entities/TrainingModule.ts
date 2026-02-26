@@ -1,64 +1,53 @@
-import { PartialBy } from "../../types/utils";
-import { GetSchemaType, Schema } from "../../utils/codec";
-import { BaseMetadataModel, SharedProperties, SharedPropertiesModel } from "./Ref";
-import { TranslatableTextModel } from "./TranslatableText";
+import { Maybe, PartialBy } from "../../types/utils";
+import { BaseMetadata, SharedProperties } from "./Ref";
+import { TranslatableText } from "./TranslatableText";
+import { PageBinding } from "./PageBinding";
 import { ModelValidation } from "./Validation";
 
-export const TrainingModuleTypeModel = Schema.oneOf([
-    Schema.exact("app"),
-    Schema.exact("core"),
-    Schema.exact("widget"),
-]);
+export type TrainingModuleType = "app" | "core" | "widget";
 
-export const TrainingModulePageModel = Schema.extend(
-    TranslatableTextModel,
-    Schema.object({ id: Schema.string, editable: Schema.boolean, permissions: SharedPropertiesModel })
-);
+export type TrainingModulePage = TranslatableText & {
+    id: string;
+    editable: boolean;
+    permissions: SharedProperties;
+    bindings: PageBinding[];
+};
 
-export const TrainingModuleStepModel = Schema.object({
-    id: Schema.string,
-    title: TranslatableTextModel,
-    subtitle: Schema.optional(TranslatableTextModel),
-    pages: Schema.array(TrainingModulePageModel),
-});
+export type TrainingModuleStep = {
+    id: string;
+    title: TranslatableText;
+    subtitle: Maybe<TranslatableText>;
+    pages: TrainingModulePage[];
+};
 
-export const TrainingModuleContentsModel = Schema.object({
-    welcome: TranslatableTextModel,
-    steps: Schema.array(TrainingModuleStepModel),
-});
+export type TrainingModuleContents = {
+    welcome: TranslatableText;
+    steps: TrainingModuleStep[];
+};
 
-export const TrainingModuleModel = Schema.extend(
-    BaseMetadataModel,
-    Schema.object({
-        id: Schema.string,
-        name: TranslatableTextModel,
-        icon: Schema.string,
-        type: TrainingModuleTypeModel,
-        disabled: Schema.optionalSafe(Schema.boolean, false),
-        progress: Schema.object({
-            id: Schema.string,
-            lastStep: Schema.number,
-            completed: Schema.boolean,
-        }),
-        contents: TrainingModuleContentsModel,
-        revision: Schema.number,
-        dhisVersionRange: Schema.string,
-        dhisAppKey: Schema.string,
-        dhisLaunchUrl: Schema.string,
-        dhisAuthorities: Schema.array(Schema.string),
-        installed: Schema.boolean,
-        compatible: Schema.boolean,
-        editable: Schema.boolean,
-        outdated: Schema.boolean,
-        builtin: Schema.boolean,
-    })
-);
-
-export type TrainingModule = GetSchemaType<typeof TrainingModuleModel>;
-export type TrainingModuleType = GetSchemaType<typeof TrainingModuleTypeModel>;
-export type TrainingModuleStep = GetSchemaType<typeof TrainingModuleStepModel>;
-export type TrainingModulePage = GetSchemaType<typeof TrainingModulePageModel>;
-export type TrainingModuleContents = GetSchemaType<typeof TrainingModuleContentsModel>;
+export type TrainingModule = BaseMetadata & {
+    id: string;
+    name: TranslatableText;
+    icon: string;
+    type: TrainingModuleType;
+    disabled: boolean;
+    progress: {
+        id: string;
+        lastStep: number;
+        completed: boolean;
+    };
+    contents: TrainingModuleContents;
+    revision: number;
+    dhisVersionRange: string;
+    dhisAppKey: string;
+    dhisLaunchUrl: string;
+    dhisAuthorities: string[];
+    installed: boolean;
+    compatible: boolean;
+    editable: boolean;
+    outdated: boolean;
+    builtin: boolean;
+};
 
 export type PartialTrainingModule = PartialBy<
     TrainingModule,

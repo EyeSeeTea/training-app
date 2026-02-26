@@ -11,11 +11,12 @@ import { useAppContext } from "../../contexts/app-context";
 import { Dropzone, DropzoneRef } from "../dropzone/Dropzone";
 import { ImportTranslationDialog, ImportTranslationRef } from "../import-translation-dialog/ImportTranslationDialog";
 import { InputDialog } from "../input-dialog/InputDialog";
-import { MarkdownEditorDialog } from "../markdown-editor/MarkdownEditorDialog";
 import { useImportExportTranslation } from "../../hooks/useImportExportTranslation";
+import { PageBinding } from "../../../domain/entities/PageBinding";
 import { SharedProperties } from "../../../domain/entities/Ref";
 import { PermissionsDialog } from "../permissions-dialog/PermissionsDialog";
 import { useModuleList } from "./useModuleList";
+import { PageEditorDialog } from "../page-editor/PageEditorDialog";
 
 export interface ModuleListTableProps {
     rows: ListItem[];
@@ -48,7 +49,7 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
         selection,
         inputDialogProps,
         confirmDialogProps: dialogProps,
-        markdownDialogProps,
+        pageEditorDialog,
         pagePermissionsDialog,
     } = useModuleList({
         refreshRows,
@@ -91,7 +92,7 @@ export const ModuleListTable: React.FC<ModuleListTableProps> = props => {
         <PageWrapper>
             {dialogProps && <ConfirmationDialog isOpen={true} maxWidth={"xl"} {...dialogProps} />}
             {inputDialogProps && <InputDialog isOpen={true} fullWidth={true} maxWidth={"md"} {...inputDialogProps} />}
-            {markdownDialogProps && <MarkdownEditorDialog {...markdownDialogProps} />}
+            {pageEditorDialog && <PageEditorDialog {...pageEditorDialog} />}
             {pagePermissionsDialog && <PermissionsDialog {...pagePermissionsDialog} />}
 
             <ImportTranslationDialog type="module" ref={translationImportRef} onSave={handleTranslationUpload} />
@@ -146,6 +147,7 @@ export interface ListItemPage {
     position: number;
     lastPosition: number;
     editable: boolean;
+    bindings: PageBinding[];
     permissions: SharedProperties;
 }
 
@@ -174,7 +176,7 @@ export const buildListSteps = (model: PartialTrainingModule, steps: TrainingModu
         position: stepIdx,
         lastPosition: steps.length - 1,
         editable: model.editable ?? true,
-        pages: pages.map(({ id: pageId, permissions, editable, ...value }, pageIdx) => ({
+        pages: pages.map(({ id: pageId, bindings, permissions, editable, ...value }, pageIdx) => ({
             id: pageId,
             stepId,
             moduleId: model.id,
@@ -183,6 +185,7 @@ export const buildListSteps = (model: PartialTrainingModule, steps: TrainingModu
             position: pageIdx,
             lastPosition: pages.length - 1,
             editable: editable,
+            bindings,
             permissions,
             value,
         })),
@@ -200,9 +203,14 @@ export type ModuleListTableAction = {
     openCloneModulePage?: (params: { id: string }) => void;
     openCreateModulePage?: () => void;
     editContents?: (params: { id: string; text: TranslatableText; value: string }) => Promise<void>;
+    editPage?: (params: {
+        id: string;
+        text: TranslatableText;
+        page: { id: string; value: string; bindings?: PageBinding[] };
+    }) => Promise<void>;
     editPagePermissions: (params: { id: string; page: { id: string; permissions: SharedProperties } }) => Promise<void>;
     addStep?: (params: { id: string; title: string }) => Promise<void>;
-    addPage?: (params: { id: string; step: string; value: string }) => Promise<void>;
+    addPage?: (params: { id: string; step: string; page: { value: string; bindings: PageBinding[] } }) => Promise<void>;
     deleteStep?: (params: { id: string; step: string }) => Promise<void>;
     deletePage?: (params: { id: string; step: string; page: string }) => Promise<void>;
     deleteModules?: (params: { ids: string[] }) => Promise<void>;

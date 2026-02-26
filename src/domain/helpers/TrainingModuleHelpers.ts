@@ -1,6 +1,7 @@
 import { swapById } from "../../utils/array";
 import { defaultPagePermissions, PartialTrainingModule } from "../entities/TrainingModule";
 import { TranslatableText } from "../entities/TranslatableText";
+import { PageBinding } from "../entities/PageBinding";
 import { SharedProperties } from "../entities/Ref";
 
 export const updateTranslation = (
@@ -44,6 +45,23 @@ export function updatePagePermissions(
             steps: module.contents.steps.map(step => ({
                 ...step,
                 pages: step.pages.map(page => (page.id === pageId ? { ...page, permissions } : page)),
+            })),
+        },
+    };
+}
+
+export function updatePageBindings(
+    module: PartialTrainingModule,
+    page: { id: string; bindings: PageBinding[] }
+): PartialTrainingModule {
+    const { id: pageId, bindings } = page;
+    return {
+        ...module,
+        contents: {
+            ...module.contents,
+            steps: module.contents.steps.map(step => ({
+                ...step,
+                pages: step.pages.map(page => (page.id === pageId ? { ...page, bindings } : page)),
             })),
         },
     };
@@ -119,7 +137,12 @@ export const addStep = (model: PartialTrainingModule, title: string): PartialTra
     });
 };
 
-export const addPage = (model: PartialTrainingModule, stepKey: string, value: string): PartialTrainingModule => {
+export const addPage = (
+    model: PartialTrainingModule,
+    stepKey: string,
+    page: { value: string; bindings?: PageBinding[] }
+): PartialTrainingModule => {
+    const { value, bindings } = page;
     return enforceKeyName({
         ...model,
         contents: {
@@ -136,6 +159,7 @@ export const addPage = (model: PartialTrainingModule, stepKey: string, value: st
                             key: generatePageKey(model.id, stepIdx + 1, step.pages.length + 1),
                             referenceValue: value,
                             translations: {},
+                            bindings: bindings || [],
                             permissions: defaultPagePermissions,
                             editable: true,
                         },

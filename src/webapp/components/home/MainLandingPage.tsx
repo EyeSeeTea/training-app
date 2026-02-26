@@ -2,22 +2,27 @@ import React from "react";
 import styled from "styled-components";
 
 import { LandingNode } from "../../../domain/entities/LandingPage";
-import { useAppConfigContext } from "../../contexts/AppConfigProvider";
 import { ModalContent, ModalParagraph, ModalTitle } from "../modal";
-import { useAppContext } from "../../contexts/app-context";
 import { Cardboard } from "../card-board/Cardboard";
 import { BigCard } from "../card-board/BigCard";
 import i18n from "../../../utils/i18n";
+import { TranslateMethod } from "../../../domain/entities/TranslatableText";
+import { Config } from "../../../domain/entities/Config";
+import { LogoInfo } from "../../hooks/useAppConfig";
+import { Modules } from "./Modules";
+import { HomePageContentComponentProps } from "./HomePageContent";
+import { MaybeBy } from "../../../types/utils";
 
-type TrainingAreaProps = {
+type TrainingAreaProps = MaybeBy<HomePageContentComponentProps, "currentPage"> & {
     landingNodes: LandingNode[];
     openPage: (page: LandingNode) => void;
+    translate: TranslateMethod;
+    appConfig: Config;
+    logoInfo: LogoInfo;
 };
 
 export const MainLandingPage: React.FC<TrainingAreaProps> = (props: TrainingAreaProps) => {
-    const { landingNodes, openPage } = props;
-    const { translate } = useAppContext();
-    const { appConfig, logoInfo } = useAppConfigContext();
+    const { landingNodes, openPage, translate, appConfig, logoInfo } = props;
     const { logoPath, logoText } = logoInfo;
 
     return (
@@ -50,6 +55,7 @@ export const MainLandingPage: React.FC<TrainingAreaProps> = (props: TrainingArea
                         />
                     ))}
                 </Cardboard>
+                <Modules {...props} />
             </ModalContent>
         </React.Fragment>
     );
