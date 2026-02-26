@@ -3,12 +3,12 @@ import { useCallback, useMemo, useState } from "react";
 import { Maybe } from "../../types/utils";
 import { User } from "../../data/entities/User";
 
-type UseTrainingPageProps = {
+type UseTrainingNavigationProps = {
     landings: LandingNode[];
     currentUser: User;
 };
 
-export function useTrainingNavigation(props: UseTrainingPageProps) {
+export function useTrainingNavigation(props: UseTrainingNavigationProps) {
     const { landings, currentUser } = props;
 
     const [history, updateHistory] = useState<LandingNode[]>([]);

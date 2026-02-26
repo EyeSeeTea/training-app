@@ -7,7 +7,7 @@ import { Modal, ModalContent, ModalTitle } from "../../components/modal";
 import { useAppContext } from "../../contexts/app-context";
 import { useAppConfigContext } from "../../contexts/AppConfigProvider";
 import { HomePageContent } from "../../components/home/HomePageContent";
-import { useTrainingNavigation } from "../../hooks/useTutorialPage";
+import { useTrainingNavigation } from "../../hooks/useTrainingNavigation";
 
 export const HomePage: React.FC = React.memo(() => {
     const { setAppState, landings, reload, isLoading, currentUser } = useAppContext();

@@ -9,7 +9,7 @@ import { getCompositionRoot } from "../../../webapp/CompositionRoot";
 import { LandingNode } from "../../../domain/entities/LandingPage";
 import { generateSettingsUrl, transformD2Urls, updateIconDocumentUrls } from "../utils";
 import { getLogoInfo, LogoInfo } from "../../../webapp/hooks/useAppConfig";
-import { useTrainingNavigation } from "../../../webapp/hooks/useTutorialPage";
+import { useTrainingNavigation } from "../../../webapp/hooks/useTrainingNavigation";
 import { User } from "../../../data/entities/User";
 
 type UseTutorialModuleStateProps = {
