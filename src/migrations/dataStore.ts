@@ -22,11 +22,7 @@ export async function saveDataStore(
     await dataStore.save(dataStoreKey, value).getData();
 }
 
-export async function deleteDataStore(
-    api: D2Api,
-    dataStoreNamespace: string,
-    dataStoreKey: string
-): Promise<void> {
+export async function deleteDataStore(api: D2Api, dataStoreNamespace: string, dataStoreKey: string): Promise<void> {
     try {
         await api.delete(`/dataStore/${dataStoreNamespace}/${dataStoreKey}`).getData();
     } catch (error: any) {
