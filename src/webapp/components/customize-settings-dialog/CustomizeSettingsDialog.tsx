@@ -28,6 +28,7 @@ export const CustomizeSettingsDialog: React.FC<CustomSettingsDialogProps> = prop
         handleTranslationUpload,
         exportTranslations,
         importTranslations,
+        defaultCustomText,
     } = useCustomizeSettingsDialog(props);
 
     return (
@@ -56,6 +57,7 @@ export const CustomizeSettingsDialog: React.FC<CustomSettingsDialogProps> = prop
                     <TextField
                         fullWidth={true}
                         label={customTextLabel[key]}
+                        placeholder={defaultCustomText[key]?.referenceValue}
                         value={customTextVal[key] ? customTextVal[key]?.referenceValue : ""}
                         InputLabelProps={inputProps}
                         onChange={onChangeField(key)}

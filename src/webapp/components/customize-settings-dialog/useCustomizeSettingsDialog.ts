@@ -1,7 +1,7 @@
 import _ from "lodash";
-import { useState, useCallback, useRef, ChangeEvent } from "react";
+import { useState, useCallback, useRef, ChangeEvent, useMemo } from "react";
 
-import { CustomText, CustomTextFields } from "../../../domain/entities/CustomText";
+import { CustomText, CustomTextFields, getDefaultCustomText } from "../../../domain/entities/CustomText";
 import { ImportTranslationRef } from "../import-translation-dialog/ImportTranslationDialog";
 import { CustomSettingsDialogProps } from "./CustomizeSettingsDialog";
 import { useAppContext } from "../../contexts/app-context";
@@ -27,6 +27,8 @@ export const useCustomizeSettingsDialog = (props: CustomSettingsDialogProps) => 
     const logoHasChanges = logoVal !== logo;
     const customTextHasChanges = !_.isEqual(customTextVal, appConfig.customText);
     const disableSave = !logoHasChanges && !customTextHasChanges;
+
+    const defaultCustomText = useMemo(() => getDefaultCustomText(), []);
 
     const save = useCallback(async () => {
         await saveConfig({
@@ -86,6 +88,7 @@ export const useCustomizeSettingsDialog = (props: CustomSettingsDialogProps) => 
         exportTranslations,
         importTranslations,
         handleTranslationUpload,
+        defaultCustomText,
     };
 };
 
