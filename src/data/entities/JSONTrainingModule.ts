@@ -2,7 +2,10 @@ import { TrainingModuleContents, TrainingModulePage, TrainingModuleStep } from "
 import { TranslatableText } from "../../domain/entities/TranslatableText";
 import { PartialBy } from "../../types/utils";
 
-export type TrainingModulePageOptionalPermissions = PartialBy<Omit<TrainingModulePage, "editable">, "permissions">;
+export type TrainingModulePageOptionalPermissions = PartialBy<
+    Omit<TrainingModulePage, "editable">,
+    "permissions" | "bindings"
+>;
 type TrainingModuleStepOptionalPermissions = Omit<TrainingModuleStep, "pages"> & {
     pages: TrainingModulePageOptionalPermissions[];
 };
