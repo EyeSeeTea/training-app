@@ -98,7 +98,7 @@ const TutorialModule: React.FC<TrainingModuleProps> = props => {
     useEffect(() => {
         const { step, content } = moduleNavigation.tutorialProgress;
         appendToTriggerKey(`${moduleStep}-${step}-${content}`);
-    }, [moduleStep, moduleNavigation.tutorialProgress]);
+    }, [moduleStep, moduleNavigation.tutorialProgress, appendToTriggerKey]);
 
     return (
         <>
@@ -120,7 +120,7 @@ const WelcomeStep: React.FC<StepProps> = props => {
 
     const onStart = useCallback(() => {
         setModuleStep("contents");
-    }, []);
+    }, [setModuleStep]);
     return (
         <>
             <StyledMarkdownViewer source={translate(module.contents.welcome)} />
@@ -154,7 +154,7 @@ const TrainingSummaryStep: React.FC<StepProps> = props => {
             setModuleStep("steps");
             setTutorialProgress({ step, content: 1 });
         },
-        [setModuleStep]
+        [setModuleStep, setTutorialProgress]
     );
 
     const title = completed ? i18n.t("What did you learn in this tutorial?") : i18n.t("What will this tutorial cover?");
@@ -218,7 +218,7 @@ const FinalStep: React.FC<StepProps> = props => {
 
     const onPrev = useCallback(() => {
         setModuleStep("steps");
-    }, []);
+    }, [setModuleStep]);
 
     return (
         <>
