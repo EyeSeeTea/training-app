@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { ContainerConfig, SideBarConfig } from "../../domain/entities/Config";
+import { ContainerConfig } from "../../domain/entities/Config";
 import { InteractiveTrainingModal } from "./InteractiveTrainingModal";
 import { SettingsAccess } from "./hooks/useInteractiveTraining";
 import { MarkdownViewer } from "../../webapp/components/markdown-viewer/MarkdownViewer";

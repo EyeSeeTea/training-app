@@ -39,7 +39,10 @@ export function useTutorialModuleState(props: UseTutorialModuleStateProps) {
 
     const showNavButtons = !textContent && !isRoot;
 
-    const onGoBack = useMemo(() => (showNavButtons && !module ? handleBack : undefined), [handleBack, showNavButtons]);
+    const onGoBack = useMemo(
+        () => (showNavButtons && !module ? handleBack : undefined),
+        [handleBack, showNavButtons, module]
+    );
     const onGoHome = useMemo(() => (showNavButtons ? handleHome : undefined), [handleHome, showNavButtons]);
 
     const loadModule = useCallback(
@@ -101,7 +104,7 @@ export function useTrainingContent(props: UseTrainingContentProps) {
 
     const textContent = useMemo(() => {
         return contents.reduce((acc, content) => `${acc}\n\n${translate(content)}`, "");
-    }, [contents, translate, d2Api.apiPath]);
+    }, [contents, translate]);
 
     const setContentsImmediate = useCallback(
         (targetIds: string[]) => {
@@ -230,7 +233,7 @@ export function useTrainingResources(props: UseTrainingDataProps) {
         Promise.all([modulesPromise, landingsPromise, configPromise, currentUserPromise]).finally(() =>
             setIsLoading(false)
         );
-    }, [compositionRoot]);
+    }, [compositionRoot, baseUrl, d2Api, trainingAppKey]);
 
     return {
         pages,
