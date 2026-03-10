@@ -1,21 +1,13 @@
 import { InstalledApp } from "../../domain/entities/InstalledApp";
 import { InstanceRepository } from "../../domain/repositories/InstanceRepository";
 import { D2Api } from "../../types/d2-api";
-import { cache, clearCache } from "../../utils/cache";
+import { cache } from "../../utils/cache";
 import { UserSearch } from "../entities/SearchUser";
 
 export class InstanceDhisRepository implements InstanceRepository {
     constructor(private api: D2Api) {}
 
-    @cache()
-    public async getVersion(): Promise<string> {
-        const { version } = await this.api.system.info.getData();
-        return version;
-    }
-
     public async installApp(appName: string): Promise<boolean> {
-        clearCache(this.isAppInstalledByUrl, this);
-
         const storeApps = await this.listStoreApps();
         const { versions = [] } = storeApps.find(({ name }) => name === appName) ?? {};
         const latestVersion = versions[0]?.id;
@@ -40,17 +32,6 @@ export class InstanceDhisRepository implements InstanceRepository {
     }
 
     @cache()
-    public async isAppInstalledByUrl(launchUrl: string): Promise<boolean> {
-        try {
-            await this.api.baseConnection.request({ method: "get", url: launchUrl }).getData();
-        } catch (error: any) {
-            return false;
-        }
-
-        return true;
-    }
-
-    @cache()
     public async listInstalledApps(): Promise<InstalledApp[]> {
         const apps = await this.api.get<DhisInstalledApp[]>("/apps").getData();
 
@@ -58,7 +39,7 @@ export class InstanceDhisRepository implements InstanceRepository {
             name: app.name,
             version: app.name,
             fullLaunchUrl: app.launchUrl,
-            launchUrl: app.launchUrl.replace(this.api.baseUrl, ""),
+            launchUrl: (app.pluginLaunchUrl ?? app.launchUrl).replace(this.api.baseUrl, ""),
         }));
     }
 
@@ -82,8 +63,10 @@ interface DhisInstalledApp {
     developer: Record<string, string>;
     activities: Record<string, unknown>;
     launchUrl: string;
+    pluginLaunchUrl?: string;
     appState: string;
     key: string;
     launch_path: string;
+    plugin_launch_path?: string;
     default_locale: string;
 }

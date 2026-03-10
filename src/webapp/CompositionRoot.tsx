@@ -38,19 +38,14 @@ export function getCompositionRoot(api: D2Api) {
     const configRepository = new Dhis2ConfigRepository(api);
     const instanceRepository = new InstanceDhisRepository(api);
     const documentRepository = new Dhis2DocumentRepository(api);
-    const trainingModuleRepository = new TrainingModuleDefaultRepository(
-        api,
-        configRepository,
-        instanceRepository,
-        documentRepository
-    );
+    const trainingModuleRepository = new TrainingModuleDefaultRepository(api, configRepository, documentRepository);
     const landingPageRepository = new LandingPageDefaultRepository(api, documentRepository);
 
     return {
         usecases: {
             modules: getExecute({
-                get: new GetModuleUseCase(trainingModuleRepository),
-                list: new ListModulesUseCase(trainingModuleRepository),
+                get: new GetModuleUseCase(trainingModuleRepository, instanceRepository),
+                list: new ListModulesUseCase(trainingModuleRepository, instanceRepository),
                 update: new UpdateModuleUseCase(trainingModuleRepository),
                 delete: new DeleteModulesUseCase(trainingModuleRepository),
                 swapOrder: new SwapModuleOrderUseCase(trainingModuleRepository),
