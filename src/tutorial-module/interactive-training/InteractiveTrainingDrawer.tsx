@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import React from "react";
+import React, { PropsWithChildren } from "react";
 import { Box, Drawer } from "@material-ui/core";
 import BackIcon from "@material-ui/icons/ArrowBack";
 import SettingsIcon from "@material-ui/icons/Settings";
@@ -10,7 +10,6 @@ import { Tooltip, TooltipText } from "../../webapp/components/tooltip/Tooltip";
 import i18n from "../../utils/i18n";
 import { ScrollableContainer } from "./ScrollableContainer";
 import { ActionButton } from "../../webapp/components/action-button/ActionButton";
-import { DrawerToggleButton } from "./DrawerToggleIcon";
 import { useDrawerCollapseMode } from "./hooks/useDrawerCollapseMode";
 
 const DRAWER_COLLAPSED_WIDTH = 40;
@@ -95,7 +94,10 @@ export const InteractiveTrainingDrawer: React.FC<SideDrawerProps> = props => {
                     onClick={onToggleClick}
                     tooltip={toggleTooltip}
                     tooltipPlacement={toggleTooltipPlacement}
-                />
+                    isMinimized={isMinimized}
+                >
+                    {isMinimized && <HelpText>{i18n.t("help")}</HelpText>}
+                </DrawerToggleButton>
             </DrawerHeader>
 
             {!isMinimized && <Content triggerKey={triggerKey}>{drawerContent}</Content>}
@@ -119,6 +121,30 @@ export const InteractiveTrainingDrawer: React.FC<SideDrawerProps> = props => {
     );
 };
 
+type DrawerToggleButtonProps = PropsWithChildren<{
+    Icon: React.ElementType;
+    onClick: () => void;
+    tooltip: string;
+    tooltipPlacement: "left" | "right";
+    isMinimized: boolean;
+}>;
+
+const DrawerToggleButton: React.FC<DrawerToggleButtonProps> = ({
+    Icon,
+    onClick,
+    tooltip,
+    tooltipPlacement,
+    isMinimized,
+    children,
+}) => (
+    <div onClick={onClick}>
+        <HeaderButton text={tooltip} placement={tooltipPlacement} isMinimized={isMinimized}>
+            <Icon />
+            {children}
+        </HeaderButton>
+    </div>
+);
+
 const Content = styled(ScrollableContainer)`
     display: flex;
     flex-direction: column;
@@ -134,8 +160,18 @@ const HeaderOptions = styled.div`
     gap: 8px;
 `;
 
-export const HeaderButton = styled(Tooltip)`
+export const HeaderButton = styled(Tooltip)<{ isMinimized?: boolean }>`
     cursor: pointer;
+
+    ${({ isMinimized }) => {
+        return isMinimized
+            ? css`
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+              `
+            : "";
+    }}
 
     svg {
         font-size: 18px !important;
@@ -193,8 +229,11 @@ const closedStyles = css`
     transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
     width: ${DRAWER_COLLAPSED_WIDTH}px;
     overflow: visible;
+    display: flex;
 
     & .MuiDrawer-paper {
+        flex: 1;
+        justify-content: center;
         transition: width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
         width: ${DRAWER_COLLAPSED_WIDTH}px;
         overflow: visible;
@@ -210,4 +249,12 @@ const ActionButtonContainer = styled.div`
 
 const HelpButton = styled.div`
     font-size: 20px;
+`;
+
+const HelpText = styled.span`
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
 `;
