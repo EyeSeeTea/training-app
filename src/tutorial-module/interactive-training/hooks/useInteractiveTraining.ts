@@ -43,7 +43,10 @@ export function useTutorialModuleState(props: UseTutorialModuleStateProps) {
         () => (showNavButtons && !module ? handleBack : undefined),
         [handleBack, showNavButtons, module]
     );
-    const onGoHome = useMemo(() => (showNavButtons ? handleHome : undefined), [handleHome, showNavButtons]);
+    const onGoHome = useMemo(
+        () => (showNavButtons || module ? handleHome : undefined),
+        [handleHome, showNavButtons, module]
+    );
 
     const loadModule = useCallback(
         (moduleId: string) => {
