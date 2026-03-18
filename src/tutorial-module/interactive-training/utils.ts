@@ -45,7 +45,7 @@ export function getSectionPageIds(currentUrl: string, pages: TrainingModulePage[
 }
 
 export function generateSettingsUrl(baseUrl: string, appKey: string) {
-    return `${generateTrainingAppBaseUrl(baseUrl, appKey)}/index.html#/settings`;
+    return `${generateTrainingAppBaseUrl(baseUrl, appKey)}/index.html#/settings?showInteractiveTrainingConfig`;
 }
 
 export function generateTrainingAppBaseUrl(baseUrl: string, appKey: string) {
