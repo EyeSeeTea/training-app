@@ -11,6 +11,8 @@ import i18n from "../../utils/i18n";
 import { ScrollableContainer } from "./ScrollableContainer";
 import { ActionButton } from "../../webapp/components/action-button/ActionButton";
 import { useDrawerCollapseMode } from "./hooks/useDrawerCollapseMode";
+import { NotificationBadgeState } from "./hooks/useContentChangeIndicator";
+import { NotificationBadge } from "./components/NotificationBadge";
 
 const DRAWER_COLLAPSED_WIDTH = 40;
 
@@ -24,6 +26,7 @@ type SideDrawerProps = {
     triggerKey: string;
     containerConfig: SideBarConfig;
     drawerContent: React.ReactNode;
+    badgeProps?: NotificationBadgeState;
 };
 
 export const InteractiveTrainingDrawer: React.FC<SideDrawerProps> = props => {
@@ -38,6 +41,7 @@ export const InteractiveTrainingDrawer: React.FC<SideDrawerProps> = props => {
         triggerKey,
         containerConfig,
         drawerContent,
+        badgeProps,
     } = props;
 
     const isRight = containerConfig.position === "right";
@@ -95,6 +99,7 @@ export const InteractiveTrainingDrawer: React.FC<SideDrawerProps> = props => {
                     tooltip={toggleTooltip}
                     tooltipPlacement={toggleTooltipPlacement}
                     isMinimized={isMinimized}
+                    badgeProps={showMini && isMinimized ? badgeProps : undefined}
                 >
                     {isMinimized && <HelpText>{i18n.t("help")}</HelpText>}
                 </DrawerToggleButton>
@@ -114,6 +119,7 @@ export const InteractiveTrainingDrawer: React.FC<SideDrawerProps> = props => {
                 <ActionButtonContainer>
                     <ActionButton onClick={showTraining} {...buttonPosition}>
                         <HelpButton>?</HelpButton>
+                        <NotificationBadge {...badgeProps} />
                     </ActionButton>
                 </ActionButtonContainer>
             )}
@@ -127,6 +133,7 @@ type DrawerToggleButtonProps = PropsWithChildren<{
     tooltip: string;
     tooltipPlacement: "left" | "right";
     isMinimized: boolean;
+    badgeProps?: NotificationBadgeState;
 }>;
 
 const DrawerToggleButton: React.FC<DrawerToggleButtonProps> = ({
@@ -135,15 +142,21 @@ const DrawerToggleButton: React.FC<DrawerToggleButtonProps> = ({
     tooltip,
     tooltipPlacement,
     isMinimized,
+    badgeProps,
     children,
 }) => (
-    <div onClick={onClick}>
+    <DrawerToggleContainer onClick={onClick}>
         <HeaderButton text={tooltip} placement={tooltipPlacement} isMinimized={isMinimized}>
             <Icon />
             {children}
         </HeaderButton>
-    </div>
+        <NotificationBadge {...badgeProps} />
+    </DrawerToggleContainer>
 );
+
+const DrawerToggleContainer = styled.div`
+    position: relative;
+`;
 
 const Content = styled(ScrollableContainer)`
     display: flex;
@@ -242,6 +255,8 @@ const closedStyles = css`
 `;
 
 const ActionButtonContainer = styled.div`
+    position: relative;
+
     .MuiFab-root {
         padding: 0;
     }

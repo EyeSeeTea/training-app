@@ -1,4 +1,4 @@
-import React, { createContext, PropsWithChildren, useMemo } from "react";
+import React, { createContext, PropsWithChildren, useCallback, useMemo } from "react";
 
 import { TrainingModulePage } from "../../domain/entities/TrainingModule";
 import { Maybe } from "../../types/utils";
@@ -13,6 +13,7 @@ import {
 } from "./hooks/useInteractiveTraining";
 import { TrainingLanding } from "./TrainingLanding";
 import { useScrollableContainerKey } from "./hooks/useScrollableContainerKey";
+import { useContentChangeIndicator } from "./hooks/useContentChangeIndicator";
 
 const trainingEventKinds = ["click", "focus", "section"] as const;
 type TrainingEventKind = typeof trainingEventKinds[number];
@@ -30,6 +31,7 @@ type TutorialModuleProps = PropsWithChildren<{
     events?: TrainingEventKind[];
     highlightElementsWithBindings?: boolean;
     trainingAppKey?: string;
+    showContentChangeIndicator?: boolean;
 }>;
 
 const defaultAppKey = "Training-App";
@@ -41,6 +43,7 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
         events = [...trainingEventKinds],
         highlightElementsWithBindings,
         trainingAppKey = defaultAppKey,
+        showContentChangeIndicator = true,
         children,
     } = props;
 
@@ -73,6 +76,18 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
         loadedModule: moduleHandling.loadedModule,
     });
 
+    const { badgeProps, clearIndicator } = useContentChangeIndicator({
+        targetIds,
+        textContent,
+        isMinimized,
+        enabled: showContentChangeIndicator,
+    });
+
+    const handleShowTraining = useCallback(() => {
+        clearIndicator();
+        showTraining();
+    }, [clearIndicator, showTraining]);
+
     const containerClass = `training-scope ${highlightElementsWithBindings ? "highlight-training-elements" : ""}`;
 
     const contextValue = useMemo(() => ({ pages, trigger, events }), [pages, trigger, events]);
@@ -87,7 +102,8 @@ export const InteractiveTrainingProvider: React.FC<TutorialModuleProps> = props 
                 triggerKey={triggerKey}
                 isMinimized={isMinimized}
                 onMinimize={minimizeTraining}
-                showTraining={showTraining}
+                showTraining={handleShowTraining}
+                badgeProps={badgeProps}
                 settingsAccess={settingsAccess}
                 goBack={onGoBack}
                 goHome={onGoHome}
