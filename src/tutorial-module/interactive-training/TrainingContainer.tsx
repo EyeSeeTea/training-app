@@ -6,6 +6,7 @@ import { InteractiveTrainingModal } from "./InteractiveTrainingModal";
 import { SettingsAccess } from "./hooks/useInteractiveTraining";
 import { MarkdownViewer } from "../../webapp/components/markdown-viewer/MarkdownViewer";
 import { InteractiveTrainingDrawer } from "./InteractiveTrainingDrawer";
+import { NotificationBadgeState } from "./hooks/useContentChangeIndicator";
 
 type TrainingContainerProps = {
     containerConfig: ContainerConfig;
@@ -19,6 +20,7 @@ type TrainingContainerProps = {
     goBack?: () => void;
     goHome?: () => void;
     isLoading?: boolean;
+    badgeProps?: NotificationBadgeState;
 };
 
 export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
@@ -32,6 +34,7 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
         goHome,
         goBack,
         isLoading = true,
+        badgeProps,
         ...containerProps
     } = props;
 
@@ -53,6 +56,7 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
                     onBack={goBack}
                     onSettings={settingsAccess.hasAccess ? onSettings : undefined}
                     containerConfig={containerConfig}
+                    badgeProps={badgeProps}
                     drawerContent={<TrainingContainerContent content={content} defaultContent={defaultContent} />}
                 >
                     {children}
@@ -69,6 +73,7 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
                         onGoBack={goBack}
                         onSettings={settingsAccess.hasAccess ? onSettings : undefined}
                         containerConfig={containerConfig}
+                        badgeProps={badgeProps}
                     >
                         <TrainingContainerContent content={content} defaultContent={defaultContent} />
                     </InteractiveTrainingModal>

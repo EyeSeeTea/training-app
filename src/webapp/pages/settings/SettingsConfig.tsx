@@ -18,6 +18,7 @@ import {
 } from "../../components/permissions-dialog/PermissionsDialog";
 import { useContainerDialog } from "./useContainerDialog";
 import { ContainerConfigDialog } from "../../components/container-config-dialog/ContainerConfigDialog";
+import { useShowInteractiveTrainingConfig } from "../../hooks/useShowInteractiveTrainingConfig";
 
 type SettingsConfigProps = {
     modules: TrainingModule[];
@@ -35,6 +36,8 @@ export const SettingsConfig: React.FC<SettingsConfigProps> = props => {
         containerConfig: appConfig.containerConfig,
         save: save,
     });
+
+    const showInteractiveTrainingConfig = useShowInteractiveTrainingConfig();
 
     const [danglingDocuments, setDanglingDocuments] = useState<NamedRef[]>([]);
     const [dialogProps, updateDialog] = useState<ConfirmationDialogProps | null>(null);
@@ -163,15 +166,17 @@ export const SettingsConfig: React.FC<SettingsConfigProps> = props => {
                     </ListItem>
                 )}
 
-                <ListItem button onClick={onOpenContainerConfig}>
-                    <ListItemIcon>
-                        <Icon>web_asset</Icon>
-                    </ListItemIcon>
-                    <ListItemText
-                        primary={i18n.t("Configure container for interactive training")}
-                        secondary={i18n.t("Update container type, dimensions, and position")}
-                    />
-                </ListItem>
+                {showInteractiveTrainingConfig && (
+                    <ListItem button onClick={onOpenContainerConfig}>
+                        <ListItemIcon>
+                            <Icon>web_asset</Icon>
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={i18n.t("Configure container for interactive training")}
+                            secondary={i18n.t("Update container type, dimensions, and position")}
+                        />
+                    </ListItem>
+                )}
             </Group>
         </>
     );
