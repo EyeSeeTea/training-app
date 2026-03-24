@@ -32,6 +32,9 @@ export const ImportTranslationDialog = React.forwardRef(
             await props.onSave(selectedModule, selectedLang, terms);
 
             setOpen(false);
+            setSelectedLang(undefined);
+            setSelectedModule(undefined);
+            setTerms(undefined);
         }, [snackbar, props, selectedModule, selectedLang, terms]);
 
         const onFileUpload = useCallback(
