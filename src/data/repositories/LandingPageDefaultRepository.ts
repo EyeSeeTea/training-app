@@ -114,23 +114,39 @@ export class LandingPageDefaultRepository implements LandingPageRepository {
         return _.flatMap(models, model => _.compact([model.name, model.title, model.content]));
     }
 
-    public async importTranslations(language: string, terms: Record<string, string>): Promise<TranslatableText[]> {
+    public async importTranslations(
+        language: string,
+        terms: Record<string, string>,
+        id?: string
+    ): Promise<TranslatableText[]> {
         const models = await this.storageClient.getObject<PersistedLandingPage[]>(Namespaces.LANDING_PAGES);
         if (!models) throw new Error(`Unable to load landing pages`);
 
-        const translatedModels: PersistedLandingPage[] = models.map(model => ({
-            ...model,
-            name: setTranslationValue(model.name, language, terms[model.name.key]),
-            title: model.title ? setTranslationValue(model.title, language, terms[model.title.key]) : undefined,
-            content: model.content ? setTranslationValue(model.content, language, terms[model.content.key]) : undefined,
-        }));
+        const nodesToTranslate = id ? await this._list([id]) : models;
+        const nodeIdsToTranslate = new Set(nodesToTranslate.map(node => node.id));
+
+        const translatedModels: PersistedLandingPage[] = models.map(model => {
+            if (!nodeIdsToTranslate.has(model.id)) return model;
+            return {
+                ...model,
+                name: setTranslationValue(model.name, language, terms[model.name.key]),
+                title: model.title ? setTranslationValue(model.title, language, terms[model.title.key]) : undefined,
+                content: model.content
+                    ? setTranslationValue(model.content, language, terms[model.content.key])
+                    : undefined,
+            };
+        });
 
         await this.storageClient.saveObjectsInCollection<PersistedLandingPage>(
             Namespaces.LANDING_PAGES,
             translatedModels
         );
 
-        return this.extractTranslatableText(translatedModels);
+        const filteredTranslatedModels = id
+            ? translatedModels.filter(m => nodeIdsToTranslate.has(m.id))
+            : translatedModels;
+
+        return this.extractTranslatableText(filteredTranslatedModels);
     }
 
     private async saveDefaultLandingPage(): Promise<PersistedLandingPage> {
