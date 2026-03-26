@@ -1,12 +1,35 @@
 /// <reference types="vitest" />
-import { defineConfig, loadEnv } from "vite";
+import { UserConfig, defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import nodePolyfills from "vite-plugin-node-stdlib-browser";
 import * as path from "path";
 
 const redirectPaths = ["/dhis-web-pivot", "/dhis-web-data-visualizer", "/dhis-web-commons-ajax-json"];
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode }): UserConfig => {
+    const isLibraryMode = mode === "library";
+    if (isLibraryMode) {
+        return defineConfig({
+            plugins: [nodePolyfills(), react()],
+            build: {
+                lib: {
+                    entry: path.resolve(__dirname, "src/lib/index.ts"),
+                    name: "TrainingApp",
+                    formats: ["es", "cjs"],
+                    fileName: format => `index.${format === "es" ? "es" : "cjs"}.js`,
+                },
+                rollupOptions: {
+                    external: ["react", "react-dom", "styled-components"],
+                },
+            },
+            resolve: {
+                alias: {
+                    src: path.resolve(__dirname, "./src"),
+                },
+            },
+        });
+    }
+
     const env = loadEnv(mode, process.cwd(), "");
     const proxy = getProxy(env);
     const port = Number(env.VITE_PORT || env.PORT || 8081);

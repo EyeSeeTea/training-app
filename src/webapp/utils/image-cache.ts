@@ -13,18 +13,19 @@ export const extractImageUrls = (contents: string): string[] => {
 };
 
 const extractMarkdownImages = (contents: string): string[] => {
-    const regex = /!\[[^\]]*\]\((?<url>.*?)\s*(?="|\))(?<title>".*")?\)/g;
+    // Avoid named capture groups for broader TS target compatibility.
+    const regex = /!\[[^\]]*\]\((.*?)\s*(?="|\))(".*")?\)/g;
     return _(Array.from(contents.matchAll(regex)))
-        .map(({ groups }) => groups?.url)
+        .map(match => match[1])
         .compact()
         .uniq()
         .value();
 };
 
 const extractHTMLImages = (contents: string): string[] => {
-    const regex = /src\s*=\s*"(?<url>.+?)"/g;
+    const regex = /src\s*=\s*"(.+?)"/g;
     return _(Array.from(contents.matchAll(regex)))
-        .map(({ groups }) => groups?.url)
+        .map(match => match[1])
         .compact()
         .uniq()
         .value();

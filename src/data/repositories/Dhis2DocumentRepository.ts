@@ -48,7 +48,7 @@ async function transformFile(blob: Blob, mime: string): Promise<Blob> {
         return new Promise(resolve => {
             Resizer.imageFileResizer(blob, 600, 600, "PNG", 100, 0, blob => resolve(blob as Blob), "blob");
         });
-    } else if (import.meta.env.DEV && mime === "image/gif") {
+    } else if ((import.meta as any).env?.DEV && mime === "image/gif") {
         try {
             const ffmpeg = createFFmpeg({ corePath: "https://unpkg.com/@ffmpeg/core/dist/ffmpeg-core.js" });
 
@@ -66,8 +66,9 @@ async function transformFile(blob: Blob, mime: string): Promise<Blob> {
                 "file.mp4"
             );
 
-            const data = ffmpeg.FS("readFile", "file.mp4");
-            return new Blob([data.buffer], { type: "video/mp4" });
+            const data = ffmpeg.FS("readFile", "file.mp4") as Uint8Array;
+            // Ensure we pass an ArrayBuffer (not SharedArrayBuffer) as BlobPart for TS 5.x DOM types.
+            return new Blob([data.buffer as ArrayBuffer], { type: "video/mp4" });
         } catch (error: any) {
             return blob;
         }
