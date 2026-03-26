@@ -11,6 +11,8 @@
         "type": "git",
         "url": "git+https://github.com/eyeseetea/training-app.git"
     },
+    "packageManager": "yarn@4.12.0",
+    "zipName": "training-app",
     "peerDependencies": {
         "react": ">=17",
         "react-dom": ">=17"
@@ -62,27 +64,28 @@
         "styled-jsx": "4.0.1"
     },
     "scripts": {
-        "build-lib": "mkdir -p dist && yarn build-lib-locales && yarn build-lib-tsc && node ./build-lib.js",
+        "build-lib": "vite build --mode library && mkdir -p dist && yarn build-lib-locales && yarn build-lib-tsc && node ./build-lib.js",
+        "build:lib": "yarn build-lib",
         "build-lib-tsc": "tsc --build tsconfig.lib.json",
         "build-lib-locales": "yarn localize && mkdir -p dist/locales && cp -a src/locales/* dist/locales",
         "start": "vite --strictPort",
         "prebuild": "yarn localize && yarn test",
         "build-folder": "rm -rf build/ && d2-manifest package.json manifest.webapp && vite build --outDir=build && yarn run manifest && cp -r i18n icon.png build",
-        "build": "VITE_DHIS2_BASE_URL='' VITE_DHIS2_AUTH='' yarn build-folder && cd build && zip --quiet -r ../${npm_package_name##*/}.zip *",
+        "build": "yarn localize && VITE_DHIS2_BASE_URL='' VITE_DHIS2_AUTH='' yarn build-folder && rm -f $npm_package_zipName.zip && cd build && zip --quiet -r ../$npm_package_zipName.zip *",
         "test": "vitest run --passWithNoTests",
         "test-watch": "vitest watch",
         "lint": "eslint src cypress --ext .js,.jsx,.ts,.tsx",
         "prettify": "prettier \"./**/*.{js,jsx,json,css,ts,tsx}\" --write",
         "extract-pot": "yarn d2-i18n-extract -p src/ -o i18n/",
         "localize": "yarn update-po && d2-i18n-generate -n training-app -p ./i18n/ -o ./src/locales/",
-        "update-po": "yarn extract-pot && for pofile in i18n/*.po; do msgmerge --backup=off -U $pofile i18n/en.pot; done",
+        "update-po": "yarn extract-pot && find i18n/ -name '*.po' -exec msgmerge --backup=off -U {} i18n/en.pot \\;",
         "manifest": "d2-manifest package.json build/manifest.webapp",
         "cy:verify": "cypress verify",
         "check-uncommited": "test -z \"$(git status -uno --porcelain)\"",
         "cy:e2e:open": "NODE_ENV=test CYPRESS_E2E=true cypress open",
         "cy:e2e:run": "NODE_ENV=test CYPRESS_E2E=true cypress run --browser chrome",
         "release": "bash scripts/publish.sh",
-        "_prepare": "husky install"
+        "prepare": "corepack enable 2>/dev/null || true && husky install"
     },
     "devDependencies": {
         "@babel/core": "7.15.8",
@@ -96,9 +99,9 @@
         "@types/lodash": "4.14.176",
         "@types/material-ui": "0.21.12",
         "@types/md5": "2.3.1",
-        "@types/node": "16.11.6",
-        "@types/react": "17.0.33",
-        "@types/react-dom": "17.0.10",
+        "@types/node": "^20",
+        "@types/react": "17.0.88",
+        "@types/react-dom": "17.0.25",
         "@types/react-router-dom": "5.3.2",
         "@types/styled-components": "5.1.15",
         "@typescript-eslint/eslint-plugin": "5.2.0",
@@ -122,14 +125,18 @@
         "http-proxy-middleware": "2.0.1",
         "husky": "7.0.4",
         "jsdom": "^21.1.2",
+        "node-stdlib-browser": "^1",
         "prettier": "2.4.1",
         "react-test-renderer": "17.0.2",
-        "typescript": "4.4.4",
+        "typescript": "5.7.3",
         "vite": "^4.5.14",
-        "vitest": "^0.34.6",
         "vite-plugin-node-stdlib-browser": "^0.2.1",
-        "node-stdlib-browser": "^1",
+        "vitest": "^0.34.6",
         "wait-on": "5.3.0"
+    },
+    "resolutions": {
+        "@types/react": "17.0.88",
+        "@types/react-dom": "17.0.25"
     },
     "manifest.webapp": {
         "name": "Training App",
