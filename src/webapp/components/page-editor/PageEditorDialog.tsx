@@ -6,6 +6,7 @@ import { BINDING_TYPE, getDefaultBinding, PageBinding } from "../../../domain/en
 import i18n from "../../../utils/i18n";
 import { StepPreview } from "../markdown-editor/StepPreview";
 import { PageBindingEditor } from "./PageBindingEditor";
+import { useShowInteractiveTrainingConfig } from "../../hooks/useShowInteractiveTrainingConfig";
 
 type Page = Pick<TrainingModulePage, "id" | "referenceValue" | "bindings"> & { name: string };
 
@@ -18,6 +19,8 @@ export type PageEditorProps = {
 
 export const PageEditorDialog: React.FC<PageEditorProps> = props => {
     const { page: initialPage, onSave, onCancel, onUpload } = props;
+
+    const showInteractiveTrainingConfig = useShowInteractiveTrainingConfig();
 
     const { bindings, ...bindingActions } = usePageBindings(initialPage?.bindings);
 
@@ -44,8 +47,12 @@ export const PageEditorDialog: React.FC<PageEditorProps> = props => {
             onSave={handleSave}
             markdownPreview={markdown => <StepPreview value={markdown} />}
         >
-            <h3>{i18n.t("Interactive training bindings")}</h3>
-            <PageBindingEditor bindings={bindings} {...bindingActions} />
+            {showInteractiveTrainingConfig && (
+                <>
+                    <h3>{i18n.t("Interactive training bindings")}</h3>
+                    <PageBindingEditor bindings={bindings} {...bindingActions} />
+                </>
+            )}
         </MarkdownEditorDialog>
     );
 };

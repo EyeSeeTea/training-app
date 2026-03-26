@@ -5,15 +5,18 @@ import { Modal, ModalContent } from "../../webapp/components/modal";
 import { ScrollableContainer } from "./ScrollableContainer";
 import { ActionButton } from "../../webapp/components/action-button/ActionButton";
 import { DialogConfig } from "../../domain/entities/Config";
+import { NotificationBadgeState } from "./hooks/useContentChangeIndicator";
+import { NotificationBadge } from "./components/NotificationBadge";
 
 type InteractiveTrainingModalProps = React.ComponentProps<typeof Modal> & {
     triggerKey: string;
     showTraining: () => void;
     containerConfig: DialogConfig;
+    badgeProps?: NotificationBadgeState;
 };
 
 export const InteractiveTrainingModal: React.FC<InteractiveTrainingModalProps> = props => {
-    const { children, triggerKey, showTraining, containerConfig, ...modalProps } = props;
+    const { children, triggerKey, showTraining, containerConfig, badgeProps, ...modalProps } = props;
 
     const position =
         containerConfig.buttonPosition === "top-right"
@@ -36,6 +39,7 @@ export const InteractiveTrainingModal: React.FC<InteractiveTrainingModalProps> =
             <ActionButtonContainer hidden={!modalProps.minimized}>
                 <ActionButton onClick={showTraining} {...position}>
                     <HelpButton>?</HelpButton>
+                    <NotificationBadge {...badgeProps} />
                 </ActionButton>
             </ActionButtonContainer>
         </>
@@ -57,6 +61,7 @@ const StyledModal = styled(Modal)`
 `;
 
 const ActionButtonContainer = styled.div<{ hidden: boolean }>`
+    position: relative;
     visibility: ${({ hidden }) => (hidden ? "hidden" : "visible")};
 
     .MuiFab-root {
