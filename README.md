@@ -9,7 +9,7 @@ $ yarn install
 Start development server:
 
 ```
-$ PORT=8082 REACT_APP_DHIS2_BASE_URL="https://play.dhis2.org/dev" yarn start
+$ VITE_PORT=8082 VITE_DHIS2_BASE_URL="https://play.dhis2.org/dev" yarn start
 ```
 
 Linting:
@@ -85,7 +85,7 @@ const SomeComponent: React.FunctionComponent = () => {
 
 ### App logo
 
-Add `REACT_APP_LOGO_PATH` to change the path from where the app is loading the logo image on Homepage. Since the root path is `public`, the variable value must be preceded by `img/`. By default, if the value is left blank, WHO logo will show up.
+Add `VITE_LOGO_PATH` to change the path from where the app is loading the logo image on Homepage. Since the root path is `public`, the variable value must be preceded by `img/`. By default, if the value is left blank, WHO logo will show up.
 
 ### Build as a library
 

@@ -62,7 +62,7 @@ export interface LogoInfo {
 }
 
 export function getLogoInfo(logo?: Maybe<string>): LogoInfo {
-    const logoPath = logo || process.env["REACT_APP_LOGO_PATH"] || "img/logo-eyeseetea.png";
+    const logoPath = logo || import.meta.env.VITE_LOGO_PATH || "img/logo-eyeseetea.png";
     const filename = logoPath.split("/").reverse()[0] || "";
     const name = filename.substring(0, filename.lastIndexOf("."));
     const logoText = _.startCase(name);

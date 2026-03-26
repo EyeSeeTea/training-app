@@ -7,13 +7,18 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { D2Api } from "./types/d2-api";
 import App from "./webapp/pages/App";
-import "./webapp/utils/wdyr";
 
-const isDev = process.env.NODE_ENV === "development";
+const isDev = import.meta.env.DEV;
+
+// El skeleton no incluye instrumentation extra tipo why-did-you-render.
+// Para mantenerlo sin romper ESM en el navegador, lo cargamos solo en DEV.
+if (isDev) {
+    void import("./webapp/utils/wdyr");
+}
 
 async function getBaseUrl() {
     if (isDev) {
-        return "/dhis2"; // See src/setupProxy.js
+        return "/dhis2"; // Proxied by Vite dev server.
     } else {
         const { data: manifest } = await axios.get<any>("manifest.webapp");
         return manifest.activities.dhis.href;
