@@ -46,10 +46,11 @@ async function main() {
 
         const userSettings = await api.get<{ keyUiLocale: string }>("/userSettings").getData();
         configI18n(userSettings);
+        const config = { baseUrl, apiVersion: 30 };
 
         ReactDOM.render(
             <React.StrictMode>
-                <Provider config={{ baseUrl, apiVersion: 30 }}>
+                <Provider config={config} plugin={false} parentAlertsAdd={() => {}} showAlertsInPlugin={false}>
                     <App locale={userSettings.keyUiLocale} baseUrl={baseUrl} />
                 </Provider>
             </React.StrictMode>,

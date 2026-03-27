@@ -1,6 +1,6 @@
 import Resizer from "react-image-file-resizer";
 import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
-import FileType from "file-type/browser";
+import { fileTypeFromBuffer } from "file-type";
 
 import { Document } from "../../domain/entities/Document";
 import { DocumentRepository, UploadFileOptions } from "../../domain/repositories/DocumentRepository";
@@ -22,7 +22,7 @@ export class Dhis2DocumentRepository implements DocumentRepository {
     }
 
     public async uploadFile(data: ArrayBuffer, options: UploadFileOptions = {}): Promise<string> {
-        const type = await FileType.fromBuffer(data);
+        const type = await fileTypeFromBuffer(new Uint8Array(data));
         const { mime = "application/unknown", ext } = type ?? {};
         const blob = new Blob([data], { type: mime });
         const name = options.name ?? `Uploaded file${ext ? `.${ext}` : ""}`;
