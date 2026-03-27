@@ -20,9 +20,26 @@ async function getBaseUrl() {
     if (isDev) {
         return "/dhis2"; // Proxied by Vite dev server.
     } else {
-        const { data: manifest } = await axios.get<any>("manifest.webapp");
-        return manifest.activities.dhis.href;
+        return getInjectedBaseUrl() || (await getBaseUrlFromManifest());
     }
+}
+
+// Get from manifest.webapp: activities.dhis.href
+async function getBaseUrlFromManifest(): Promise<string> {
+    const { data: manifest } = await axios.get<any>("manifest.webapp");
+    const href = manifest?.activities?.dhis?.href;
+
+    if (!href || href === "*") {
+        throw new Error("Base URL not found in manifest.webapp");
+    }
+
+    return href;
+}
+
+// Injected by backend in public.html meta tag "dhis2-base-url"
+function getInjectedBaseUrl(): string | null {
+    const baseUrl = document.querySelector('meta[name="dhis2-base-url"]')?.getAttribute("content");
+    return baseUrl && baseUrl !== "__DHIS2_BASE_URL__" ? baseUrl : null;
 }
 
 const isLangRTL = (code: string) => {
