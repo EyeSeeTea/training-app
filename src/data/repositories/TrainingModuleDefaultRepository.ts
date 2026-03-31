@@ -27,6 +27,7 @@ import { isEventBinding, PageBinding } from "../../domain/entities/PageBinding";
 import { InstalledApp } from "../../domain/entities/InstalledApp";
 import { DocumentRepository } from "../../domain/repositories/DocumentRepository";
 import { ConfigRepository } from "../../domain/repositories/ConfigRepository";
+import { fetchInstalledApps } from "../utils/installedApps";
 
 export class TrainingModuleDefaultRepository implements TrainingModuleRepository {
     private storageClient: StorageClient;
@@ -45,7 +46,7 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
         this.assetClient = new FetchHttpClient({});
     }
 
-    public async list(installedApps: InstalledApp[]): Promise<TrainingModule[]> {
+    public async list(): Promise<TrainingModule[]> {
         try {
             const currentUser = await this.configRepository.getUser();
             const progress = await this.progressStorageClient.getObject<UserProgress[]>(Namespaces.PROGRESS);
@@ -87,6 +88,7 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
                 .filter(model => validateUserPermission(model, "read", currentUser))
                 .value();
 
+            const installedApps = await fetchInstalledApps(this.api);
             const domainModels = await this.buildDomainModels(modules, installedApps);
 
             return domainModels.map(model => ({
@@ -105,11 +107,7 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
         }
     }
 
-    public async get(
-        key: string,
-        installedApps: InstalledApp[],
-        options: GetModuleOptions
-    ): Promise<TrainingModule | undefined> {
+    public async get(key: string, options: GetModuleOptions): Promise<TrainingModule | undefined> {
         const defaultModules = await this.listDefaultModules(options);
         const dataStoreModel = await this.storageClient.getObjectInCollection<PersistedTrainingModule>(
             Namespaces.TRAINING_MODULES,
@@ -120,7 +118,7 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
         if (!model) return undefined;
 
         const progress = await this.progressStorageClient.getObject<UserProgress[]>(Namespaces.PROGRESS);
-
+        const installedApps = await fetchInstalledApps(this.api);
         const domainModels = await this.buildDomainModels([model], installedApps);
         const domainModel = domainModels[0];
 

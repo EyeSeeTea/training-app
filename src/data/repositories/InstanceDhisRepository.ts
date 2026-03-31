@@ -1,8 +1,9 @@
 import { InstalledApp } from "../../domain/entities/InstalledApp";
 import { InstanceRepository } from "../../domain/repositories/InstanceRepository";
 import { D2Api } from "../../types/d2-api";
-import { cache } from "../../utils/cache";
+import { cache, clearCache } from "../../utils/cache";
 import { UserSearch } from "../entities/SearchUser";
+import { fetchInstalledApps } from "../utils/installedApps";
 
 export class InstanceDhisRepository implements InstanceRepository {
     constructor(private api: D2Api) {}
@@ -15,6 +16,7 @@ export class InstanceDhisRepository implements InstanceRepository {
 
         try {
             await this.api.appHub.install(latestVersion).getData();
+            clearCache(this.listInstalledApps, this);
         } catch (error: any) {
             return false;
         }
@@ -33,14 +35,7 @@ export class InstanceDhisRepository implements InstanceRepository {
 
     @cache()
     public async listInstalledApps(): Promise<InstalledApp[]> {
-        const apps = await this.api.get<DhisInstalledApp[]>("/apps").getData();
-
-        return apps.map(app => ({
-            name: app.name,
-            version: app.name,
-            fullLaunchUrl: app.launchUrl,
-            launchUrl: (app.pluginLaunchUrl ?? app.launchUrl).replace(this.api.baseUrl, ""),
-        }));
+        return fetchInstalledApps(this.api);
     }
 
     private async listStoreApps() {
@@ -53,7 +48,7 @@ export class InstanceDhisRepository implements InstanceRepository {
     }
 }
 
-interface DhisInstalledApp {
+export interface DhisInstalledApp {
     version: string;
     name: string;
     appType: "APP" | "RESOURCE" | "DASHBOARD_WIDGET" | "TRACKER_DASHBOARD_WIDGET";

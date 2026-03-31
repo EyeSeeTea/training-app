@@ -44,8 +44,8 @@ export function getCompositionRoot(api: D2Api) {
     return {
         usecases: {
             modules: getExecute({
-                get: new GetModuleUseCase(trainingModuleRepository, instanceRepository),
-                list: new ListModulesUseCase(trainingModuleRepository, instanceRepository),
+                get: new GetModuleUseCase(trainingModuleRepository),
+                list: new ListModulesUseCase(trainingModuleRepository),
                 update: new UpdateModuleUseCase(trainingModuleRepository),
                 delete: new DeleteModulesUseCase(trainingModuleRepository),
                 swapOrder: new SwapModuleOrderUseCase(trainingModuleRepository),
