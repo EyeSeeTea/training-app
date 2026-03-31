@@ -1,10 +1,12 @@
 import { useLoading } from "@eyeseetea/d2-ui-components";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
+import { useDisplayGlobalShellHeader } from "../../hooks/useDisplayGlobalShellHeader";
 
 export const IFrame: React.FC<IFrameProps> = ({ className, src, title = "IFrame" }) => {
     const ref = useRef<HTMLIFrameElement>(null);
     const loading = useLoading();
+    useDisplayGlobalShellHeader("none");
 
     useEffect(() => {
         loading.show();
