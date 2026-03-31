@@ -10,7 +10,6 @@ export class ListModulesUseCase implements UseCase {
     ) {}
 
     public async execute(): Promise<TrainingModule[]> {
-        const installedApps = await this.instanceRepository.listInstalledApps();
-        return this.trainingModuleRepository.list(installedApps);
+        return this.trainingModuleRepository.list();
     }
 }
