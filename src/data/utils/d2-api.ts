@@ -2,6 +2,7 @@ import _ from "lodash";
 import { D2Api } from "../../types/d2-api";
 import { Instance } from "../entities/Instance";
 import { InstalledApp } from "../../domain/entities/InstalledApp";
+import { memoizeAsync } from "../../utils/cache";
 
 export function getMajorVersion(version: string): number {
     const apiVersion = _.get(version.split("."), 1);
@@ -19,7 +20,7 @@ export async function isAppInstalledByUrl(
     launchUrl: string
 ): Promise<boolean> {
     const isPathRelative = launchUrl.startsWith("/");
-    const [baseAppPath, _] = launchUrl.split("#");
+    const [baseAppPath] = launchUrl.split("#");
 
     // Normalize by removing trailing /, #, #/, /#, and '/index.html'
     const normalizePath = (path: string) => path.replace(/[/#]+$/, "").replace(/\/index.html\.[^/]*$/, "");
@@ -43,7 +44,7 @@ export async function isAppInstalledByUrl(
     return isAppInstalled;
 }
 
-export async function getVersion(api: D2Api): Promise<string> {
+export const getVersion = memoizeAsync(async (api: D2Api): Promise<string> => {
     const { version } = await api.system.info.getData();
     return version;
-}
+});
