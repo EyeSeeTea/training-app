@@ -9,8 +9,7 @@ export class InstallAppUseCase implements UseCase {
     ) {}
 
     public async execute(moduleId: string): Promise<boolean> {
-        const installedApps = await this.instanceRepository.listInstalledApps();
-        const module = await this.trainingModuleRepository.get(moduleId, installedApps, {
+        const module = await this.trainingModuleRepository.get(moduleId, {
             autoInstallDefaultModules: true,
         });
         if (!module?.name) return false;
