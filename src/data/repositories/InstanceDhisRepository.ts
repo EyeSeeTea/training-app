@@ -47,21 +47,3 @@ export class InstanceDhisRepository implements InstanceRepository {
         }
     }
 }
-
-export interface DhisInstalledApp {
-    version: string;
-    name: string;
-    appType: "APP" | "RESOURCE" | "DASHBOARD_WIDGET" | "TRACKER_DASHBOARD_WIDGET";
-    appStorageSource: string;
-    folderName: string;
-    icons: Record<string, string>;
-    developer: Record<string, string>;
-    activities: Record<string, unknown>;
-    launchUrl: string;
-    pluginLaunchUrl?: string;
-    appState: string;
-    key: string;
-    launch_path: string;
-    plugin_launch_path?: string;
-    default_locale: string;
-}
