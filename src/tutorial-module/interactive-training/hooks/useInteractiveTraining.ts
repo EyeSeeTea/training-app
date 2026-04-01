@@ -41,9 +41,12 @@ export function useTutorialModuleState(props: UseTutorialModuleStateProps) {
 
     const onGoBack = useMemo(
         () => (showNavButtons && !module ? handleBack : undefined),
-        [handleBack, module, showNavButtons]
+        [handleBack, showNavButtons, module]
     );
-    const onGoHome = useMemo(() => (showNavButtons ? handleHome : undefined), [handleHome, showNavButtons]);
+    const onGoHome = useMemo(
+        () => (showNavButtons || module ? handleHome : undefined),
+        [handleHome, showNavButtons, module]
+    );
 
     const loadModule = useCallback(
         (moduleId: string) => {
@@ -233,7 +236,7 @@ export function useTrainingResources(props: UseTrainingDataProps) {
         Promise.all([modulesPromise, landingsPromise, configPromise, currentUserPromise]).finally(() =>
             setIsLoading(false)
         );
-    }, [baseUrl, compositionRoot, d2Api, trainingAppKey]);
+    }, [compositionRoot, baseUrl, d2Api, trainingAppKey]);
 
     return {
         pages,

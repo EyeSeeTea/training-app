@@ -28,6 +28,7 @@ import { usePagePermissions } from "./usePagePermissions";
 import { PageEditorProps } from "../page-editor/PageEditorDialog";
 import { Maybe } from "../../../types/utils";
 import { PageBindingPreview } from "./PageBindingPreview";
+import { useShowInteractiveTrainingConfig } from "../../hooks/useShowInteractiveTrainingConfig";
 
 type UseModuleListProps = {
     rows: ListItem[];
@@ -45,6 +46,8 @@ export function useModuleList(props: UseModuleListProps) {
 
     const loading = useLoading();
     const snackbar = useSnackbar();
+
+    const showInteractiveTrainingConfig = useShowInteractiveTrainingConfig();
 
     const [selection, setSelection] = useState<TableSelection[]>([]);
     const [inputDialogProps, updateInputDialog] = useState<Maybe<InputDialogProps>>();
@@ -614,7 +617,7 @@ export function useModuleList(props: UseModuleListProps) {
         [openImportDialog, translationImportRef]
     );
 
-    const columns = useMemo(() => buildTableColumns(), []);
+    const columns = useMemo(() => buildTableColumns(showInteractiveTrainingConfig), [showInteractiveTrainingConfig]);
 
     return {
         globalActions,
@@ -648,7 +651,7 @@ const StepPreview: React.FC<{
     );
 };
 
-function buildTableColumns(): TableColumn<ListItem>[] {
+function buildTableColumns(showInteractiveTrainingConfig: boolean): TableColumn<ListItem>[] {
     return [
         {
             name: "name",
@@ -670,7 +673,7 @@ function buildTableColumns(): TableColumn<ListItem>[] {
                             )}
                         />
                     ) : null}
-                    {item.rowType === "page" && item.bindings?.length ? (
+                    {showInteractiveTrainingConfig && item.rowType === "page" && item.bindings?.length ? (
                         <PageBindingPreview bindings={item.bindings} />
                     ) : null}
                 </div>
