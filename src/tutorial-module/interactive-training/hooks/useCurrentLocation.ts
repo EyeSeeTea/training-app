@@ -18,7 +18,7 @@ export function useCurrentLocation(options?: LocationOptions) {
         };
 
         return observerRef.current.subscribe(handleChange);
-    }, []);
+    }, [options]);
 
     return url;
 }
