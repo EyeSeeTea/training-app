@@ -55,7 +55,7 @@ export default defineConfig(({ mode }): UserConfig => {
             globals: true,
             include: ["**/*.{test,spec}.{ts,tsx}"],
             setupFiles: "./src/tests/setup.ts",
-            exclude: ["node_modules", "cypress"],
+            exclude: ["node_modules"],
         },
     };
 });
