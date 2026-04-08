@@ -54,12 +54,21 @@ export const LandingPageListTable: React.FC<LandingPageListTableProps> = props =
     const translationImportRef = useRef<ImportTranslationRef>(null);
     const [dialogProps, updateDialog] = useState<ConfirmationDialogProps | null>(null);
     const [permissionLandingNodeId, setPermissionLandingNodeId] = useState<string>();
+    const [importTranslationLandingId, setImportTranslationLandingId] = useState<string>();
 
     const closePermissionsDialog = useCallback(() => setPermissionLandingNodeId(undefined), []);
 
     const openImportDialog = useCallback(async () => {
         landingImportRef.current?.openDialog();
     }, [landingImportRef]);
+
+    const openImportTranslationsDialog = useCallback(
+        (landingId: string) => {
+            setImportTranslationLandingId(landingId);
+            translationImportRef.current?.startImport();
+        },
+        [translationImportRef]
+    );
 
     const handleFileUpload = useCallback(
         async (files: File[], rejections: FileRejection[]) => {
@@ -94,11 +103,13 @@ export const LandingPageListTable: React.FC<LandingPageListTableProps> = props =
     );
 
     const handleTranslationUpload = useCallback(
-        async (_key: string | undefined, lang: string, terms: Record<string, string>) => {
-            await importTranslation(() => usecases.landings.importTranslations(lang, terms));
+        async (key: string | undefined, lang: string, terms: Record<string, string>) => {
+            const landingId = key || importTranslationLandingId;
+            await importTranslation(() => usecases.landings.importTranslations(lang, terms, landingId));
+            setImportTranslationLandingId(undefined);
             await reload();
         },
-        [usecases.landings, importTranslation, reload]
+        [usecases.landings, importTranslation, reload, importTranslationLandingId]
     );
 
     const actions: TableAction<LandingNode>[] = useMemo(
@@ -114,6 +125,7 @@ export const LandingPageListTable: React.FC<LandingPageListTableProps> = props =
                 onAddSection,
                 onAddSubSection,
                 setPermissionLandingNodeId,
+                openImportTranslationsDialog,
             }),
         [
             usecases,
@@ -126,6 +138,7 @@ export const LandingPageListTable: React.FC<LandingPageListTableProps> = props =
             onAddSection,
             onAddSubSection,
             setPermissionLandingNodeId,
+            openImportTranslationsDialog,
         ]
     );
 
@@ -205,6 +218,7 @@ type BuildTableActionsProps = Pick<
     exportTranslation: (exporter: () => Promise<Translations>, type: string) => Promise<void>;
     loading: LoadingState;
     setPermissionLandingNodeId: (value: Maybe<string>) => void;
+    openImportTranslationsDialog: (landingId: string) => void;
 };
 function buildTableActions(props: BuildTableActionsProps): TableAction<LandingNode>[] {
     const {
@@ -218,6 +232,7 @@ function buildTableActions(props: BuildTableActionsProps): TableAction<LandingNo
         onEditLandingNode,
         loading,
         setPermissionLandingNodeId,
+        openImportTranslationsDialog,
     } = props;
 
     const move = async (ids: string[], nodes: LandingNode[], change: "up" | "down") => {
@@ -296,6 +311,17 @@ function buildTableActions(props: BuildTableActionsProps): TableAction<LandingNo
             },
             isActive: nodes => _.every(nodes, item => item.type === "root"),
             multiple: true,
+        },
+        {
+            name: "import-translations",
+            text: i18n.t("Import JSON translations"),
+            icon: <Icon>translate</Icon>,
+            onClick: (ids: string[]) => {
+                if (!ids[0]) return;
+                openImportTranslationsDialog(ids[0]);
+            },
+            isActive: nodes => _.every(nodes, item => item.type === "root"),
+            multiple: false,
         },
         {
             name: "export-translations",

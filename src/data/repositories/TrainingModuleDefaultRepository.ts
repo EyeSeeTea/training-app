@@ -7,8 +7,6 @@ import {
 } from "../../domain/entities/TrainingModule";
 import { setTranslationValue, TranslatableText } from "../../domain/entities/TranslatableText";
 import { UserProgress } from "../../domain/entities/UserProgress";
-import { ConfigRepository } from "../../domain/repositories/ConfigRepository";
-import { InstanceRepository } from "../../domain/repositories/InstanceRepository";
 import { GetModuleOptions, TrainingModuleRepository } from "../../domain/repositories/TrainingModuleRepository";
 import { swapById } from "../../utils/array";
 import { cache } from "../../utils/cache";
@@ -22,11 +20,14 @@ import { StorageClient } from "../clients/storage/StorageClient";
 import { JSONTrainingModule, TrainingModulePageOptionalPermissions } from "../entities/JSONTrainingModule";
 import { PersistedTrainingModule } from "../entities/PersistedTrainingModule";
 import { User, validateUserPermission } from "../entities/User";
-import { getMajorVersion } from "../utils/d2-api";
+import { getMajorVersion, getVersion, isAppInstalledByUrl } from "../utils/d2-api";
 import { D2Api } from "../../types/d2-api";
-import { DocumentRepository } from "../../domain/repositories/DocumentRepository";
 import { generatePageId, generateStepId } from "../../domain/helpers/TrainingModuleHelpers";
 import { isEventBinding, PageBinding } from "../../domain/entities/PageBinding";
+import { InstalledApp } from "../../domain/entities/InstalledApp";
+import { DocumentRepository } from "../../domain/repositories/DocumentRepository";
+import { ConfigRepository } from "../../domain/repositories/ConfigRepository";
+import { fetchInstalledApps } from "../utils/installedApps";
 
 export class TrainingModuleDefaultRepository implements TrainingModuleRepository {
     private storageClient: StorageClient;
@@ -35,9 +36,8 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
     private assetClient: HttpClient;
 
     constructor(
-        api: D2Api,
+        private api: D2Api,
         private configRepository: ConfigRepository,
-        private instanceRepository: InstanceRepository,
         private documentRepository: DocumentRepository
     ) {
         this.storageClient = new DataStoreStorageClient("global", api);
@@ -88,7 +88,8 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
                 .filter(model => validateUserPermission(model, "read", currentUser))
                 .value();
 
-            const domainModels = await this.buildDomainModels(modules);
+            const installedApps = await fetchInstalledApps(this.api);
+            const domainModels = await this.buildDomainModels(modules, installedApps);
 
             return domainModels.map(model => ({
                 ...model,
@@ -117,8 +118,8 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
         if (!model) return undefined;
 
         const progress = await this.progressStorageClient.getObject<UserProgress[]>(Namespaces.PROGRESS);
-
-        const domainModels = await this.buildDomainModels([model]);
+        const installedApps = await fetchInstalledApps(this.api);
+        const domainModels = await this.buildDomainModels([model], installedApps);
         const domainModel = domainModels[0];
 
         if (!domainModel) return undefined;
@@ -345,10 +346,11 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
     }
 
     private async buildDomainModels(
-        models: PersistedTrainingModule[]
+        models: PersistedTrainingModule[],
+        installedApps: InstalledApp[]
     ): Promise<Omit<TrainingModule, "progress" | "outdated" | "builtin">[]> {
         const currentUser = await this.configRepository.getUser();
-        const instanceVersion = await this.instanceRepository.getVersion();
+        const instanceVersion = await getVersion(this.api);
 
         return promiseMap(models, async model => {
             if (model._version !== 1) {
@@ -387,7 +389,7 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
                             })),
                     })),
                 },
-                installed: await this.instanceRepository.isAppInstalledByUrl(model.dhisLaunchUrl),
+                installed: await isAppInstalledByUrl(this.api, installedApps, model.dhisLaunchUrl),
                 editable: validateUserPermission(model, "write", currentUser),
                 compatible: validateDhisVersion(model, instanceVersion),
                 created: new Date(created),

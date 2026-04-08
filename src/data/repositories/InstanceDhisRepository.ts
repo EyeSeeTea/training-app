@@ -3,19 +3,12 @@ import { InstanceRepository } from "../../domain/repositories/InstanceRepository
 import { D2Api } from "../../types/d2-api";
 import { cache, clearCache } from "../../utils/cache";
 import { UserSearch } from "../entities/SearchUser";
+import { fetchInstalledApps } from "../utils/installedApps";
 
 export class InstanceDhisRepository implements InstanceRepository {
     constructor(private api: D2Api) {}
 
-    @cache()
-    public async getVersion(): Promise<string> {
-        const { version } = await this.api.system.info.getData();
-        return version;
-    }
-
     public async installApp(appName: string): Promise<boolean> {
-        clearCache(this.isAppInstalledByUrl, this);
-
         const storeApps = await this.listStoreApps();
         const { versions = [] } = storeApps.find(({ name }) => name === appName) ?? {};
         const latestVersion = versions[0]?.id;
@@ -23,6 +16,7 @@ export class InstanceDhisRepository implements InstanceRepository {
 
         try {
             await this.api.appHub.install(latestVersion).getData();
+            clearCache(this.listInstalledApps, this);
         } catch (error: any) {
             return false;
         }
@@ -40,26 +34,8 @@ export class InstanceDhisRepository implements InstanceRepository {
     }
 
     @cache()
-    public async isAppInstalledByUrl(launchUrl: string): Promise<boolean> {
-        try {
-            await this.api.baseConnection.request({ method: "get", url: launchUrl }).getData();
-        } catch (error: any) {
-            return false;
-        }
-
-        return true;
-    }
-
-    @cache()
     public async listInstalledApps(): Promise<InstalledApp[]> {
-        const apps = await this.api.get<DhisInstalledApp[]>("/apps").getData();
-
-        return apps.map(app => ({
-            name: app.name,
-            version: app.name,
-            fullLaunchUrl: app.launchUrl,
-            launchUrl: app.launchUrl.replace(this.api.baseUrl, ""),
-        }));
+        return fetchInstalledApps(this.api);
     }
 
     private async listStoreApps() {
@@ -70,20 +46,4 @@ export class InstanceDhisRepository implements InstanceRepository {
             return [];
         }
     }
-}
-
-interface DhisInstalledApp {
-    version: string;
-    name: string;
-    appType: "APP" | "RESOURCE" | "DASHBOARD_WIDGET" | "TRACKER_DASHBOARD_WIDGET";
-    appStorageSource: string;
-    folderName: string;
-    icons: Record<string, string>;
-    developer: Record<string, string>;
-    activities: Record<string, unknown>;
-    launchUrl: string;
-    appState: string;
-    key: string;
-    launch_path: string;
-    default_locale: string;
 }

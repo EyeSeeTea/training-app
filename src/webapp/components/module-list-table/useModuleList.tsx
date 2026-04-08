@@ -370,6 +370,14 @@ export function useModuleList(props: UseModuleListProps) {
         [loading, usecases, exportTranslation]
     );
 
+    const importTranslations = useCallback(
+        (ids: string[]) => {
+            if (!ids[0]) return;
+            translationImportRef.current?.startImport(ids[0]);
+        },
+        [translationImportRef]
+    );
+
     const onTableChange = useCallback(({ selection }: TableState<ListItem>) => {
         setSelection(selection);
     }, []);
@@ -546,6 +554,16 @@ export function useModuleList(props: UseModuleListProps) {
                 multiple: true,
             },
             {
+                name: "import-translations",
+                text: i18n.t("Import JSON translations"),
+                icon: <Icon>translate</Icon>,
+                onClick: importTranslations,
+                isActive: rows => {
+                    return _.every(rows, item => item.rowType === "module");
+                },
+                multiple: false,
+            },
+            {
                 name: "export-translations",
                 text: i18n.t("Export JSON translations"),
                 icon: <Icon>translate</Icon>,
@@ -574,6 +592,7 @@ export function useModuleList(props: UseModuleListProps) {
             resetModules,
             exportModule,
             exportTranslations,
+            importTranslations,
             openPagePermissions,
         ]
     );
