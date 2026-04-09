@@ -7,17 +7,39 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { D2Api } from "./types/d2-api";
 import App from "./webapp/pages/App";
-import "./webapp/utils/wdyr";
 
-const isDev = process.env.NODE_ENV === "development";
+const isDev = import.meta.env.DEV;
+
+// El skeleton no incluye instrumentation extra tipo why-did-you-render.
+// Para mantenerlo sin romper ESM en el navegador, lo cargamos solo en DEV.
+if (isDev) {
+    void import("./webapp/utils/wdyr");
+}
 
 async function getBaseUrl() {
     if (isDev) {
-        return "/dhis2"; // See src/setupProxy.js
+        return "/dhis2"; // Proxied by Vite dev server.
     } else {
-        const { data: manifest } = await axios.get<any>("manifest.webapp");
-        return manifest.activities.dhis.href;
+        return getInjectedBaseUrl() || (await getBaseUrlFromManifest());
     }
+}
+
+// Get from manifest.webapp: activities.dhis.href
+async function getBaseUrlFromManifest(): Promise<string> {
+    const { data: manifest } = await axios.get<any>("manifest.webapp");
+    const href = manifest?.activities?.dhis?.href;
+
+    if (!href || href === "*") {
+        throw new Error("Base URL not found in manifest.webapp");
+    }
+
+    return href;
+}
+
+// Injected by backend in public.html meta tag "dhis2-base-url"
+function getInjectedBaseUrl(): string | null {
+    const baseUrl = document.querySelector('meta[name="dhis2-base-url"]')?.getAttribute("content");
+    return baseUrl && baseUrl !== "__DHIS2_BASE_URL__" ? baseUrl : null;
 }
 
 const isLangRTL = (code: string) => {
@@ -41,10 +63,11 @@ async function main() {
 
         const userSettings = await api.get<{ keyUiLocale: string }>("/userSettings").getData();
         configI18n(userSettings);
+        const config = { baseUrl, apiVersion: 30 };
 
         ReactDOM.render(
             <React.StrictMode>
-                <Provider config={{ baseUrl, apiVersion: 30 }}>
+                <Provider config={config} plugin={false} parentAlertsAdd={() => {}} showAlertsInPlugin={false}>
                     <App locale={userSettings.keyUiLocale} baseUrl={baseUrl} />
                 </Provider>
             </React.StrictMode>,

@@ -1,5 +1,5 @@
-const isDevelopment = process.env.NODE_ENV === "development";
-const isTest = process.env.JEST_WORKER_ID !== undefined;
+const isDevelopment = import.meta.env.DEV;
+const isTest = import.meta.env.MODE === "test";
 
 export const log = (...message: unknown[]) => {
     if (isDevelopment && !isTest) console.debug("[Training]", ...message);

@@ -36,7 +36,9 @@ export class FetchHttpClient implements HttpClient {
         const credentialsStrategy = auth ? "omit" : "include";
         const fetchOptions: RequestInit = {
             method,
-            signal: controller.signal,
+            // `abort-controller` ships its own AbortSignal type, which is not identical to DOM's AbortSignal in TS 5.x.
+            // Cast to keep compatibility across environments.
+            signal: controller.signal as unknown as AbortSignal,
             body: getBody(dataType, data),
             headers: { ...baseHeaders, ...authHeaders, ...extraHeaders },
             credentials: credentials === "include" ? credentialsStrategy : undefined,
