@@ -32,6 +32,9 @@ export const ImportTranslationDialog = React.forwardRef(
             await props.onSave(selectedModule, selectedLang, terms);
 
             setOpen(false);
+            setSelectedLang(undefined);
+            setSelectedModule(undefined);
+            setTerms(undefined);
         }, [snackbar, props, selectedModule, selectedLang, terms]);
 
         const onFileUpload = useCallback(
@@ -58,7 +61,8 @@ export const ImportTranslationDialog = React.forwardRef(
         );
 
         useImperativeHandle(ref, () => ({
-            startImport() {
+            startImport(selectedModule?: string) {
+                if (selectedModule) setSelectedModule(selectedModule);
                 inputRef.current.click();
             },
         }));
@@ -115,7 +119,7 @@ const Select = styled(Dropdown)`
 `;
 
 export interface ImportTranslationRef {
-    startImport: () => void;
+    startImport: (selectedModule?: string) => void;
 }
 
 export interface ImportTranslationDialogProps {
