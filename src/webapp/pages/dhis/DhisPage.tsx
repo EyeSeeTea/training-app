@@ -1,7 +1,8 @@
 //@ts-ignore
-import { HeaderBar } from "@dhis2/ui";
+
 import React from "react";
 import i18n from "../../../utils/i18n";
+import { HeaderBar } from "../../components/header-bar/HeaderBar";
 
 export const DhisPage: React.FC = ({ children }) => {
     return (

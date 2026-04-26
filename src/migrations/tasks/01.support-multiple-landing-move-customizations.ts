@@ -28,7 +28,7 @@ async function migrate(api: D2Api, debug: Debug): Promise<void> {
                 name: defaultRoot.name,
                 title: config.customText?.rootTitle ?? defaultCustomText.rootTitle,
                 content: config.customText?.rootSubtitle ?? defaultCustomText.rootSubtitle,
-                icon: config.logo || process.env["REACT_APP_LOGO_PATH"] || "img/logo-eyeseetea.png",
+                icon: config.logo || import.meta.env.VITE_LOGO_PATH || "img/logo-eyeseetea.png",
             };
         }
         return node;

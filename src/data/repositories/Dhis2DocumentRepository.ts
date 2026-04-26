@@ -1,6 +1,6 @@
 import Resizer from "react-image-file-resizer";
 import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
-import FileType from "file-type/browser";
+import { fileTypeFromBuffer } from "file-type";
 
 import { Document } from "../../domain/entities/Document";
 import { DocumentRepository, UploadFileOptions } from "../../domain/repositories/DocumentRepository";
@@ -22,7 +22,7 @@ export class Dhis2DocumentRepository implements DocumentRepository {
     }
 
     public async uploadFile(data: ArrayBuffer, options: UploadFileOptions = {}): Promise<string> {
-        const type = await FileType.fromBuffer(data);
+        const type = await fileTypeFromBuffer(new Uint8Array(data));
         const { mime = "application/unknown", ext } = type ?? {};
         const blob = new Blob([data], { type: mime });
         const name = options.name ?? `Uploaded file${ext ? `.${ext}` : ""}`;
@@ -48,7 +48,7 @@ async function transformFile(blob: Blob, mime: string): Promise<Blob> {
         return new Promise(resolve => {
             Resizer.imageFileResizer(blob, 600, 600, "PNG", 100, 0, blob => resolve(blob as Blob), "blob");
         });
-    } else if (process.env.NODE_ENV === "development" && mime === "image/gif") {
+    } else if ((import.meta as any).env?.DEV && mime === "image/gif") {
         try {
             const ffmpeg = createFFmpeg({ corePath: "https://unpkg.com/@ffmpeg/core/dist/ffmpeg-core.js" });
 
@@ -66,8 +66,9 @@ async function transformFile(blob: Blob, mime: string): Promise<Blob> {
                 "file.mp4"
             );
 
-            const data = ffmpeg.FS("readFile", "file.mp4");
-            return new Blob([data.buffer], { type: "video/mp4" });
+            const data = ffmpeg.FS("readFile", "file.mp4") as Uint8Array;
+            // Ensure we pass an ArrayBuffer (not SharedArrayBuffer) as BlobPart for TS 5.x DOM types.
+            return new Blob([data.buffer as ArrayBuffer], { type: "video/mp4" });
         } catch (error: any) {
             return blob;
         }

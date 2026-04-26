@@ -9,7 +9,9 @@ export class InstallAppUseCase implements UseCase {
     ) {}
 
     public async execute(moduleId: string): Promise<boolean> {
-        const module = await this.trainingModuleRepository.get(moduleId, { autoInstallDefaultModules: true });
+        const module = await this.trainingModuleRepository.get(moduleId, {
+            autoInstallDefaultModules: true,
+        });
         if (!module?.name) return false;
 
         // TODO: We should store app hub id on model instead of using display name
