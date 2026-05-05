@@ -1,3 +1,12 @@
+<img width="1032" height="156" alt="339296317-0f0cc41a-a7cd-4c34-b755-bc6e92049dd3" src="https://github.com/user-attachments/assets/7fc94a09-de9a-48c1-a6f8-e4b623042101" />
+
+   
+Training App is a DHIS2 Web Application part of [EyeSeeTea's DHIS2 Suite](https://eyeseetea.com/dhis2-apps/) that enables its users to quickly learn on how to use the system and its apps. It allows creating custom tutorials or use off-the-shelf ones provided by the app to teach users how to use the main features of DHIS2.
+
+   
+<img width="1389" height="475" alt="339296698-acbbc73e-c2d5-4df8-a0ff-78a9badf8f1a" src="https://github.com/user-attachments/assets/3c3f0cd8-840f-4994-9817-2046c9ae145d" />
+
+
 ## Setup
 
 ```
