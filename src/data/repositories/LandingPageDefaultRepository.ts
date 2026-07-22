@@ -175,6 +175,7 @@ export const defaultRoot: PersistedLandingPage = {
     title: undefined,
     content: undefined,
     modules: [],
+    autoOpenSingleSection: false,
     permissions: defaultPermissions,
 };
 

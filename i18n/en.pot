@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2026-03-10T08:57:33.873Z\n"
-"PO-Revision-Date: 2026-03-10T08:57:33.873Z\n"
+"POT-Creation-Date: 2026-07-22T07:10:31.757Z\n"
+"PO-Revision-Date: 2026-07-22T07:10:31.757Z\n"
 
 msgid "Welcome to training on DHIS2"
 msgstr ""
@@ -180,6 +180,14 @@ msgid "Modules"
 msgstr ""
 
 msgid "Modules assigned"
+msgstr ""
+
+msgid "Open the only section automatically"
+msgstr ""
+
+msgid ""
+"When this landing page has exactly one section, open it directly. The title "
+"and contents of this page are skipped."
 msgstr ""
 
 msgid "Contents"

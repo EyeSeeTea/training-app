@@ -21,7 +21,10 @@ type UseTutorialModuleStateProps = {
 
 export function useTutorialModuleState(props: UseTutorialModuleStateProps) {
     const { landings, modules, textContent, currentUser } = props;
-    const { goBack, goHome, isRoot, currentPage, ...navigations } = useTrainingNavigation({ landings, currentUser });
+    const { goBack, goHome, isRoot, canGoBack, currentPage, ...navigations } = useTrainingNavigation({
+        landings,
+        currentUser,
+    });
     const [module, setModule] = useState<TrainingModule>();
 
     const handleBack = useCallback(() => {
@@ -37,7 +40,7 @@ export function useTutorialModuleState(props: UseTutorialModuleStateProps) {
         goHome();
     }, [goHome]);
 
-    const showNavButtons = !textContent && !isRoot;
+    const showNavButtons = !textContent && canGoBack;
 
     const onGoBack = useMemo(
         () => (showNavButtons && !module ? handleBack : undefined),

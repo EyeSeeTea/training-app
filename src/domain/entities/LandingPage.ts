@@ -3,6 +3,7 @@ import { TranslatableText, TranslatableTextModel } from "./TranslatableText";
 import { SharedProperties, SharedPropertiesModel } from "./Ref";
 import { User, validateUserPermission } from "../../data/entities/User";
 import { generateUid } from "../../data/utils/uid";
+import { Maybe } from "../../types/utils";
 import _ from "lodash";
 
 export const LandingPageNodeTypeModel = Schema.oneOf([
@@ -26,6 +27,7 @@ export interface LandingNode {
     modules: string[];
     children: LandingNode[];
     permissions: SharedProperties;
+    autoOpenSingleSection: boolean;
 }
 
 export const LandingNodeModel: Codec<LandingNode> = Schema.object({
@@ -40,6 +42,7 @@ export const LandingNodeModel: Codec<LandingNode> = Schema.object({
     modules: Schema.optionalSafe(Schema.array(Schema.string), []),
     children: Schema.lazy(() => Schema.array(LandingNodeModel)),
     permissions: SharedPropertiesModel,
+    autoOpenSingleSection: Schema.optionalSafe(Schema.boolean, false),
 });
 
 export interface OrderedLandingNode extends LandingNode {
@@ -73,12 +76,19 @@ export function getDefaultLandingNode(props: { type: LandingNodeType; parent: st
         content: undefined,
         children: [],
         modules: [],
+        autoOpenSingleSection: false,
         permissions: {
             publicAccess: "r-------",
             userAccesses: [],
             userGroupAccesses: [],
         },
     };
+}
+
+export function getPromotedSingleSection(node: Maybe<LandingNode>): Maybe<LandingNode> {
+    return node?.type === "root" && node.autoOpenSingleSection && node.children.length === 1
+        ? node.children[0]
+        : undefined;
 }
 
 export function flattenNodes(nodes: LandingNode[]): LandingNode[] {

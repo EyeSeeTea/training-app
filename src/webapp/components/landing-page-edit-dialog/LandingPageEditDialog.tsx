@@ -4,7 +4,7 @@ import {
     MultipleDropdown,
     useSnackbar,
 } from "@eyeseetea/d2-ui-components";
-import { TextField } from "@material-ui/core";
+import { Checkbox, FormControlLabel, FormHelperText, TextField } from "@material-ui/core";
 import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
 import styled from "styled-components";
 import { getDefaultLandingNode, LandingNode, LandingNodeType } from "../../../domain/entities/LandingPage";
@@ -128,6 +128,30 @@ export const LandingPageEditDialog: React.FC<LandingPageEditDialogProps> = props
                 </Row>
             )}
 
+            {isRoot && (
+                <Row>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={value.autoOpenSingleSection}
+                                onChange={event =>
+                                    setValue(landing => ({
+                                        ...landing,
+                                        autoOpenSingleSection: event.target.checked,
+                                    }))
+                                }
+                            />
+                        }
+                        label={i18n.t("Open the only section automatically")}
+                    />
+                    <HelperText>
+                        {i18n.t(
+                            "When this landing page has exactly one section, open it directly. The title and contents of this page are skipped."
+                        )}
+                    </HelperText>
+                </Row>
+            )}
+
             <Row>
                 <h3>{i18n.t("Contents")}</h3>
 
@@ -157,6 +181,10 @@ export interface LandingPageEditDialogProps extends Omit<ConfirmationDialogProps
 
 const Row = styled.div`
     margin-bottom: 25px;
+`;
+
+const HelperText = styled(FormHelperText)`
+    margin-left: 32px;
 `;
 
 const IconContainer = styled.div`

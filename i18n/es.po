@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Traning App - UI Interface\n"
-"POT-Creation-Date: 2026-03-10T08:57:33.873Z\n"
+"POT-Creation-Date: 2026-07-22T07:10:31.757Z\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -183,6 +183,14 @@ msgstr "Módulos"
 
 msgid "Modules assigned"
 msgstr "Módulos asignados"
+
+msgid "Open the only section automatically"
+msgstr ""
+
+msgid ""
+"When this landing page has exactly one section, open it directly. The title "
+"and contents of this page are skipped."
+msgstr ""
 
 msgid "Contents"
 msgstr "Contenidos"

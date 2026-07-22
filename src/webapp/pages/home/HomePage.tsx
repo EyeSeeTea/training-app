@@ -12,9 +12,8 @@ import { useTrainingNavigation } from "../../hooks/useTrainingNavigation";
 export const HomePage: React.FC = React.memo(() => {
     const { setAppState, landings, reload, isLoading, currentUser } = useAppContext();
     const { hasSettingsAccess } = useAppConfigContext();
-    const { isRoot, currentPage, openPage, goBack, goHome, userLandings, isMainLandingVisible } = useTrainingNavigation(
-        { landings, currentUser }
-    );
+    const { isRoot, canGoBack, currentPage, openPage, goBack, goHome, userLandings, isMainLandingVisible } =
+        useTrainingNavigation({ landings, currentUser });
 
     const [isLoadingLong, setLoadingLong] = useState<boolean>(false);
 
@@ -61,8 +60,8 @@ export const HomePage: React.FC = React.memo(() => {
             onAbout={openAbout}
             onMinimize={minimize}
             onClose={exitTutorial}
-            onGoBack={!isRoot ? goBack : undefined}
-            onGoHome={!isRoot ? goHome : undefined}
+            onGoBack={canGoBack ? goBack : undefined}
+            onGoHome={canGoBack ? goHome : undefined}
             centerChildren={true}
             allowDrag={true}
         >
