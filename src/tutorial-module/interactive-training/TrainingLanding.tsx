@@ -264,6 +264,7 @@ const TrainingContainer = styled.div`
 
     [data-component="modal-content"] {
         max-height: unset;
+        max-width: unset;
     }
 
     [data-component="card-progress"] {
