@@ -40,6 +40,7 @@ function updatePackageJson() {
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
     const packageJson2 = { ...packageJson, name: packageJson.name.replace(/-app$/, "-component") };
     delete packageJson2["manifest.webapp"];
+    delete packageJson2.scripts;
     moveToPeerDependencies(packageJson2);
     const destinationPath = path.join(distPath, "package.json");
     fs.writeFileSync(destinationPath, JSON.stringify(packageJson2, null, 2));
