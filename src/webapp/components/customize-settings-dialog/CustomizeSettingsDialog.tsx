@@ -98,4 +98,5 @@ const FileInput = styled.input`
 const customTextLabel: CustomTextInfo = {
     rootTitle: i18n.t("Welcome message"),
     rootSubtitle: i18n.t("Module selection"),
+    rootSelectFromAllModules: i18n.t("Module selection from all modules"),
 };

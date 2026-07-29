@@ -12,7 +12,7 @@ export type PartialConfig = Pick<Partial<Config>, "showAllModules" | "logo" | "c
 };
 
 export class SaveConfigUseCase implements UseCase {
-    constructor(private configRepository: ConfigRepository) {}
+    constructor(private configRepository: ConfigRepository) { }
 
     public async execute(update: PartialConfig): Promise<void> {
         const config = await this.configRepository.get();
@@ -32,6 +32,9 @@ export class SaveConfigUseCase implements UseCase {
                 rootSubtitle:
                     this.normalizeTextField(update.customText?.rootSubtitle, defaultCustomText.rootSubtitle) ??
                     config.customText.rootSubtitle,
+                rootSelectFromAllModules:
+                    this.normalizeTextField(update.customText?.rootSelectFromAllModules, defaultCustomText.rootSelectFromAllModules) ??
+                    config.customText.rootSelectFromAllModules,
             },
             containerConfig: update.containerConfig ?? config.containerConfig,
         };

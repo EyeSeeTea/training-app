@@ -106,5 +106,6 @@ function updateStateTranslations(prev: CustomText, current: CustomText): CustomT
         ...prev,
         rootTitle: updateItemTranslation(prev.rootTitle, current.rootTitle),
         rootSubtitle: updateItemTranslation(prev.rootSubtitle, current.rootSubtitle),
+        rootSelectFromAllModules: updateItemTranslation(prev.rootSelectFromAllModules, current.rootSelectFromAllModules),
     };
 }
