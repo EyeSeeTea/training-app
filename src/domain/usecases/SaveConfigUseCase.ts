@@ -32,6 +32,11 @@ export class SaveConfigUseCase implements UseCase {
                 rootSubtitle:
                     this.normalizeTextField(update.customText?.rootSubtitle, defaultCustomText.rootSubtitle) ??
                     config.customText.rootSubtitle,
+                rootSelectFromAllModules:
+                    this.normalizeTextField(
+                        update.customText?.rootSelectFromAllModules,
+                        defaultCustomText.rootSelectFromAllModules
+                    ) ?? config.customText.rootSelectFromAllModules,
             },
             containerConfig: update.containerConfig ?? config.containerConfig,
         };
