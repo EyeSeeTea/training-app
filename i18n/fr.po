@@ -71,9 +71,8 @@ msgstr "Vous avez fini le tutoriel {{nom}}!"
 msgid "Finish"
 msgstr "Sortir"
 
-#, fuzzy
 msgid "Expand panel"
-msgstr "Agrandir la fenêtre"
+msgstr "Développer le panneau"
 
 msgid "Collapse panel"
 msgstr ""
@@ -478,13 +477,11 @@ msgstr ""
 msgid "Unable to update module contents"
 msgstr "Impossible de mettre à jour le contenu du module"
 
-#, fuzzy
 msgid "Unable to update page"
-msgstr "Impossible d'ajouter une page"
+msgstr "Impossible de mettre à jour la page"
 
-#, fuzzy
 msgid "Unable to update page permissions"
-msgstr "Impossible de mettre à jour le contenu du module"
+msgstr "Impossible de mettre à jour les autorisations de la page"
 
 msgid "Unable to move item"
 msgstr "Impossible de déplacer l'objet"

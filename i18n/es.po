@@ -71,9 +71,8 @@ msgstr "Has completado el tutorial {{name}}"
 msgid "Finish"
 msgstr "Finalizar"
 
-#, fuzzy
 msgid "Expand panel"
-msgstr "Expandir ventana"
+msgstr "Expandir panel"
 
 msgid "Collapse panel"
 msgstr ""
@@ -135,7 +134,6 @@ msgstr "Exportar traducciones JSON"
 msgid "Import JSON translations"
 msgstr "Importar traducciones JSON"
 
-#, fuzzy
 msgid "Customize main landing page"
 msgstr "Personalizar la página principal"
 
@@ -479,13 +477,11 @@ msgstr ""
 msgid "Unable to update module contents"
 msgstr "No se puede actualizar el contenido del módulo"
 
-#, fuzzy
 msgid "Unable to update page"
-msgstr "No se puede añadir la página"
+msgstr "No se puede actualizar la página"
 
-#, fuzzy
 msgid "Unable to update page permissions"
-msgstr "No se puede actualizar el contenido del módulo"
+msgstr "No se puede actualizar los permisos de la página"
 
 msgid "Unable to move item"
 msgstr "No se puede mover el artículo"
