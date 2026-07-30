@@ -35,7 +35,7 @@ export const Modules: React.FC<ModulesProps> = props => {
         <React.Fragment>
             {isRoot && appConfig.showAllModules ? (
                 <ModalParagraph size={28} align={"left"}>
-                    {i18n.t("Select a module below to learn how to use applications in DHIS2:")}
+                    {translate(appConfig.customText.rootSelectFromAllModules)}
                 </ModalParagraph>
             ) : null}
 

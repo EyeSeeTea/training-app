@@ -79,6 +79,13 @@ export class Dhis2ConfigRepository implements ConfigRepository {
             rootSubtitle: customText.rootSubtitle
                 ? setTranslationValue(customText.rootSubtitle, language, terms[customText.rootSubtitle.key])
                 : undefined,
+            rootSelectFromAllModules: customText.rootSelectFromAllModules
+                ? setTranslationValue(
+                      customText.rootSelectFromAllModules,
+                      language,
+                      terms[customText.rootSelectFromAllModules.key]
+                  )
+                : undefined,
         };
 
         const updatedConfig: Config = {
@@ -86,6 +93,8 @@ export class Dhis2ConfigRepository implements ConfigRepository {
             customText: {
                 rootTitle: translatedText.rootTitle ?? config.customText.rootTitle,
                 rootSubtitle: translatedText.rootSubtitle ?? config.customText.rootSubtitle,
+                rootSelectFromAllModules:
+                    translatedText.rootSelectFromAllModules ?? config.customText.rootSelectFromAllModules,
             },
         };
 
@@ -111,6 +120,8 @@ function getMergedConfig(config: Maybe<PersistedConfig>): Config {
     const mergedCustomText = {
         rootTitle: config?.customText?.rootTitle ?? defaultCustomText.rootTitle,
         rootSubtitle: config?.customText?.rootSubtitle ?? defaultCustomText.rootSubtitle,
+        rootSelectFromAllModules:
+            config?.customText?.rootSelectFromAllModules ?? defaultCustomText.rootSelectFromAllModules,
     };
 
     const { customText: _, ...defaultConfigWithoutCustomText } = defaultConfig;
