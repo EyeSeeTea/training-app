@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Traning App - UI Interface\n"
-"POT-Creation-Date: 2026-03-10T08:57:33.873Z\n"
+"POT-Creation-Date: 2026-07-29T08:11:02.044Z\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -71,9 +71,8 @@ msgstr "Vous avez fini le tutoriel {{nom}}!"
 msgid "Finish"
 msgstr "Sortir"
 
-#, fuzzy
 msgid "Expand panel"
-msgstr "Agrandir la fenêtre"
+msgstr "Développer le panneau"
 
 msgid "Collapse panel"
 msgstr ""
@@ -125,6 +124,9 @@ msgstr "Message de bienvenue"
 
 msgid "Module selection"
 msgstr "Sélection du module"
+
+msgid "Module selection from all modules"
+msgstr "Sélection du module parmi tous les modules"
 
 msgid "Export JSON translations"
 msgstr "Exportation des traductions en JSON"
@@ -475,13 +477,11 @@ msgstr ""
 msgid "Unable to update module contents"
 msgstr "Impossible de mettre à jour le contenu du module"
 
-#, fuzzy
 msgid "Unable to update page"
-msgstr "Impossible d'ajouter une page"
+msgstr "Impossible de mettre à jour la page"
 
-#, fuzzy
 msgid "Unable to update page permissions"
-msgstr "Impossible de mettre à jour le contenu du module"
+msgstr "Impossible de mettre à jour les autorisations de la page"
 
 msgid "Unable to move item"
 msgstr "Impossible de déplacer l'objet"

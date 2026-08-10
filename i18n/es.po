@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Traning App - UI Interface\n"
-"POT-Creation-Date: 2026-03-10T08:57:33.873Z\n"
+"POT-Creation-Date: 2026-07-29T08:11:02.044Z\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -71,9 +71,8 @@ msgstr "Has completado el tutorial {{name}}"
 msgid "Finish"
 msgstr "Finalizar"
 
-#, fuzzy
 msgid "Expand panel"
-msgstr "Expandir ventana"
+msgstr "Expandir panel"
 
 msgid "Collapse panel"
 msgstr ""
@@ -126,13 +125,15 @@ msgstr "Mensaje de bienvenida"
 msgid "Module selection"
 msgstr "Selección de módulo"
 
+msgid "Module selection from all modules"
+msgstr "Selección de módulo para todos los módulos"
+
 msgid "Export JSON translations"
 msgstr "Exportar traducciones JSON"
 
 msgid "Import JSON translations"
 msgstr "Importar traducciones JSON"
 
-#, fuzzy
 msgid "Customize main landing page"
 msgstr "Personalizar la página principal"
 
@@ -476,13 +477,11 @@ msgstr ""
 msgid "Unable to update module contents"
 msgstr "No se puede actualizar el contenido del módulo"
 
-#, fuzzy
 msgid "Unable to update page"
-msgstr "No se puede añadir la página"
+msgstr "No se puede actualizar la página"
 
-#, fuzzy
 msgid "Unable to update page permissions"
-msgstr "No se puede actualizar el contenido del módulo"
+msgstr "No se puede actualizar los permisos de la página"
 
 msgid "Unable to move item"
 msgstr "No se puede mover el artículo"
@@ -648,10 +647,10 @@ msgstr ""
 "países en la creación de capacidades para la recopilación y uso de datos "
 "sanitarios. La OMS proporciona una serie de tutoriales para ayudar a los "
 "países a utilizar los paquetes estándar DHIS2 de la OMS, que se pueden "
-"encontrar en el [repositorio GitHub de tutoriales de la OMS](https://github."
-"com/WorldHealthOrganization/DHIS2-tutorials) y se pueden instalar en la "
-"aplicación. La OMS no garantiza la validez, exactitud o integridad de otros "
-"tutoriales elaborados por la comunidad de usuarios de la aplicación.*"
+"encontrar en el [repositorio GitHub de tutoriales de la OMS](https://"
+"github.com/WorldHealthOrganization/DHIS2-tutorials) y se pueden instalar en "
+"la aplicación. La OMS no garantiza la validez, exactitud o integridad de "
+"otros tutoriales elaborados por la comunidad de usuarios de la aplicación.*"
 
 msgid "World Health Organization"
 msgstr "World Health Organization"
