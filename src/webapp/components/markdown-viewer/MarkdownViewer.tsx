@@ -207,7 +207,7 @@ export const validHtml = {
         del: ["cite"],
         ins: ["cite"],
         q: ["cite"],
-        video: ["src", "playsinline", "controls", "autoplay", "loop", "mute"],
+        video: ["src", "playsInline", "controls", "autoPlay", "loop", "muted"],
         "video-gif": ["src"],
         pdf: ["src"],
         "*": [
