@@ -4,3 +4,4 @@ export * from "./ModalFooter";
 export * from "./ModalHeader";
 export * from "./ModalParagraph";
 export * from "./ModalTitle";
+export * from "./CenteredModal";

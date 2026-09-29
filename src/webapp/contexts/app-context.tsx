@@ -1,5 +1,5 @@
 import _ from "lodash";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { LandingNode } from "../../domain/entities/LandingPage";
 import { removeEmptyPages, TrainingModule } from "../../domain/entities/TrainingModule";
 import { buildTranslate, TranslateMethod } from "../../domain/entities/TranslatableText";
@@ -23,21 +23,29 @@ export const AppContextProvider: React.FC<AppContextProviderProps> = ({
     const [landings, setLandings] = useState<LandingNode[]>([]);
     const [isAdmin, setIsAdmin] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [modulesStatus, setModulesStatus] = useState<ModulesStatus>("loading");
     const translate = buildTranslate(locale);
     const reload = useCallback(async () => {
         setIsLoading(true);
 
-        const [modules, landings] = await Promise.all([
-            compositionRoot.usecases.modules.list(),
-            compositionRoot.usecases.landings.list(),
-        ]);
+        try {
+            const [modules, landings] = await Promise.all([
+                compositionRoot.usecases.modules.list(),
+                compositionRoot.usecases.landings.list(),
+            ]);
 
-        cacheImages(JSON.stringify(modules));
-        cacheImages(JSON.stringify(landings));
+            cacheImages(JSON.stringify(modules));
+            cacheImages(JSON.stringify(landings));
 
-        setModules(modules);
-        setLandings(landings);
-        setIsLoading(false);
+            setModules(modules);
+            setLandings(landings);
+            setModulesStatus("loaded");
+        } catch (error) {
+            console.error(error);
+            setModulesStatus("failed");
+        } finally {
+            setIsLoading(false);
+        }
     }, [compositionRoot]);
 
     const updateAppState = useCallback((update: AppState | ((prevState: AppState) => AppState)) => {
@@ -63,6 +71,7 @@ export const AppContextProvider: React.FC<AppContextProviderProps> = ({
                 translate,
                 reload,
                 isLoading,
+                modulesStatus,
                 isAdmin,
                 currentUser,
             }}
@@ -86,13 +95,13 @@ export function useAppContext(): UseAppContextResult {
         translate,
         reload,
         isLoading,
+        modulesStatus,
         isAdmin,
         currentUser,
     } = context;
     const { usecases } = compositionRoot;
-    const [module, setCurrentModule] = useState<TrainingModule>();
 
-    useEffect(() => {
+    const module = useMemo(() => {
         const currentModule =
             appState.type === "TRAINING" ||
             appState.type === "TRAINING_DIALOG" ||
@@ -100,7 +109,7 @@ export function useAppContext(): UseAppContextResult {
             appState.type === "CLONE_MODULE"
                 ? modules.find(({ id }) => id === appState.module)
                 : undefined;
-        setCurrentModule(currentModule ? removeEmptyPages(currentModule) : undefined);
+        return currentModule && removeEmptyPages(currentModule);
     }, [appState, modules]);
 
     return {
@@ -114,11 +123,13 @@ export function useAppContext(): UseAppContextResult {
         translate,
         reload,
         isLoading,
+        modulesStatus,
         isAdmin,
         currentUser,
     };
 }
 
+export type ModulesStatus = "loading" | "loaded" | "failed";
 type AppStateUpdateMethod = (oldState: AppState) => AppState;
 type ReloadMethod = () => Promise<void>;
 
@@ -139,6 +150,7 @@ export interface AppContextState {
     translate: TranslateMethod;
     reload: ReloadMethod;
     isLoading: boolean;
+    modulesStatus: ModulesStatus;
     isAdmin: boolean;
     currentUser: User;
 }
@@ -154,6 +166,7 @@ export interface UseAppContextResult {
     translate: TranslateMethod;
     reload: ReloadMethod;
     isLoading: boolean;
+    modulesStatus: ModulesStatus;
     isAdmin: boolean;
     currentUser: User;
 }

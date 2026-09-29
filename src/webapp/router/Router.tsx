@@ -5,11 +5,14 @@ import { ActionButton } from "../components/action-button/ActionButton";
 import { IFrame } from "../components/iframe/IFrame";
 import { useAppContext } from "../contexts/app-context";
 import { buildPathFromState, buildStateFromPath } from "../entities/AppState";
+import { ModuleUnavailable } from "../components/module-unavailable/ModuleUnavailable";
 import { ExitPage } from "../pages/exit/ExitPage";
-import { AppRoute, buildRoutes } from "./AppRoute";
+import { buildRoutes } from "./AppRoute";
+import { getModuleFrame } from "./ModuleFrame";
+import { useCurrentRoute } from "./useCurrentRoute";
 
 export const Router: React.FC<{ baseUrl: string }> = ({ baseUrl }) => {
-    const { appState, routes, setAppState, module, reload } = useAppContext();
+    const { appState, routes, setAppState, modules, modulesStatus, reload } = useAppContext();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -19,15 +22,9 @@ export const Router: React.FC<{ baseUrl: string }> = ({ baseUrl }) => {
     const [startPage] = useState(location.pathname);
     const defaultRoute = routes.find(({ defaultRoute }) => defaultRoute) ?? routes[0];
 
-    const hasProperty = useCallback(
-        (property: keyof AppRoute) => {
-            const match = matchRoutes(routerRoutes, location.pathname);
-            const path = match && match[0] ? match[0].route.path : "";
-            const route = routes.find(({ paths }) => paths.includes(path));
-            return route && route[property];
-        },
-        [routes, routerRoutes, location.pathname]
-    );
+    const { route: currentRoute, params } = useCurrentRoute(routerRoutes);
+    const moduleFrame = getModuleFrame({ baseUrl, moduleKey: params.key, modules, modulesStatus });
+    const goHome = useCallback(() => setAppState({ type: "HOME" }), [setAppState]);
 
     const mainComponent = useMemo(() => {
         if (appState.exit) {
@@ -63,8 +60,11 @@ export const Router: React.FC<{ baseUrl: string }> = ({ baseUrl }) => {
 
     return (
         <React.Fragment>
-            {hasProperty("iframe") && <IFrame src={`${baseUrl}${module?.dhisLaunchUrl ?? ""}`} />}
-            {hasProperty("backdrop") && !appState.minimized ? <Backdrop /> : null}
+            {currentRoute?.iframe && moduleFrame.type === "iframe" && <IFrame src={moduleFrame.src} />}
+            {currentRoute?.iframe && moduleFrame.type === "unavailable" && !appState.exit && !appState.minimized && (
+                <ModuleUnavailable reason={moduleFrame.reason} onGoHome={goHome} />
+            )}
+            {currentRoute?.backdrop && !appState.minimized ? <Backdrop /> : null}
             {mainComponent}
         </React.Fragment>
     );
