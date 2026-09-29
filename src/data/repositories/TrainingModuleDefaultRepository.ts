@@ -19,7 +19,7 @@ import { Namespaces } from "../clients/storage/Namespaces";
 import { StorageClient } from "../clients/storage/StorageClient";
 import { JSONTrainingModule, TrainingModulePageOptionalPermissions } from "../entities/JSONTrainingModule";
 import { PersistedTrainingModule } from "../entities/PersistedTrainingModule";
-import { User, validateUserPermission } from "../entities/User";
+import { hasAuthorities, User, validateUserPermission } from "../entities/User";
 import { getMajorVersion, getVersion, isAppInstalledByUrl } from "../utils/d2-api";
 import { D2Api } from "../../types/d2-api";
 import { generatePageId, generateStepId } from "../../domain/helpers/TrainingModuleHelpers";
@@ -77,14 +77,7 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
             const modules = _([...dataStoreModules, ...missingModules])
                 .compact()
                 .uniqBy("id")
-                .filter(({ dhisAuthorities }) => {
-                    const userAuthorities = currentUser.userRoles.flatMap(({ authorities }) => authorities);
-
-                    return _.every(
-                        dhisAuthorities,
-                        authority => userAuthorities.includes("ALL") || userAuthorities.includes(authority)
-                    );
-                })
+                .filter(({ dhisAuthorities }) => hasAuthorities(currentUser, dhisAuthorities))
                 .filter(model => validateUserPermission(model, "read", currentUser))
                 .value();
 
