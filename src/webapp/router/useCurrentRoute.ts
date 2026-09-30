@@ -1,13 +1,21 @@
+import { useMemo } from "react";
 import { matchRoutes, useLocation } from "react-router-dom";
+import { Maybe } from "../../types/utils";
 import { useAppContext } from "../contexts/app-context";
-import { AppRoute, buildRoutes } from "./AppRoute";
+import { AppRoute, ReactRouterRoute } from "./AppRoute";
 
-export function useCurrentRoute(): AppRoute | null {
+export interface CurrentRoute {
+    route: Maybe<AppRoute>;
+    params: Record<string, string>;
+}
+
+export function useCurrentRoute(routerRoutes: ReactRouterRoute[]): CurrentRoute {
     const { routes } = useAppContext();
-    const location = useLocation();
+    const { pathname } = useLocation();
 
-    const result = matchRoutes(buildRoutes(routes), location.pathname);
-    if (!result || result.length === 0) return null;
-
-    return routes.find(({ paths }) => paths.includes(result[0]?.route.path ?? "")) ?? null;
+    return useMemo(() => {
+        const match = matchRoutes(routerRoutes, pathname)?.[0];
+        const path = match?.route.path ?? "";
+        return { route: routes.find(({ paths }) => paths.includes(path)), params: match?.params ?? {} };
+    }, [routes, routerRoutes, pathname]);
 }

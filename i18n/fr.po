@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Traning App - UI Interface\n"
-"POT-Creation-Date: 2026-07-29T08:11:02.044Z\n"
+"POT-Creation-Date: 2026-09-28T19:45:17.686Z\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -500,6 +500,18 @@ msgstr "Impossible de supprimer la page"
 
 msgid "Page permissions"
 msgstr ""
+
+msgid "Module not found"
+msgstr "Module introuvable"
+
+msgid "This module does not exist or you do not have access to it."
+msgstr "Ce module n'existe pas ou vous n'y avez pas accès."
+
+msgid "Cannot load the modules"
+msgstr "Impossible de charger les modules"
+
+msgid "An error occurred. Reload the page to try again."
+msgstr "Une erreur est survenue. Rechargez la page pour réessayer."
 
 msgid "Binding"
 msgstr ""

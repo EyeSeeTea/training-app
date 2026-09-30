@@ -1,30 +1,38 @@
 import { useConfig } from "@dhis2/app-runtime";
+import { useSnackbar } from "@eyeseetea/d2-ui-components";
 import React, { useCallback } from "react";
-import styled from "styled-components";
+import { getModuleLaunchUrl } from "../../../domain/entities/TrainingModule";
 import i18n from "../../../utils/i18n";
 import { MainButton } from "../../components/main-button/MainButton";
 import { MarkdownViewer } from "../../components/markdown-viewer/MarkdownViewer";
-import { Modal, ModalContent, ModalFooter } from "../../components/modal";
+import { CenteredModal, ModalContent, ModalFooter } from "../../components/modal";
 import { useAppContext } from "../../contexts/app-context";
 
 export const ExitPage = () => {
     const { baseUrl } = useConfig();
     const { setAppState, module } = useAppContext();
+    const snackbar = useSnackbar();
 
     const continueTutorial = useCallback(() => {
         setAppState(appState => ({ ...appState, exit: false }));
     }, [setAppState]);
 
     const exitTutorial = useCallback(() => {
-        window.location.href = `${baseUrl}${module?.dhisLaunchUrl ?? ""}`;
-    }, [baseUrl, module]);
+        const launchUrl = getModuleLaunchUrl(baseUrl, module);
+
+        if (launchUrl) {
+            window.location.href = launchUrl;
+        } else {
+            snackbar.error(i18n.t("This module does not exist or you do not have access to it."));
+        }
+    }, [baseUrl, module, snackbar]);
 
     const goHome = useCallback(() => {
         setAppState({ type: "HOME" });
     }, [setAppState]);
 
     return (
-        <StyledModal onGoHome={goHome} centerChildren={true}>
+        <CenteredModal onGoHome={goHome} centerChildren={true}>
             <ExitPageContent />
             <ModalFooter>
                 <MainButton color="primary" onClick={continueTutorial}>
@@ -34,16 +42,9 @@ export const ExitPage = () => {
                     {i18n.t("Exit Tutorial")}
                 </MainButton>
             </ModalFooter>
-        </StyledModal>
+        </CenteredModal>
     );
 };
-
-const StyledModal = styled(Modal)`
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-`;
 
 export const ExitPageContent: React.FC = () => {
     const title = i18n.t("Are you sure you want to exit?");

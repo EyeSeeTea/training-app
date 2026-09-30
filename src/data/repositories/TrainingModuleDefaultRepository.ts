@@ -19,7 +19,7 @@ import { Namespaces } from "../clients/storage/Namespaces";
 import { StorageClient } from "../clients/storage/StorageClient";
 import { JSONTrainingModule, TrainingModulePageOptionalPermissions } from "../entities/JSONTrainingModule";
 import { PersistedTrainingModule } from "../entities/PersistedTrainingModule";
-import { User, validateUserPermission } from "../entities/User";
+import { hasAuthorities, User, validateUserPermission } from "../entities/User";
 import { getMajorVersion, getVersion, isAppInstalledByUrl } from "../utils/d2-api";
 import { D2Api } from "../../types/d2-api";
 import { generatePageId, generateStepId } from "../../domain/helpers/TrainingModuleHelpers";
@@ -47,64 +47,50 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
     }
 
     public async list(): Promise<TrainingModule[]> {
-        try {
-            const currentUser = await this.configRepository.getUser();
-            const progress = await this.progressStorageClient.getObject<UserProgress[]>(Namespaces.PROGRESS);
-            const dataStoreModules = await this.storageClient.listObjectsInCollection<PersistedTrainingModule>(
-                Namespaces.TRAINING_MODULES
-            );
+        const [currentUser, progress, dataStoreModules, defaultModules] = await Promise.all([
+            this.configRepository.getUser(),
+            this.progressStorageClient.getObject<UserProgress[]>(Namespaces.PROGRESS),
+            this.storageClient.listObjectsInCollection<PersistedTrainingModule>(Namespaces.TRAINING_MODULES),
+            this.listDefaultModules(),
+        ]);
 
-            const defaultModules = await this.listDefaultModules();
+        const missingModuleKeys = _.difference(
+            defaultModules.map(({ id }) => id),
+            dataStoreModules.map(({ id }) => id)
+        );
 
-            const missingModuleKeys = _.difference(
-                defaultModules.map(({ id }) => id),
-                dataStoreModules.map(({ id }) => id)
-            );
+        const [outdatedModules, updatableModules] = _(dataStoreModules)
+            .filter(({ id, revision }) => {
+                const builtIn = defaultModules.find(item => item.id === id);
+                return !!builtIn && builtIn.revision > revision;
+            })
+            .partition(({ dirty }) => dirty)
+            .value();
 
-            const [outdatedModules, updatableModules] = _(dataStoreModules)
-                .filter(({ id, revision }) => {
-                    const builtIn = defaultModules.find(item => item.id === id);
-                    return !!builtIn && builtIn.revision > revision;
-                })
-                .partition(({ dirty }) => dirty)
-                .value();
+        const missingModules = await promiseMap([...missingModuleKeys, ...updatableModules.map(({ id }) => id)], key =>
+            this.importDefaultModule(key)
+        );
 
-            const missingModules = await promiseMap(
-                [...missingModuleKeys, ...updatableModules.map(({ id }) => id)],
-                key => this.importDefaultModule(key)
-            );
+        const modules = _([...dataStoreModules, ...missingModules])
+            .compact()
+            .uniqBy("id")
+            .filter(({ dhisAuthorities }) => hasAuthorities(currentUser, dhisAuthorities))
+            .filter(model => validateUserPermission(model, "read", currentUser))
+            .value();
 
-            const modules = _([...dataStoreModules, ...missingModules])
-                .compact()
-                .uniqBy("id")
-                .filter(({ dhisAuthorities }) => {
-                    const userAuthorities = currentUser.userRoles.flatMap(({ authorities }) => authorities);
+        const installedApps = await fetchInstalledApps(this.api);
+        const domainModels = await this.buildDomainModels(modules, installedApps);
 
-                    return _.every(
-                        dhisAuthorities,
-                        authority => userAuthorities.includes("ALL") || userAuthorities.includes(authority)
-                    );
-                })
-                .filter(model => validateUserPermission(model, "read", currentUser))
-                .value();
-
-            const installedApps = await fetchInstalledApps(this.api);
-            const domainModels = await this.buildDomainModels(modules, installedApps);
-
-            return domainModels.map(model => ({
-                ...model,
-                outdated: !!outdatedModules.find(({ id }) => model.id === id),
-                builtin: !!defaultModules.find(({ id }) => model.id === id),
-                progress: progress?.find(({ id }) => id === model.id) ?? {
-                    id: model.id,
-                    lastStep: 0,
-                    completed: false,
-                },
-            }));
-        } catch (error: any) {
-            console.error(error);
-            return [];
-        }
+        return domainModels.map(model => ({
+            ...model,
+            outdated: !!outdatedModules.find(({ id }) => model.id === id),
+            builtin: !!defaultModules.find(({ id }) => model.id === id),
+            progress: progress?.find(({ id }) => id === model.id) ?? {
+                id: model.id,
+                lastStep: 0,
+                completed: false,
+            },
+        }));
     }
 
     public async get(key: string, options: GetModuleOptions): Promise<TrainingModule | undefined> {
