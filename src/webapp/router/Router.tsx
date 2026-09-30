@@ -61,10 +61,10 @@ export const Router: React.FC<{ baseUrl: string }> = ({ baseUrl }) => {
     return (
         <React.Fragment>
             {currentRoute?.iframe && moduleFrame.type === "iframe" && <IFrame src={moduleFrame.src} />}
+            {currentRoute?.backdrop && !appState.minimized ? <Backdrop /> : null}
             {currentRoute?.iframe && moduleFrame.type === "unavailable" && !appState.exit && !appState.minimized && (
                 <ModuleUnavailable reason={moduleFrame.reason} onGoHome={goHome} />
             )}
-            {currentRoute?.backdrop && !appState.minimized ? <Backdrop /> : null}
             {mainComponent}
         </React.Fragment>
     );
