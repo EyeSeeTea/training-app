@@ -30,11 +30,8 @@ export class Dhis2ConfigRepository implements ConfigRepository {
                     displayName: true,
                     userGroups: { id: true, name: true },
                     username: true,
-                    userRoles: { id: true, name: true, authorities: true },
-                    userCredentials: {
-                        username: true,
-                        userRoles: { id: true, name: true, authorities: true },
-                    },
+                    authorities: true,
+                    userCredentials: { username: true },
                 },
             })
             .getData();
@@ -46,10 +43,7 @@ export class Dhis2ConfigRepository implements ConfigRepository {
             name: d2User.displayName,
             username: d2User.username || credentials?.username,
             userGroups: d2User.userGroups ?? [],
-            userRoles: (d2User.userRoles || credentials?.userRoles || []).map(role => ({
-                ...role,
-                authorities: role.authorities ?? [],
-            })),
+            authorities: d2User.authorities ?? [],
         };
     }
 

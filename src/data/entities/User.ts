@@ -5,12 +5,9 @@ export interface User {
     id: string;
     name: string;
     username: string;
-    userRoles: UserRole[];
-    userGroups: NamedRef[];
-}
-
-export interface UserRole extends NamedRef {
+    /** `/api/me` returns empty `userRoles` on DHIS2 v43. */
     authorities: string[];
+    userGroups: NamedRef[];
 }
 
 type ValidateUserPermissionItem = Pick<BaseMetadata, "publicAccess" | "userAccesses" | "userGroupAccesses"> & {
@@ -43,6 +40,7 @@ export const validateUserPermission = (
     return isAdmin || isUserOwner || isPublic || hasUserAccess || hasGroupAccess;
 };
 
-export const isSuperAdmin = (user: User): boolean => {
-    return _.flatMap(user.userRoles, ({ authorities }) => authorities).includes("ALL");
-};
+export const isSuperAdmin = (user: User): boolean => user.authorities.includes("ALL");
+
+export const hasAuthorities = (user: User, requiredAuthorities: string[] = []): boolean =>
+    isSuperAdmin(user) || requiredAuthorities.every(authority => user.authorities.includes(authority));

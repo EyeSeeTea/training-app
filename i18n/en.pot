@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2026-07-29T08:11:02.044Z\n"
-"PO-Revision-Date: 2026-07-29T08:11:02.045Z\n"
+"POT-Creation-Date: 2026-09-28T19:45:17.686Z\n"
+"PO-Revision-Date: 2026-09-28T19:45:17.688Z\n"
 
 msgid "Welcome to training on DHIS2"
 msgstr ""
@@ -493,6 +493,18 @@ msgid "Unable to remove page"
 msgstr ""
 
 msgid "Page permissions"
+msgstr ""
+
+msgid "Module not found"
+msgstr ""
+
+msgid "This module does not exist or you do not have access to it."
+msgstr ""
+
+msgid "Cannot load the modules"
+msgstr ""
+
+msgid "An error occurred. Reload the page to try again."
 msgstr ""
 
 msgid "Binding"

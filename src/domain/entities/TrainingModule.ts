@@ -138,3 +138,11 @@ export function removeEmptyPages(module: TrainingModule): TrainingModule {
 export function removeEmptyStepsFromModules(modules: TrainingModule[]): TrainingModule[] {
     return modules.map(module => removeEmptyPages(module)).filter(({ contents }) => contents.steps.length > 0);
 }
+
+/** Never falls back to the server root. */
+export function getModuleLaunchUrl(
+    baseUrl: string,
+    module: Maybe<Pick<TrainingModule, "dhisLaunchUrl">>
+): Maybe<string> {
+    return module?.dhisLaunchUrl ? `${baseUrl}${module.dhisLaunchUrl}` : undefined;
+}

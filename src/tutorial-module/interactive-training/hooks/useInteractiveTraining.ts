@@ -161,7 +161,7 @@ export function useTrainingResources(props: UseTrainingDataProps) {
         name: "",
         username: "",
         userGroups: [],
-        userRoles: [],
+        authorities: [],
     });
 
     const [containerConfig, setContainerConfig] = useState<ContainerConfig>(defaultContainerConfig);
