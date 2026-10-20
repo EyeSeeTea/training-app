@@ -9,6 +9,7 @@ import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
 import styled from "styled-components";
 import { getDefaultLandingNode, LandingNode, LandingNodeType } from "../../../domain/entities/LandingPage";
 import i18n from "../../../utils/i18n";
+import { useAppConfigContext } from "../../contexts/AppConfigProvider";
 import { useAppContext } from "../../contexts/app-context";
 import { MarkdownEditor } from "../markdown-editor/MarkdownEditor";
 import { MarkdownViewer } from "../markdown-viewer/MarkdownViewer";
@@ -20,7 +21,12 @@ export const LandingPageEditDialog: React.FC<LandingPageEditDialogProps> = props
     const isRoot = type === "root";
 
     const { modules, translate, usecases } = useAppContext();
+    const { appConfig } = useAppConfigContext();
     const snackbar = useSnackbar();
+
+    // A root landing page shows every module when showAllModules is enabled, so assigning
+    // modules to it is only meaningful when that setting is off.
+    const showModuleSelector = !isRoot || !appConfig.showAllModules;
 
     const [value, setValue] = useState<LandingNode>(initialNode ?? getDefaultLandingNode({ type, parent, order }));
 
@@ -115,7 +121,7 @@ export const LandingPageEditDialog: React.FC<LandingPageEditDialogProps> = props
                 </IconUpload>
             </Row>
 
-            {!isRoot && (
+            {showModuleSelector && (
                 <Row>
                     <h3>{i18n.t("Modules")}</h3>
 
