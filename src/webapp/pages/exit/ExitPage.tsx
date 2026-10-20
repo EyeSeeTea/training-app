@@ -1,5 +1,4 @@
 import { useConfig } from "@dhis2/app-runtime";
-import { useSnackbar } from "@eyeseetea/d2-ui-components";
 import React, { useCallback } from "react";
 import { getModuleLaunchUrl } from "../../../domain/entities/TrainingModule";
 import i18n from "../../../utils/i18n";
@@ -11,21 +10,14 @@ import { useAppContext } from "../../contexts/app-context";
 export const ExitPage = () => {
     const { baseUrl } = useConfig();
     const { setAppState, module } = useAppContext();
-    const snackbar = useSnackbar();
 
     const continueTutorial = useCallback(() => {
         setAppState(appState => ({ ...appState, exit: false }));
     }, [setAppState]);
 
     const exitTutorial = useCallback(() => {
-        const launchUrl = getModuleLaunchUrl(baseUrl, module);
-
-        if (launchUrl) {
-            window.location.href = launchUrl;
-        } else {
-            snackbar.error(i18n.t("This module does not exist or you do not have access to it."));
-        }
-    }, [baseUrl, module, snackbar]);
+        window.location.href = getModuleLaunchUrl(baseUrl, module) ?? baseUrl;
+    }, [baseUrl, module]);
 
     const goHome = useCallback(() => {
         setAppState({ type: "HOME" });
