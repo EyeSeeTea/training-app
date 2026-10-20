@@ -161,6 +161,7 @@ export function useTrainingResources(props: UseTrainingDataProps) {
         name: "",
         username: "",
         userGroups: [],
+        isSuperAdmin: false,
         authorities: [],
     });
 

@@ -37,13 +37,15 @@ export class Dhis2ConfigRepository implements ConfigRepository {
             .getData();
 
         const credentials = d2User.userCredentials;
+        const authorities = d2User.authorities ?? [];
 
         return {
             id: d2User.id,
             name: d2User.displayName,
             username: d2User.username || credentials?.username,
             userGroups: d2User.userGroups ?? [],
-            authorities: d2User.authorities ?? [],
+            isSuperAdmin: authorities.includes("ALL"),
+            authorities,
         };
     }
 

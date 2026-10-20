@@ -1,22 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { hasAuthorities, isSuperAdmin, User } from "../User";
+import { hasAuthorities, UserAuthorities } from "../User";
 
-const buildUser = (authorities: string[]): User => ({
-    id: "user-id",
-    name: "User",
-    username: "user",
-    userGroups: [],
+const buildUser = (authorities: string[], isSuperAdmin = false): UserAuthorities => ({
+    isSuperAdmin,
     authorities,
-});
-
-describe("isSuperAdmin", () => {
-    it("is true when the user has the ALL authority", () => {
-        expect(isSuperAdmin(buildUser(["ALL"]))).toBe(true);
-    });
-
-    it("is false without the ALL authority", () => {
-        expect(isSuperAdmin(buildUser(["M_dhis-web-capture"]))).toBe(false);
-    });
 });
 
 describe("hasAuthorities", () => {
@@ -40,6 +27,6 @@ describe("hasAuthorities", () => {
     });
 
     it("allows every module for a super admin", () => {
-        expect(hasAuthorities(buildUser(["ALL"]), ["M_dhis-web-capture"])).toBe(true);
+        expect(hasAuthorities(buildUser([], true), ["M_dhis-web-capture"])).toBe(true);
     });
 });

@@ -5,6 +5,7 @@ export interface User {
     id: string;
     name: string;
     username: string;
+    isSuperAdmin: boolean;
     /** `/api/me` returns empty `userRoles` on DHIS2 v43. */
     authorities: string[];
     userGroups: NamedRef[];
@@ -22,8 +23,6 @@ export const validateUserPermission = (
     const { user, publicAccess = "--------", userAccesses = [], userGroupAccesses = [] } = item;
     const token = permission === "read" ? "r" : "w";
 
-    const isAdmin = isSuperAdmin(currentUser);
-
     const isUserOwner = user?.id && user?.id === currentUser.id;
     const isPublic = publicAccess.substring(0, 2).includes(token);
 
@@ -37,10 +36,5 @@ export const validateUserPermission = (
             .intersectionBy(currentUser?.userGroups || [], "id")
             .value().length > 0;
 
-    return isAdmin || isUserOwner || isPublic || hasUserAccess || hasGroupAccess;
+    return currentUser.isSuperAdmin || isUserOwner || isPublic || hasUserAccess || hasGroupAccess;
 };
-
-export const isSuperAdmin = (user: User): boolean => user.authorities.includes("ALL");
-
-export const hasAuthorities = (user: User, requiredAuthorities: string[] = []): boolean =>
-    isSuperAdmin(user) || requiredAuthorities.every(authority => user.authorities.includes(authority));
