@@ -507,8 +507,8 @@ msgstr "Módulo no encontrado"
 msgid "This module does not exist or you do not have access to it."
 msgstr "Este módulo no existe o no tiene acceso a él."
 
-msgid "Cannot load the modules"
-msgstr "No se pueden cargar los módulos"
+msgid "Cannot load the training content"
+msgstr "No se puede cargar el contenido de formación"
 
 msgid "An error occurred. Reload the page to try again."
 msgstr "Se produjo un error. Vuelva a cargar la página para intentarlo de nuevo."

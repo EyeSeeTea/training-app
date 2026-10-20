@@ -27,7 +27,7 @@ const getMessages = (): Record<ModuleUnavailableReason, { title: string; descrip
         description: i18n.t("This module does not exist or you do not have access to it."),
     },
     "load-failed": {
-        title: i18n.t("Cannot load the modules"),
+        title: i18n.t("Cannot load the training content"),
         description: i18n.t("An error occurred. Reload the page to try again."),
     },
 });

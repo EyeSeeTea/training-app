@@ -501,7 +501,7 @@ msgstr ""
 msgid "This module does not exist or you do not have access to it."
 msgstr ""
 
-msgid "Cannot load the modules"
+msgid "Cannot load the training content"
 msgstr ""
 
 msgid "An error occurred. Reload the page to try again."

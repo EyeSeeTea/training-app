@@ -507,8 +507,8 @@ msgstr "Module introuvable"
 msgid "This module does not exist or you do not have access to it."
 msgstr "Ce module n'existe pas ou vous n'y avez pas accès."
 
-msgid "Cannot load the modules"
-msgstr "Impossible de charger les modules"
+msgid "Cannot load the training content"
+msgstr "Impossible de charger le contenu de formation"
 
 msgid "An error occurred. Reload the page to try again."
 msgstr "Une erreur est survenue. Rechargez la page pour réessayer."
