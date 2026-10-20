@@ -22,8 +22,7 @@ describe("hasAuthorities", () => {
     });
 
     it("allows a stored module that has no authorities field", () => {
-        const dhisAuthorities = undefined as unknown as string[];
-        expect(hasAuthorities(buildUser([]), dhisAuthorities)).toBe(true);
+        expect(hasAuthorities(buildUser([]))).toBe(true);
     });
 
     it("allows every module for a super admin", () => {
