@@ -13,12 +13,10 @@ export class CheckSettingsPermissionsUseCase implements UseCase {
         const user = await this.configRepository.getUser();
         const { settingsPermissions: permissions } = config;
 
-        const isAdmin = !!user.userRoles.find(role => role.authorities.find(authority => authority === "ALL"));
-
         const sharedByUser = this.findCurrentUser(user, permissions.users ?? []);
         const sharedByGroup = this.findCurrentUser(user, permissions.userGroups ?? []);
 
-        return isAdmin || sharedByUser || sharedByGroup;
+        return user.isSuperAdmin || sharedByUser || sharedByGroup;
     }
 
     private findCurrentUser(user: User, collection: NamedRef[]): boolean {
