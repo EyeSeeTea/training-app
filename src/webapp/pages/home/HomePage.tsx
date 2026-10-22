@@ -102,9 +102,14 @@ const StyledModal = styled(Modal)`
     transform: translate(-50%, -50%);
     width: 65vw;
     max-height: 80vh;
+    display: flex;
+    flex-direction: column;
 
     ${ModalContent} {
         max-width: 65vw;
+        max-height: none;
+        flex-shrink: 1;
+        min-height: 0;
         padding: 0px;
         margin: 0px 10px 20px 10px;
     }
@@ -114,6 +119,15 @@ const StyledModal = styled(Modal)`
     }
 `;
 
+// The modal has a max height, so the card list scrolls inside it instead of overflowing the window
 const ContentWrapper = styled.div`
     padding: 15px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;
+
+    > * {
+        flex-shrink: 0;
+    }
 `;
