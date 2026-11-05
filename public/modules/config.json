@@ -1,13 +1,13 @@
 {
     "modules": [
         { "id": "dashboards", "revision": 7 },
-        { "id": "data-entry", "revision": 7 },
+        { "id": "data-entry", "revision": 8 },
         { "id": "event-capture", "revision": 7 },
         { "id": "event-visualizer", "revision": 7 },
         { "id": "data-visualizer", "revision": 7 },
-        { "id": "pivot-tables", "revision": 7 },
+        { "id": "pivot-tables", "revision": 8 },
         { "id": "maps", "revision": 7 },
         { "id": "bulk-load", "revision": 7 },
-        { "id": "tracker-capture", "revision": 7 }
+        { "id": "tracker-capture", "revision": 8 }
     ]
 }
