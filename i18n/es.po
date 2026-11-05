@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Traning App - UI Interface\n"
-"POT-Creation-Date: 2026-09-28T19:45:17.686Z\n"
+"POT-Creation-Date: 2026-10-21T14:28:44.522Z\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -257,6 +257,22 @@ msgstr "Subsección"
 
 msgid "Category"
 msgstr "Categoría"
+
+msgid "The server did not return a link for the file {{name}}."
+msgstr ""
+
+msgid ""
+"The server refused the file {{name}} because it is too large. Use a smaller "
+"file."
+msgstr ""
+
+msgid ""
+"The upload of {{name}} took too long and the server stopped it. Use a "
+"smaller file."
+msgstr ""
+
+msgid "The upload of {{name}} failed: {{message}}"
+msgstr ""
 
 msgid "Edit markdown"
 msgstr "Editar markdown"

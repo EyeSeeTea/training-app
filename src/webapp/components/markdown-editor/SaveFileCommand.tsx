@@ -48,33 +48,35 @@ export const saveFileCommand: Command = {
 
             const blobContents = await readFileAsync(blob);
             const saveFileAction = saveImage(blobContents, blob);
-            const fileUrl = (await saveFileAction.next()).value as string;
-            const type = await fileTypeFromBuffer(new Uint8Array(blobContents));
+            const { value: fileUrl } = await saveFileAction.next();
+            const uploaded = typeof fileUrl === "string";
+            const type = uploaded ? await fileTypeFromBuffer(new Uint8Array(blobContents)) : undefined;
+            const realMarkdown = uploaded ? `${breaksBefore}${getMarkdown(fileUrl, type)}` : "";
 
             const newState = textApi.getState();
+            const placeHolderStart = findPlaceHolder(newState.text, placeHolder, initialState.selection.start);
+            if (placeHolderStart === undefined) continue;
 
-            const uploadingText = newState.text.substr(initialState.selection.start, placeHolder.length);
+            textApi.setSelectionRange({ start: placeHolderStart, end: placeHolderStart + placeHolder.length });
+            textApi.replaceSelection(realMarkdown);
 
-            if (uploadingText === placeHolder) {
-                // In this case, the user did not touch the placeholder. Good user
-                // we will replace it with the real one that came from the server
-                textApi.setSelectionRange({
-                    start: initialState.selection.start,
-                    end: initialState.selection.start + placeHolder.length,
-                });
+            const selectionDelta =
+                placeHolderStart < newState.selection.start ? realMarkdown.length - placeHolder.length : 0;
 
-                const realMarkdown = `${breaksBefore}${getMarkdown(fileUrl, type)}`;
-                const selectionDelta = realMarkdown.length - placeHolder.length;
-
-                textApi.replaceSelection(realMarkdown);
-                textApi.setSelectionRange({
-                    start: newState.selection.start + selectionDelta,
-                    end: newState.selection.end + selectionDelta,
-                });
-            }
+            textApi.setSelectionRange({
+                start: newState.selection.start + selectionDelta,
+                end: newState.selection.end + selectionDelta,
+            });
         }
     },
 };
+
+function findPlaceHolder(text: string, placeHolder: string, initialStart: number): number | undefined {
+    if (text.substr(initialStart, placeHolder.length) === placeHolder) return initialStart;
+
+    const index = text.indexOf(placeHolder);
+    return index === -1 ? undefined : index;
+}
 
 function getMarkdown(fileUrl: string, type?: FileTypeResult): string {
     // Detect transformed gif files

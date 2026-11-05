@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2026-09-28T19:45:17.686Z\n"
-"PO-Revision-Date: 2026-09-28T19:45:17.688Z\n"
+"POT-Creation-Date: 2026-10-21T14:28:44.522Z\n"
+"PO-Revision-Date: 2026-10-21T14:28:44.524Z\n"
 
 msgid "Welcome to training on DHIS2"
 msgstr ""
@@ -255,6 +255,22 @@ msgid "Sub-section"
 msgstr ""
 
 msgid "Category"
+msgstr ""
+
+msgid "The server did not return a link for the file {{name}}."
+msgstr ""
+
+msgid ""
+"The server refused the file {{name}} because it is too large. Use a smaller "
+"file."
+msgstr ""
+
+msgid ""
+"The upload of {{name}} took too long and the server stopped it. Use a "
+"smaller file."
+msgstr ""
+
+msgid "The upload of {{name}} failed: {{message}}"
 msgstr ""
 
 msgid "Edit markdown"
