@@ -96,7 +96,8 @@ function getProxy(env: Record<string, string>) {
     return {
         "/dhis2": {
             ...shared,
-            rewrite: (p: string) => p.replace(/^\/dhis2/, "/"),
+            // Strip the prefix without leaving a double slash: Vite 7 no longer collapses "//api" and Tomcat answers 400.
+            rewrite: (p: string) => p.replace(/^\/dhis2/, ""),
         },
         "/documents": {
             ...shared,
