@@ -81,7 +81,8 @@ Every entry in the `resolutions` block of `package.json` is documented here, tog
 - **No fix:** 4.0.7 is the latest published version and the advisory covers every version through it.
 - **Paths:** `2.3.2` through `micromatch` ← `fast-glob` ← `globby` ← `@typescript-eslint/typescript-estree`; `4.0.4` through `vite` and `jest-util`/`jest-message-util` (types of `@testing-library/jest-dom`); `4.0.7` through `tinyglobby` ← `vite`.
 - **Impact:** the ReDoS needs an attacker-supplied glob pattern. All of them are dev tooling (lint, Vite, test types) fed with the repository's own patterns, and none ships in the app bundle.
-- **Review when:** a patched `picomatch` is published. `4.0.7` appears with the Vite 7 toolchain; it is the one instance that is not on the base branch.
+- **Dependency-Track counts instances, not versions:** GitHub numbers alerts of the same advisory by order of appearance, so a third `picomatch` version shows up as one new high against a base that has two. `yarn dedupe picomatch` moves `4.0.4` onto `4.0.7` (every parent range accepts it), leaving `2.3.2` and `4.0.7`, the same count as the base. No pin is needed; re-run `yarn dedupe picomatch` if a new `picomatch` 4.x release lands in the lockfile.
+- **Review when:** a patched `picomatch` is published.
 
 ### `braces@3.0.3` (high, GHSA-vfj7-8cjw-p6xm)
 
