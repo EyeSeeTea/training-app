@@ -75,3 +75,29 @@ Every entry in the `resolutions` block of `package.json` is documented here, tog
 - **Fix exists but is not applied:** the patched range is `>=26.3.4`; `@dhis2/d2-i18n` requires `^10.3`. Forcing a 10 → 26 major jump at runtime could not be validated without a DHIS2 instance.
 - **Impact:** `deepExtend` prototype corruption needs attacker-controlled resource bundles; the app only loads its own bundled translations.
 - **Review when:** `@dhis2/d2-i18n` updates `i18next`, or a DHIS2 instance is available to validate the major bump.
+
+### `picomatch@2.3.2`, `4.0.4`, `4.0.7` (high, GHSA-fc5q-39xc-vjpf)
+
+- **No fix:** 4.0.7 is the latest published version and the advisory covers every version through it.
+- **Paths:** `2.3.2` through `micromatch` ← `fast-glob` ← `globby` ← `@typescript-eslint/typescript-estree`; `4.0.4` through `vite` and `jest-util`/`jest-message-util` (types of `@testing-library/jest-dom`); `4.0.7` through `tinyglobby` ← `vite`.
+- **Impact:** the ReDoS needs an attacker-supplied glob pattern. All of them are dev tooling (lint, Vite, test types) fed with the repository's own patterns, and none ships in the app bundle.
+- **Review when:** a patched `picomatch` is published. `4.0.7` appears with the Vite 7 toolchain; it is the one instance that is not on the base branch.
+
+### `braces@3.0.3` (high, GHSA-vfj7-8cjw-p6xm)
+
+- **No fix:** 3.0.3 is the latest published version and the advisory covers `<=3.0.3`.
+- **Paths:** `micromatch` ← `fast-glob` ← `globby` ← `@typescript-eslint/typescript-estree`, and `micromatch` ← `http-proxy-middleware`.
+- **Impact:** the stack overflow needs an attacker-supplied brace pattern; both consumers only receive the repository's own patterns. Dev tooling only.
+- **Review when:** a patched `braces` is published, or ESLint and `@typescript-eslint` are migrated.
+
+### `deepmerge@4.3.1` (medium, GHSA-gcqx-w48m-w2h4) and `sprintf-js@1.0.3` (medium, GHSA-hp3w-g68c-fv3c)
+
+- **No fix:** `deepmerge` 4.3.1 and `sprintf-js` 1.1.3 are the latest published versions and are inside the advisory ranges.
+- **Paths:** `deepmerge` through `i18next-scanner` and `sprintf-js` through `argparse`, both from the archived `@dhis2/d2-i18n-extract` / `@dhis2/d2-i18n-generate`.
+- **Impact:** build-time translation extraction only (`yarn localize`); they process the repository's own sources and are not in the app bundle.
+- **Review when:** the i18n tooling is replaced. `dhis2-app-skeleton` moved to `@dhis2/cli-app-scripts`, which removes these two but brings `request` and `uuid@3.4.0`; that migration is a separate decision.
+
+### Findings that were already open on the base branch
+
+- `eslint@8.1.0` (medium, GHSA-p5wg-g6qr-c7cg): fixed in ESLint 9.26+, a major migration of the lint setup that is not part of this PR.
+- `react-router@6.0.0-beta.0` (two medium, GHSA-wrjc-x8rr-h8h6 and GHSA-9jcx-v3wj-wh4m): `react-router` and `react-router-dom` are direct dependencies pinned to this beta, and moving off it is an app migration, not a dependency refresh.
