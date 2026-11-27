@@ -22,14 +22,14 @@ export async function isAppInstalledByUrl(
     const isPathRelative = launchUrl.startsWith("/");
     const [baseAppPath] = launchUrl.split("#");
 
-    // Normalize by removing trailing /, #, #/, /#, and '/index.html'
-    const normalizePath = (path: string) => path.replace(/[/#]+$/, "").replace(/\/index.html\.[^/]*$/, "");
+    // Normalize by removing trailing /, #, #/, /#, and '/index.html' (optionally with a query string)
+    const normalizePath = (path: string) => path.replace(/[/#]+$/, "").replace(/\/index\.html(\?.*)?$/, "");
     const normalizedLaunchPath = normalizePath(baseAppPath ?? launchUrl);
 
-    const isAppInstalled = installedApps.some(app => {
-        if (!app.launchUrl) return false;
-        return normalizePath(app.launchUrl).endsWith(normalizedLaunchPath);
-    });
+    // launchUrl may point to plugin.html (pluginLaunchUrl), so check also the app launch URL
+    const isAppInstalled = installedApps.some(app =>
+        _.compact([app.launchUrl, app.fullLaunchUrl]).some(url => normalizePath(url).endsWith(normalizedLaunchPath))
+    );
 
     // We need this check to handle DHIS2 apps such as Messages and User settings that exist within the DHIS2 instance but are not listed as installed apps
     if (isPathRelative && !isAppInstalled) {

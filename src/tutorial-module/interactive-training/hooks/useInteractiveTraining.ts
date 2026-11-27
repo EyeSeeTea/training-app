@@ -184,8 +184,9 @@ export function useTrainingResources(props: UseTrainingDataProps) {
     useEffect(() => {
         setIsLoading(true);
 
+        // Embedded in a host app: default modules are bundled only with the training app itself
         const modulesPromise = compositionRoot.usecases.modules
-            .list()
+            .list({ autoInstallDefaultModules: false })
             .then(modules => setModules(updateIconDocumentUrls(modules, d2Api, trainingAppKey)))
             .catch(error => {
                 console.error(`Error fetching modules:`, error);

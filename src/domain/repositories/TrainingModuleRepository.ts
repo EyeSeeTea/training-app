@@ -3,7 +3,7 @@ import { TrainingModule } from "../entities/TrainingModule";
 import { TranslableTextRepository } from "./TranslableTextRepository";
 
 export interface TrainingModuleRepository extends TranslableTextRepository {
-    list(): Promise<TrainingModule[]>;
+    list(options?: GetModuleOptions): Promise<TrainingModule[]>;
     get(moduleKey: string, options: GetModuleOptions): Promise<TrainingModule | undefined>;
     update(module: Pick<TrainingModule, "id" | "name"> & Partial<TrainingModule>): Promise<void>;
     delete(ids: string[]): Promise<void>;
