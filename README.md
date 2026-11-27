@@ -87,6 +87,24 @@ $ yarn test
 $ yarn build-webapp
 ```
 
+## Scripts
+
+### Copy the training-app configuration to another instance
+
+Copy the `training-app` dataStore namespace and every document it references (UIDs preserved) from one DHIS2 instance to another. It runs in dry-run mode (read-only) unless `--post` is passed:
+
+```
+$ yarn copy-training-app \
+    --source-url 'https://USER:PASSWORD@source.example.org' \
+    --target-url 'https://USER:PASSWORD@target.example.org' \
+    [--post] [--update-documents]
+```
+
+-   Documents already on the target are skipped. With `--update-documents`, their file is replaced when its content differs from the source.
+-   Credentials can also be passed with `--source-auth USER:PASSWORD` / `--target-auth USER:PASSWORD`.
+-   SOCKS proxy: set `ALL_PROXY` (example: `ALL_PROXY=socks5h://localhost:9300`).
+-   DHIS2 2.42 rejects uploads bigger than `max.file_upload_size` (dhis.conf, default 10 MB): raise it on the target to copy bigger files.
+
 ## Some development tips
 
 ### Structure
