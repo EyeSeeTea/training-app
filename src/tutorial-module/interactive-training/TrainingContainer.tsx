@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { Box } from "@material-ui/core";
 
 import { ContainerConfig } from "../../domain/entities/Config";
 import { InteractiveTrainingModal } from "./InteractiveTrainingModal";
@@ -44,41 +45,59 @@ export const TrainingContainer: React.FC<TrainingContainerProps> = props => {
         window.open(settingsAccess.settingsUrl, "_blank");
     }, [settingsAccess]);
 
-    if (isLoading) return <></>;
+    // Children always render in the same position of the tree, so the host app is mounted
+    // immediately and not re-mounted when the training data finishes loading.
+    const trainingUi = isLoading ? null : getTrainingUi();
+    const isSidebar = trainingUi?.type === "sidebar";
 
-    switch (containerConfig.type) {
-        case "sidebar":
-            return (
-                <InteractiveTrainingDrawer
-                    {...containerProps}
-                    isMinimized={isMinimized}
-                    onHome={goHome}
-                    onBack={goBack}
-                    onSettings={settingsAccess.hasAccess ? onSettings : undefined}
-                    containerConfig={containerConfig}
-                    badgeProps={badgeProps}
-                    drawerContent={<TrainingContainerContent content={content} defaultContent={defaultContent} />}
-                >
-                    {children}
-                </InteractiveTrainingDrawer>
-            );
-        case "dialog":
-            return (
-                <>
-                    {children}
-                    <InteractiveTrainingModal
-                        {...containerProps}
-                        minimized={isMinimized}
-                        onGoHome={goHome}
-                        onGoBack={goBack}
-                        onSettings={settingsAccess.hasAccess ? onSettings : undefined}
-                        containerConfig={containerConfig}
-                        badgeProps={badgeProps}
-                    >
-                        <TrainingContainerContent content={content} defaultContent={defaultContent} />
-                    </InteractiveTrainingModal>
-                </>
-            );
+    return (
+        <Box display={isSidebar ? "flex" : "block"}>
+            {trainingUi?.type === "sidebar" && !trainingUi.isRight ? trainingUi.element : null}
+            <Box flexGrow={isSidebar ? 1 : undefined}>{children}</Box>
+            {trainingUi?.type === "sidebar" && trainingUi.isRight ? trainingUi.element : null}
+            {trainingUi?.type === "dialog" ? trainingUi.element : null}
+        </Box>
+    );
+
+    function getTrainingUi() {
+        switch (containerConfig.type) {
+            case "sidebar":
+                return {
+                    type: "sidebar" as const,
+                    isRight: containerConfig.position === "right",
+                    element: (
+                        <InteractiveTrainingDrawer
+                            {...containerProps}
+                            isMinimized={isMinimized}
+                            onHome={goHome}
+                            onBack={goBack}
+                            onSettings={settingsAccess.hasAccess ? onSettings : undefined}
+                            containerConfig={containerConfig}
+                            badgeProps={badgeProps}
+                            drawerContent={
+                                <TrainingContainerContent content={content} defaultContent={defaultContent} />
+                            }
+                        />
+                    ),
+                };
+            case "dialog":
+                return {
+                    type: "dialog" as const,
+                    element: (
+                        <InteractiveTrainingModal
+                            {...containerProps}
+                            minimized={isMinimized}
+                            onGoHome={goHome}
+                            onGoBack={goBack}
+                            onSettings={settingsAccess.hasAccess ? onSettings : undefined}
+                            containerConfig={containerConfig}
+                            badgeProps={badgeProps}
+                        >
+                            <TrainingContainerContent content={content} defaultContent={defaultContent} />
+                        </InteractiveTrainingModal>
+                    ),
+                };
+        }
     }
 };
 

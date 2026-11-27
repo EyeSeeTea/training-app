@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import React, { PropsWithChildren } from "react";
-import { Box, Drawer } from "@material-ui/core";
+import { Drawer } from "@material-ui/core";
 import BackIcon from "@material-ui/icons/ArrowBack";
 import SettingsIcon from "@material-ui/icons/Settings";
 import HomeIcon from "@material-ui/icons/Home";
@@ -37,7 +37,6 @@ export const InteractiveTrainingDrawer: React.FC<SideDrawerProps> = props => {
         onBack,
         onHome,
         onSettings,
-        children,
         triggerKey,
         containerConfig,
         drawerContent,
@@ -110,10 +109,8 @@ export const InteractiveTrainingDrawer: React.FC<SideDrawerProps> = props => {
     );
 
     return (
-        <Box display="flex">
-            {!isRight && drawer}
-            <Box flexGrow={1}>{children}</Box>
-            {isRight && drawer}
+        <>
+            {drawer}
             {/* Hide mode only: floating action button when collapsed */}
             {isHideMode && isMinimized && (
                 <ActionButtonContainer>
@@ -123,7 +120,7 @@ export const InteractiveTrainingDrawer: React.FC<SideDrawerProps> = props => {
                     </ActionButton>
                 </ActionButtonContainer>
             )}
-        </Box>
+        </>
     );
 };
 

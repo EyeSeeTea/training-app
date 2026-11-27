@@ -47,12 +47,14 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
         this.assetClient = new FetchHttpClient({});
     }
 
-    public async list(): Promise<TrainingModule[]> {
-        const [currentUser, progress, dataStoreModules, defaultModules] = await Promise.all([
+    public async list(options: GetModuleOptions = defaultModuleOptions): Promise<TrainingModule[]> {
+        const [currentUser, progress, dataStoreModules, defaultModules, installedApps] = await Promise.all([
             this.configRepository.getUser(),
             this.progressStorageClient.getObject<UserProgress[]>(Namespaces.PROGRESS),
             this.storageClient.listObjectsInCollection<PersistedTrainingModule>(Namespaces.TRAINING_MODULES),
-            this.listDefaultModules(),
+            this.listDefaultModules(options),
+            fetchInstalledApps(this.api),
+            getVersion(this.api),
         ]);
 
         const missingModuleKeys = _.difference(
@@ -69,7 +71,7 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
             .value();
 
         const missingModules = await promiseMap([...missingModuleKeys, ...updatableModules.map(({ id }) => id)], key =>
-            this.importDefaultModule(key)
+            this.importDefaultModule(key, options)
         );
 
         const modules = _([...dataStoreModules, ...missingModules])
@@ -79,7 +81,6 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
             .filter(model => validateUserPermission(model, "read", currentUser))
             .value();
 
-        const installedApps = await fetchInstalledApps(this.api);
         const domainModels = await this.buildDomainModels(modules, installedApps);
 
         return domainModels.map(model => ({
@@ -336,54 +337,64 @@ export class TrainingModuleDefaultRepository implements TrainingModuleRepository
         models: PersistedTrainingModule[],
         installedApps: InstalledApp[]
     ): Promise<Omit<TrainingModule, "progress" | "outdated" | "builtin">[]> {
-        const currentUser = await this.configRepository.getUser();
-        const instanceVersion = await getVersion(this.api);
+        const [currentUser, instanceVersion] = await Promise.all([
+            this.configRepository.getUser(),
+            getVersion(this.api),
+        ]);
 
-        return promiseMap(models, async model => {
-            if (model._version !== 1) {
-                throw new Error(`Unsupported revision of module: ${model._version}`);
-            }
+        // Modules may share a launch URL: check each URL once, all of them in parallel
+        const isInstalled = _.memoize((launchUrl: string) => isAppInstalledByUrl(this.api, installedApps, launchUrl));
 
-            const { created, lastUpdated, type, contents, ...rest } = model;
-            const validType = isValidTrainingType(type) ? type : "app";
+        return Promise.all(
+            models.map(async model => {
+                if (model._version !== 1) {
+                    throw new Error(`Unsupported revision of module: ${model._version}`);
+                }
 
-            const checkPagePermissions = (page: TrainingModulePageOptionalPermissions, permission: "read" | "write") =>
-                validateUserPagePermissions({
-                    module: model,
-                    item: {
-                        ...page,
-                        permissions: page.permissions ?? defaultPagePermissions,
+                const { created, lastUpdated, type, contents, ...rest } = model;
+                const validType = isValidTrainingType(type) ? type : "app";
+
+                const checkPagePermissions = (
+                    page: TrainingModulePageOptionalPermissions,
+                    permission: "read" | "write"
+                ) =>
+                    validateUserPagePermissions({
+                        module: model,
+                        item: {
+                            ...page,
+                            permissions: page.permissions ?? defaultPagePermissions,
+                        },
+                        permission,
+                        currentUser,
+                    });
+
+                return {
+                    ...rest,
+                    contents: {
+                        ...contents,
+                        steps: contents.steps.map((step, stepIdx) => ({
+                            ...step,
+                            id: generateStepId(model.id, stepIdx),
+                            pages: step.pages
+                                .filter(page => checkPagePermissions(page, "read"))
+                                .map((page, pageIdx) => ({
+                                    ...page,
+                                    id: generatePageId(model.id, stepIdx, pageIdx),
+                                    permissions: page.permissions ?? defaultPagePermissions,
+                                    bindings: page.bindings ?? [],
+                                    editable: checkPagePermissions(page, "write"),
+                                })),
+                        })),
                     },
-                    permission,
-                    currentUser,
-                });
-
-            return {
-                ...rest,
-                contents: {
-                    ...contents,
-                    steps: contents.steps.map((step, stepIdx) => ({
-                        ...step,
-                        id: generateStepId(model.id, stepIdx),
-                        pages: step.pages
-                            .filter(page => checkPagePermissions(page, "read"))
-                            .map((page, pageIdx) => ({
-                                ...page,
-                                id: generatePageId(model.id, stepIdx, pageIdx),
-                                permissions: page.permissions ?? defaultPagePermissions,
-                                bindings: page.bindings ?? [],
-                                editable: checkPagePermissions(page, "write"),
-                            })),
-                    })),
-                },
-                installed: await isAppInstalledByUrl(this.api, installedApps, model.dhisLaunchUrl),
-                editable: validateUserPermission(model, "write", currentUser),
-                compatible: validateDhisVersion(model, instanceVersion),
-                created: new Date(created),
-                lastUpdated: new Date(lastUpdated),
-                type: validType,
-            };
-        });
+                    installed: await isInstalled(model.dhisLaunchUrl),
+                    editable: validateUserPermission(model, "write", currentUser),
+                    compatible: validateDhisVersion(model, instanceVersion),
+                    created: new Date(created),
+                    lastUpdated: new Date(lastUpdated),
+                    type: validType,
+                };
+            })
+        );
     }
 
     private async buildPersistedModel(model: JSONTrainingModule): Promise<PersistedTrainingModule> {
